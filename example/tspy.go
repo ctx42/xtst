@@ -1,0 +1,18 @@
+package example
+
+// File contains example usages of tester.T and tester.Spy.
+
+import (
+	"github.com/ctx42/xtst/pkg/tester"
+)
+
+// IsOdd asserts "have" is odd number. Returns true if it is, otherwise marks
+// the test as failed, writes error message to the test log and returns false.
+func IsOdd(t tester.T, have int) bool {
+	t.Helper()
+	if have%2 == 0 {
+		t.Errorf("expected %d to be odd", have)
+		return false
+	}
+	return true
+}

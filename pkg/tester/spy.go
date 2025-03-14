@@ -27,31 +27,30 @@ const (
 	closeCall                      // Call to [Spy.Close] method.
 )
 
-// MStrategy represents strategy of matching log messages produced by Helper
-// Under Test (HUT).
-type MStrategy string
+// Strategy is strategy of matching logs produced by Helper Under Test (HUT).
+type Strategy string
 
 // Log matching strategies.
 const (
 	// Equal is a strategy where messages logged by HUT are matched exactly.
-	Equal MStrategy = "equal"
+	Equal Strategy = "equal"
 
 	// Contains is a strategy where messages logged by HUT contain a string.
-	Contains MStrategy = "contains"
+	Contains Strategy = "contains"
 
 	// NotContains is a strategy where messages logged by HUT don't contain a
 	// string.
-	NotContains MStrategy = "not-contains"
+	NotContains Strategy = "not-contains"
 
 	// Regexp is a strategy where messages logged by the HUT match regular
 	// expression.
-	Regexp MStrategy = "regexp"
+	Regexp Strategy = "regexp"
 )
 
-// find represents search strategy and what to find in HUT log messages.
+// find implements log matching strategies.
 type find struct {
-	strategy MStrategy // Match strategy.
-	want     string    // Expected message.
+	strategy Strategy // Match strategy.
+	want     string   // Expected string.
 }
 
 // match returns true if "want" can be found in "have" using strategy.
@@ -517,7 +516,7 @@ func (spy *Spy) IgnoreLogs() *Spy {
 // matcher strategy is used to match the message.
 //
 // Method call will panic if [Spy.IgnoreLogs] was called before.
-func (spy *Spy) ExpectLog(matcher MStrategy, msg string, args ...any) *Spy {
+func (spy *Spy) ExpectLog(matcher Strategy, msg string, args ...any) *Spy {
 	spy.mx.Lock()
 	defer spy.mx.Unlock()
 	spy.tt.Helper()

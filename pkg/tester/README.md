@@ -36,27 +36,27 @@ which improve test readability and in many cases reduce their complexity.
 Anywhere where `*testing.T` is used you can replace it with `tester.T` interface 
 as long as the test helper uses the following methods:
 
-- Cleanup(func())
-- Error(args ...any)
-- Errorf(format string, args ...any)
-- Fatal(args ...any)
-- Fatalf(format string, args ...any)
-- FailNow()
-- Failed() bool
-- Helper()
-- Log(args ...any)
-- Logf(format string, args ...any)
-- Name() string
-- Setenv(key, value string)
-- Skip(args ...any)
-- TempDir() string
-- Context() context.Context
+- Spy.Cleanup(func())
+- Spy.Error(args ...any)
+- Spy.Errorf(format string, args ...any)
+- Spy.Fatal(args ...any)
+- Spy.Fatalf(format string, args ...any)
+- Spy.FailNow()
+- Spy.Failed() bool
+- Spy.Helper()
+- Spy.Log(args ...any)
+- Spy.Logf(format string, args ...any)
+- Spy.Name() string
+- Spy.Setenv(key, value string)
+- Spy.Skip(args ...any)
+- Spy.TempDir() string
+- Spy.Context() context.Context
 
 So for example a test helper
 
 ```go
-// IsOdd tests value is odd. Returns true if it is, otherwise marks the test as 
-// failed, writes error message to the test log and returns false.
+// IsOdd asserts "have" is odd number. Returns true if it is, otherwise marks
+// the test as failed, writes error message to the test log and returns false.
 func IsOdd(t *testing.T, have int) bool {
 	t.Helper()
 	if have%2 != 0 {
@@ -70,8 +70,8 @@ func IsOdd(t *testing.T, have int) bool {
 can be refactored as
 
 ```go
-// IsOdd tests value is odd. Returns true if it is, otherwise marks the test as 
-// failed, writes error message to the test log and returns false.
+// IsOdd asserts "have" is odd number. Returns true if it is, otherwise marks
+// the test as failed, writes error message to the test log and returns false.
 func IsOdd(t tester.T, have int) bool {
 	t.Helper()
 	if have%2 != 0 {
@@ -98,42 +98,39 @@ We can test the `IsOdd` test helper created above in the following way:
 
 ```go
 func Test_IsOdd(t *testing.T) {
-	t.Run("is odd", func(t *testing.T) {
-		// --- Given ---
-		// Instantiate the spy. By default, the only expectation is
-		// that the [testing.T.Helper] is called at least once.
+    t.Run("error is not odd number", func(t *testing.T) {
+        // --- Given ---
+
+		// Set up the spy with expectations
 		tspy := tester.New(t)
-		tspy.Close() // No more expectations can be defined.
+		tspy.ExpectError()                              // Expect an error.
+		tspy.ExpectLogEqual("expected %d to be odd", 2) // Expect log.
+		tspy.Close()                                    // No more expectations.
 
 		// --- When ---
-		success := IsOdd(tspy, 2)
+		success := IsOdd(tspy, 2) // Run the helper.
 
 		// --- Then ---
+		if success { // Verify the outcome.
+			t.Error("expected success to be false")
+		}
+		tspy.AssertExpectations() // Ensure all expectations were met.
+	})
+
+	t.Run("is odd number", func(t *testing.T) {
+		// Given
+		tspy := tester.New(t)
+		tspy.Close()
+
+		// When
+		success := IsOdd(tspy, 3)
+
+		// Then
 		if !success {
 			t.Error("expected success to be true")
 		}
 
-		// If not called manually it will be called
-		// automatically at the end of the test.
-		tspy.AssertExpectations()
-	})
-
-	t.Run("not odd", func(t *testing.T) {
-		// --- Given ---
-		tspy := tester.New(t, 1)
-		tspy.ExpectError()
-		tspy.ExpectLogEqual("expected %d to be odd", 3)
-		tspy.Close()
-
-		// --- When ---
-		success := IsOdd(tspy, 3)
-
-		// --- Then ---
-		if success {
-			t.Error("expected success to be false")
-		}
-
-		// No call to `mck.AssertExpectations` but it's still called.
+		// The `tspy.AssertExpectations()` is called automatically.
 	})
 }
 ```
@@ -146,22 +143,22 @@ multiple `Expect*` methods.
 ```go
 tspy := tester.New(t)
 
-tspy.ExpectCleanups(n) // Expect HUT to call Cleanup exactly n times. 
+tspy.ExpectCleanups(n)  // Expect HUT to call Cleanup exactly n times. 
 tspy.ExpectError()      // Expect HUT to call one of the Error* methods at least once. 
 tspy.ExpectFatal()      // Expect HUT to call one of the Fatal* methods at least once.
-tspy.ExpectFail()     // Expect HUT to call one of the Error* or Fatal* at least once.  
-tspy.ExpectHelpers(n) // Expect HUT to call Helper method exactly n times. 
+tspy.ExpectFail()       // Expect HUT to call one of the Error* or Fatal* at least once.  
+tspy.ExpectHelpers(n)   // Expect HUT to call Helper method exactly n times. 
 tspy.ExpectSetenv(k, v) // Expect HUT to call Setenv method with key, value pair.
-tspy.ExpectSkipped() // Expect HUT to skip the test.
-tspy.ExpectTempDir(n) // Expect HUT to call TempDir n times.
-tspy.ExpectFail()     // Expect HUT to call one of the Error* or Fatal* methods.
-tspy.ExpectedNames(n) // Expect HUT to call Name exactly n times.
+tspy.ExpectSkipped()    // Expect HUT to skip the test.
+tspy.ExpectTempDir(n)   // Expect HUT to call TempDir n times.
+tspy.ExpectFail()       // Expect HUT to call one of the Error* or Fatal* methods.
+tspy.ExpectedNames(n)   // Expect HUT to call Name exactly n times.
 
 // Log message expectations: 
 
-tspy.ExpectLog(matcher, format, args...) // Expect logged message to match formated string.
-tspy.ExpectLogEqual(format, args...) // Expect logged message to equal to formated string. 
-tspy.ExpectLogContain(format, args...) // Expect logged message to contain formated string.
+tspy.ExpectLog(matcher, format, args...)  // Expect logged message to match formated string.
+tspy.ExpectLogEqual(format, args...)      // Expect logged message to equal to formated string. 
+tspy.ExpectLogContain(format, args...)    // Expect logged message to contain formated string.
 tspy.ExpectLogNotContain(format, args...) // Expect logged message not to contain formated string.
 ```
 
@@ -181,7 +178,7 @@ it will expect _at least one_ call to `Helper` method, but you can define
 exact number of times it should be called by adding optional argument
 
 ```go
-tspy := tester.New(t, 3)
+tspy := tester.New(t)
 ```
 
 Now if the HUT does not make exactly 2 calls to `Helper` it will fail the test.
@@ -245,10 +242,10 @@ The `Spy` provides a couple of ways to examine log messages. The
 `ExpectLog(matcher MStrategy, format string, args ...any)` where you 
 provide matching strategy: 
 
-- `equal` - the log must be exact match with given formatted string
-- `contains` - the log must contain given formatted string
-- `not-contains` - the log must NOT contain given formatted string
-- `regexp` - given regexp must match the log 
+- `tester.Equal` - the log must be exact match with given formatted string
+- `tester.Contains` - the log must contain given formatted string
+- `tester.NotContains` - the log must NOT contain given formatted string
+- `tester.Regexp` - the log must match regexp 
 
 Or using convenience methods:
 
