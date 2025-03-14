@@ -1,9 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="go test all" type="GoTestRunConfiguration" factoryName="Go Test">
-    <module name="tst" />
+    <module name="xtst" />
     <working_directory value="$PROJECT_DIR$" />
     <go_parameters value="-count 1 -race" />
     <kind value="DIRECTORY" />
+    <package value="github.com/ctx42/xtst" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$" />
     <framework value="gotest" />
