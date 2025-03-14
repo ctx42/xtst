@@ -7,6 +7,7 @@
 package affirm
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -44,6 +45,21 @@ func False(t *testing.T, have bool) bool {
 func Equal[T comparable](t *testing.T, want, have T) bool {
 	t.Helper()
 	if want != have {
+		const format = "expected %T to be equal:\n" +
+			"\twant: %#v\n" +
+			"\thave: %#v"
+		t.Errorf(format, want, want, have)
+		return false
+	}
+	return true
+}
+
+// DeepEqual affirms "want" and "have" are equal using [reflect.DeepEqual].
+// Returns true if it is, otherwise marks the test as failed, writes error
+// message to the test log and returns false.
+func DeepEqual(t *testing.T, want, have any) bool {
+	t.Helper()
+	if !reflect.DeepEqual(want, have) {
 		const format = "expected %T to be equal:\n" +
 			"\twant: %#v\n" +
 			"\thave: %#v"

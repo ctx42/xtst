@@ -117,7 +117,7 @@ func Test_IsOdd(t *testing.T) {
 		tspy.AssertExpectations() // Ensure all expectations were met.
 	})
 
-	t.Run("is odd number", func(t *testing.T) {
+	t.Run("success is odd number", func(t *testing.T) {
 		// Given
 		tspy := tester.New(t)
 		tspy.Close()

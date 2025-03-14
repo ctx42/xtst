@@ -93,6 +93,34 @@ func Test_Equal(t *testing.T) {
 	})
 }
 
+func Test_DeepEqual(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		ti := &testing.T{}
+
+		// --- When ---
+		have := DeepEqual(ti, []int{42}, []int{42})
+
+		// --- Then ---
+		if !have || ti.Failed() {
+			t.Error("expected success")
+		}
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		ti := &testing.T{}
+
+		// --- When ---
+		have := DeepEqual(ti, []int{42}, []int{44})
+
+		// --- Then ---
+		if have || !ti.Failed() {
+			t.Error("expected failure")
+		}
+	})
+}
+
 func Test_Nil(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
