@@ -1,0 +1,6 @@
+\.idea
+tmp
+\.golangci.yml
+go_test_coverage.log
+go_test_run.log
+go.work
