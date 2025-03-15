@@ -1,0 +1,9 @@
+Struct containing other struct (multi level presentation).
+---
+{
+	Int: 1,
+	T1: {
+		Int: 2,
+		T1: nil,
+	},
+}

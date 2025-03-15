@@ -1,0 +1,10 @@
+Default presentation of a simple struct.
+---
+{
+	Int: 1,
+	Str: "2",
+	Tim: "2000-01-02T03:04:05Z",
+	Dur: "3ns",
+	Loc: "Europe/Warsaw",
+	TAp: nil,
+}

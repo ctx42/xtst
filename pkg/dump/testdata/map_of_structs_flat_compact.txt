@@ -1,0 +1,3 @@
+Map with simple structs.
+---
+map[int]types.T1{0:{Int:0,T1:nil},1:{Int:1,T1:nil}}
