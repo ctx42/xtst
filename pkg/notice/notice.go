@@ -1,0 +1,198 @@
+// Copyright (c) 2025 Rafal Zajac
+// SPDX-License-Identifier: MIT
+
+// Package notice simplifies building structured assertion messages.
+package notice
+
+import (
+	"errors"
+	"fmt"
+	"slices"
+	"strings"
+)
+
+// fieldPath represents a row name with special meaning.
+//
+// Path examples:
+//
+//   - Type
+//   - Type[1].Field
+//   - Type["key"].Field
+const fieldPath = "path"
+
+// ErrAssert represents an error that occurs during an assertion. It is
+// typically used when a condition fails to meet the expected value.
+var ErrAssert = errors.New("assert error")
+
+// Notice represents structured notice message consisting of a header and
+// multiple named rows giving context to it.
+//
+// nolint: errname
+type Notice struct {
+	Header string            // Header message.
+	Rows   map[string]string // Context rows.
+	Order  []string          // Order to display rows in.
+	err    error             // Base error.
+}
+
+// New creates a new [Notice] with the specified header which is constructed
+// using [fmt.Sprintf] from format and args. By default, the base error is
+// set to [ErrAssert].
+func New(header string, args ...any) *Notice {
+	msg := &Notice{
+		Rows: make(map[string]string, 2),
+		err:  ErrAssert,
+	}
+	return msg.SetHeader(header, args...)
+}
+
+// From returns instance of [Notice] if it is in err's tree. If prefix is not
+// empty header will be prefixed with the first element in the slice. If err is
+// not instance of [Notice] it will create a new one and wrap err.
+func From(err error, prefix ...string) *Notice {
+	var e *Notice
+	if errors.As(err, &e) {
+		if len(prefix) > 0 {
+			e.Header = fmt.Sprintf("[%s] %s", prefix[0], e.Header)
+		}
+		return e
+	}
+
+	header := "assertion error"
+	if len(prefix) > 0 {
+		header = fmt.Sprintf("[%s] %s", prefix[0], header)
+	}
+	return New(header).Wrap(err)
+}
+
+// SetHeader sets the header message. Implements fluent interface.
+func (msg *Notice) SetHeader(header string, args ...any) *Notice {
+	if len(args) > 0 {
+		header = fmt.Sprintf(header, args...)
+	}
+	msg.Header = header
+	return msg
+}
+
+// Append appends a new row with the specified name and value build using
+// [fmt.Sprintf] from format and args. If a row with the same name already
+// exists, it is moved to the end of the [Notice.Order] slice. Implements
+// fluent interface.
+func (msg *Notice) Append(name, format string, args ...any) *Notice {
+	if _, exists := msg.Rows[name]; exists {
+		msg.Order = slices.DeleteFunc(msg.Order, func(s string) bool {
+			return name == s
+		})
+	}
+	msg.Rows[name] = fmt.Sprintf(format, args...)
+	msg.Order = append(msg.Order, name)
+	return msg
+}
+
+// AppendRow appends description rows to the message.
+func (msg *Notice) AppendRow(desc ...Row) *Notice {
+	for _, row := range desc {
+		_ = msg.Append(row.Name, row.Format, row.Args...)
+	}
+	return msg
+}
+
+// Prepend prepends a new row with the specified name and value built using
+// [fmt.Sprintf] from format and args. If a row with the same name already
+// exists, it is moved to the beginning of the [Notice.Order] slice.
+// Implements fluent interface.
+func (msg *Notice) Prepend(name, format string, args ...any) *Notice {
+	hasPath := slices.Contains(msg.Order, fieldPath)
+	msg.Order = slices.DeleteFunc(msg.Order, func(s string) bool {
+		if hasPath && s == fieldPath {
+			return true
+		}
+		return name == s
+	})
+	msg.Rows[name] = fmt.Sprintf(format, args...)
+	var prepend []string
+	if hasPath && name != fieldPath {
+		prepend = []string{fieldPath}
+	}
+	prepend = append(prepend, name)
+	msg.Order = append(prepend, msg.Order...)
+	return msg
+}
+
+// Path adds path row if path is not empty string. If the path row already
+// exists it overwrites it. Implements fluent interface.
+//
+// Path examples:
+//
+//   - Type
+//   - Type[1].Field
+//   - Type["key"].Field
+func (msg *Notice) Path(path string) *Notice {
+	if path == "" {
+		return msg
+	}
+	return msg.Prepend(fieldPath, "%s", path)
+}
+
+// Want uses Append method to append a row with "want" name.
+func (msg *Notice) Want(format string, args ...any) *Notice {
+	return msg.Append("want", format, args...)
+}
+
+// Have uses Append method to append a row with "have" name.
+func (msg *Notice) Have(format string, args ...any) *Notice {
+	return msg.Append("have", format, args...)
+}
+
+// Wrap wraps base error with provided one.
+func (msg *Notice) Wrap(err error) *Notice {
+	msg.err = fmt.Errorf("%w: %w", msg.err, err)
+	return msg
+}
+
+// Remove removes named row.
+func (msg *Notice) Remove(name string) *Notice {
+	msg.Order = slices.DeleteFunc(msg.Order, func(s string) bool {
+		return name == s
+	})
+	delete(msg.Rows, name)
+	return msg
+}
+
+func (msg *Notice) Is(target error) bool { return errors.Is(msg.err, target) }
+
+// Notice returns a formatted string representation of the Notice.
+func (msg *Notice) Error() string {
+	m := msg.Header
+	if len(msg.Order) > 0 {
+		m += ":\n"
+	}
+	names := msg.equalizeNames()
+	for i := range msg.Order {
+		display := names[i]
+		given := msg.Order[i]
+		m += fmt.Sprintf("\t%s: %s", display, msg.Rows[given])
+		if i < len(msg.Order)-1 {
+			m += "\n"
+		}
+	}
+	return m
+}
+
+// equalizeNames returns a slice of row names where each name is the same
+// length as the longest row name. The shorter names have spaces prepended to
+// their names. The order of the returned slice is the same as Order field.
+func (msg *Notice) equalizeNames() []string {
+	var maxLen int
+	for _, name := range msg.Order {
+		if maxLen < len(name) {
+			maxLen = len(name)
+		}
+	}
+	var names []string
+	for _, name := range msg.Order {
+		name = strings.Repeat(" ", maxLen-len(name)) + name
+		names = append(names, name)
+	}
+	return names
+}

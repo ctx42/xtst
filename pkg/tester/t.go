@@ -1,9 +1,6 @@
 // Copyright (c) 2025 Rafal Zajac
 // SPDX-License-Identifier: MIT
 
-// Package tester provides interface which is a subset of [testing.TB] and [Spy]
-// structure which implements it and is design to help test custom assertions
-// and test helpers.
 package tester
 
 import (

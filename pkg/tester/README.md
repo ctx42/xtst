@@ -1,7 +1,7 @@
-Package `tester` provides interface `T` which is a subset of `testing.TB`
-interface and `Spy` struct which helps with testing test helpers.
+# Tester Package
 
 <!-- TOC -->
+* [Tester Package](#tester-package)
 * [Test Manager Interface](#test-manager-interface)
   * [Usage](#usage)
 * [Spy](#spy)
@@ -13,7 +13,24 @@ interface and `Spy` struct which helps with testing test helpers.
     * [Get TempDir Paths](#get-tempdir-paths)
     * [Examine Log Messages](#examine-log-messages)
     * [Ignore Log Messages](#ignore-log-messages)
+  * [Examples](#examples)
 <!-- TOC -->
+
+If you’ve spent any time writing Go tests, you’ve probably encountered the joy
+of `*testing.T`. It’s the backbone of Go’s testing framework — powerful,
+flexible, and ubiquitous. But as your test suite grows, you might find yourself
+repeating the same chunks of test logic across multiple test cases. Enter _test
+helpers_: reusable functions that streamline your tests, improve readability,
+and reduce complexity. Libraries like assert are prime examples, turning verbose
+checks into concise assertions.
+
+But here’s the catch: how do you test the test helpers themselves? After all,
+these are the tools you rely on to ensure your code works as expected. If they
+fail, your tests might silently lie to you. This is where the `tester` package
+comes to the rescue.
+
+Package `tester` provides interface `T` which is a subset of `testing.TB`
+interface and `Spy` struct which helps with testing test helpers.
 
 # Test Manager Interface
 
@@ -277,3 +294,8 @@ func Test_Spy_IgnoreLogExamination(t *testing.T) {
 	tspy.AssertExpectations()
 }
 ```
+
+## Examples
+
+See [tester.go](../../example/tester.go) and [tester.go](../../example/tester_test.go)
+for more examples.
