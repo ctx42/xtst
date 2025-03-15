@@ -1,5 +1,3 @@
-# Tester Package
-
 <!-- TOC -->
 * [Tester Package](#tester-package)
 * [Test Manager Interface](#test-manager-interface)
@@ -15,6 +13,8 @@
     * [Ignore Log Messages](#ignore-log-messages)
   * [Examples](#examples)
 <!-- TOC -->
+
+# Tester Package
 
 If you’ve spent any time writing Go tests, you’ve probably encountered the joy
 of `*testing.T`. It’s the backbone of Go’s testing framework — powerful,
