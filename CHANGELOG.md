@@ -1,3 +1,6 @@
+## v0.3.1 (Sat, 15 Mar 2025 12:00:58 UTC)
+- Add work in progress disclaimer and more documentation.
+
 ## v0.3.0 (Sat, 15 Mar 2025 11:48:58 UTC)
 - Create go.yml.
 - Add package must with helper functions which panic on error. Add `affirm.DeeoEqual` helper.
