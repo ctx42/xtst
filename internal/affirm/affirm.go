@@ -78,7 +78,7 @@ func Nil(t *testing.T, have any) bool {
 		return true
 	}
 	const format = "expected argument to be nil:\n" +
-		"\twant: <nil>\n" +
+		"\twant: nil\n" +
 		"\thave: %+v"
 	t.Errorf(format, have)
 	return false
@@ -94,7 +94,7 @@ func NotNil(t *testing.T, have any) bool {
 	}
 	const format = "expected argument not to be nil:\n" +
 		"\twant: <not-nil>\n" +
-		"\thave: <nil>"
+		"\thave: nil"
 	t.Error(format)
 	return false
 }
