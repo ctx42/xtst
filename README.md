@@ -3,6 +3,7 @@ my time as a Go developer.
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ctx42/xtst)](https://goreportcard.com/report/github.com/ctx42/xtst)
 [![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://pkg.go.dev/github.com/ctx42/xtst)
+![Tests](https://github.com/ctx42/xtst/actions/workflows/go.yml/badge.svg?branch=master)
 
 ---
 
