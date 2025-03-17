@@ -4,11 +4,14 @@ import (
 	"fmt"
 )
 
+// nolint:unparam
 func ExampleFirst() {
 	type Row struct{ Name string }
 
 	// Query to database returning rows.
-	query := func() ([]Row, error) { return []Row{{"a"}, {"b"}}, nil }
+	query := func() ([]Row, error) {
+		return []Row{{"a"}, {"b"}}, nil
+	}
 
 	have := First(query())
 
@@ -17,11 +20,14 @@ func ExampleFirst() {
 	// {a}
 }
 
+// nolint:unparam
 func ExampleSingle() {
 	type Row struct{ Name string }
 
 	// Query to database returning rows.
-	query := func() ([]Row, error) { return []Row{{"a"}}, nil }
+	query := func() ([]Row, error) {
+		return []Row{{"a"}}, nil
+	}
 
 	// Will panic if database returned more than one error.
 	have := Single(query())

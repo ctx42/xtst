@@ -1,0 +1,4 @@
+No new line at the end.
+---
+Content #1.
+Content #2.

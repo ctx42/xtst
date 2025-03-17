@@ -1,0 +1,5 @@
+Multiple new lines at the end of file.
+---
+Content #1.
+Content #2.
+
