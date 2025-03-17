@@ -5,7 +5,6 @@ package affirm
 
 import (
 	"errors"
-	"io"
 	"testing"
 )
 
@@ -178,35 +177,83 @@ func Test_NotNil(t *testing.T) {
 }
 
 func Test_Panic(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+	t.Run("success string message", func(t *testing.T) {
+		// --- Given ---
 		ti := &testing.T{}
-		have := Panic(ti, "abc", func() { panic("abc") })
-		if !have || ti.Failed() {
-			t.Error("expected success")
+
+		// --- When ---
+		have, panicked := Panic(ti, func() { panic("abc") })
+
+		// --- Then ---
+		if !panicked {
+			t.Errorf("expected 'panicked' to be true")
+
+		}
+		if ti.Failed() {
+			t.Error("expected not failed test")
+		}
+		if *have != "abc" {
+			t.Errorf("expected panic message 'abc', got '%s'", *have)
 		}
 	})
 
-	t.Run("not matching message", func(t *testing.T) {
+	t.Run("success error", func(t *testing.T) {
+		// --- Given ---
 		ti := &testing.T{}
-		have := Panic(ti, "xyz", func() { panic("abc") })
-		if have || !ti.Failed() {
-			t.Error("expected failure")
+
+		// --- When ---
+		have, panicked := Panic(ti, func() { panic(errors.New("abc")) })
+
+		// --- Then ---
+		if !panicked {
+			t.Errorf("expected 'panicked' to be true")
+
+		}
+		if ti.Failed() {
+			t.Error("expected not failed test")
+		}
+		if *have != "abc" {
+			t.Errorf("expected panic message 'abc', got '%s'", *have)
 		}
 	})
 
-	t.Run("no panic", func(t *testing.T) {
+	t.Run("success other type", func(t *testing.T) {
+		// --- Given ---
 		ti := &testing.T{}
-		have := Panic(ti, "xyz", func() {})
-		if have || !ti.Failed() {
-			t.Error("expected failure")
+
+		// --- When ---
+		have, panicked := Panic(ti, func() { panic(123) })
+
+		// --- Then ---
+		if !panicked {
+			t.Errorf("expected 'panicked' to be true")
+
+		}
+		if ti.Failed() {
+			t.Error("expected not failed test")
+		}
+		if *have != "123" {
+			t.Errorf("expected panic message '123', got '%s'", *have)
 		}
 	})
 
-	t.Run("not string panic message", func(t *testing.T) {
+	t.Run("error function does not panic", func(t *testing.T) {
+		// --- Given ---
 		ti := &testing.T{}
-		have := Panic(ti, "xyz", func() { panic(io.ErrShortWrite) })
-		if have || !ti.Failed() {
-			t.Error("expected failure")
+
+		// --- When ---
+		have, panicked := Panic(ti, func() {})
+
+		// --- Then ---
+		if panicked {
+			t.Error("expected 'panicked' to be false")
+
+		}
+		if !ti.Failed() {
+			t.Error("expected failed test")
+		}
+		if have != nil {
+			t.Errorf("expected empty panic message, got '%s'", *have)
 		}
 	})
 }

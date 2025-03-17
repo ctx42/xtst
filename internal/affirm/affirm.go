@@ -7,6 +7,7 @@
 package affirm
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -101,26 +102,26 @@ func NotNil(t *testing.T, have any) bool {
 // Panic affirms fn panics with a string message equal to "want". Returns true
 // if fn panicked with the message, otherwise marks the test as failed, writes
 // error message to the test log and returns false.
-func Panic(t *testing.T, want string, fn func()) (success bool) {
+func Panic(t *testing.T, fn func()) (msg *string, success bool) {
 	t.Helper()
 	defer func() {
 		t.Helper()
 		if r := recover(); r != nil {
-			var have string
-			if have, success = r.(string); success {
-				if want != have {
-					format := "expected panic message:\n" +
-						"\twant: %s\n" +
-						"\thave: %s"
-					t.Errorf(format, want, have)
-					success = false
-				}
-				return
+			success = true
+			var val string
+			switch v := r.(type) {
+			case string:
+				val = v
+			case error:
+				val = v.Error()
+			default:
+				val = fmt.Sprint(v)
 			}
-			t.Error("expected panic() with string argument")
+			msg = &val
 		}
 	}()
+
 	fn()
-	t.Error("expected panic()")
-	return false
+	t.Error("expected fn to panic")
+	return nil, false
 }

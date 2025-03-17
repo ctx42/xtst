@@ -179,8 +179,10 @@ func Test_New(t *testing.T) {
 		ti := &testing.T{}
 
 		// --- Then ---
+		msg, panicked := affirm.Panic(t, func() { New(ti, -2) })
+		affirm.True(t, panicked)
 		want := "ExpectHelpers cnt must be greater or equal to minus one"
-		affirm.Panic(t, want, func() { New(ti, -2) })
+		affirm.Equal(t, want, *msg)
 	})
 }
 
@@ -231,8 +233,11 @@ func Test_Spy_ExpectCleanups(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectCleanups(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectCleanups(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
+
 	})
 
 	t.Run("panics when called on finished Spy", func(t *testing.T) {
@@ -243,7 +248,9 @@ func Test_Spy_ExpectCleanups(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectCleanups(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectCleanups(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -283,7 +290,9 @@ func Test_Spy_Cleanup(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Cleanup(func() {}) })
+		msg, panicked := affirm.Panic(t, func() { spy.Cleanup(func() {}) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -295,7 +304,9 @@ func Test_Spy_Cleanup(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Cleanup(func() {}) })
+		msg, panicked := affirm.Panic(t, func() { spy.Cleanup(func() {}) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -323,7 +334,9 @@ func Test_Spy_ExpectError(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectError() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectError() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -335,7 +348,9 @@ func Test_Spy_ExpectError(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectError() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectError() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -347,8 +362,10 @@ func Test_Spy_ExpectError(t *testing.T) {
 		spy.ExpectFail()
 
 		// --- Then ---
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectError() })
+		affirm.True(t, panicked)
 		want := "cannot use ExpectError and ExpectFail in the same time"
-		affirm.Panic(t, want, func() { spy.ExpectError() })
+		affirm.Equal(t, want, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -395,7 +412,9 @@ func Test_Spy_Error(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Error("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Error("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -407,7 +426,9 @@ func Test_Spy_Error(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Error("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Error("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -454,7 +475,9 @@ func Test_Spy_Errorf(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Errorf("msg %d", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Errorf("msg %d", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -466,7 +489,9 @@ func Test_Spy_Errorf(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Errorf("msg %d", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Errorf("msg %d", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -494,7 +519,9 @@ func Test_Spy_ExpectFatal(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectFatal() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectFatal() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -506,7 +533,9 @@ func Test_Spy_ExpectFatal(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectFatal() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectFatal() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -518,8 +547,10 @@ func Test_Spy_ExpectFatal(t *testing.T) {
 		spy.ExpectFail()
 
 		// --- Then ---
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectFatal() })
+		affirm.True(t, panicked)
 		want := "cannot use ExpectFatal and ExpectFail in the same time"
-		affirm.Panic(t, want, func() { spy.ExpectFatal() })
+		affirm.Equal(t, want, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -533,9 +564,12 @@ func Test_Spy_Fatal(t *testing.T) {
 		spy.Close()
 
 		// --- When ---
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatal("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
 
 		// --- Then ---
+		affirm.True(t, panicked)
+		affirm.Equal(t, FailNowMsg, *msg)
+
 		affirm.Equal(t, 1, len(spy.haveLogMgs))
 		affirm.Equal(t, "msg 0", spy.haveLogMgs[0])
 		affirm.True(t, spy.haveFatal)
@@ -549,10 +583,15 @@ func Test_Spy_Fatal(t *testing.T) {
 		spy.Close()
 
 		// --- When ---
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatal("msg", 0) })
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatal("msg", 1) })
+		msg0, panicked0 := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		msg1, panicked1 := affirm.Panic(t, func() { spy.Fatal("msg", 1) })
 
 		// --- Then ---
+		affirm.True(t, panicked0)
+		affirm.Equal(t, FailNowMsg, *msg0)
+		affirm.True(t, panicked1)
+		affirm.Equal(t, FailNowMsg, *msg1)
+
 		affirm.Equal(t, 2, len(spy.haveLogMgs))
 		affirm.Equal(t, "msg 0", spy.haveLogMgs[0])
 		affirm.Equal(t, "msg 1", spy.haveLogMgs[1])
@@ -566,7 +605,9 @@ func Test_Spy_Fatal(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Fatal("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -578,7 +619,9 @@ func Test_Spy_Fatal(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Fatal("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -592,9 +635,11 @@ func Test_Spy_Fatalf(t *testing.T) {
 		spy.Close()
 
 		// --- When ---
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatalf("msg %d", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatalf("msg %d", 0) })
 
 		// --- Then ---
+		affirm.True(t, panicked)
+		affirm.Equal(t, FailNowMsg, *msg)
 		affirm.Equal(t, 1, len(spy.haveLogMgs))
 		affirm.Equal(t, "msg 0", spy.haveLogMgs[0])
 		affirm.True(t, spy.haveFatal)
@@ -608,10 +653,15 @@ func Test_Spy_Fatalf(t *testing.T) {
 		spy.Close()
 
 		// --- When ---
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatalf("msg %d", 0) })
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatalf("msg %d", 1) })
+		msg0, panicked0 := affirm.Panic(t, func() { spy.Fatalf("msg %d", 0) })
+		msg1, panicked1 := affirm.Panic(t, func() { spy.Fatalf("msg %d", 1) })
 
 		// --- Then ---
+		affirm.True(t, panicked0)
+		affirm.Equal(t, FailNowMsg, *msg0)
+		affirm.True(t, panicked1)
+		affirm.Equal(t, FailNowMsg, *msg1)
+
 		affirm.Equal(t, 2, len(spy.haveLogMgs))
 		affirm.Equal(t, "msg 0", spy.haveLogMgs[0])
 		affirm.Equal(t, "msg 1", spy.haveLogMgs[1])
@@ -625,7 +675,9 @@ func Test_Spy_Fatalf(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Fatalf("msg %d", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatalf("msg %d", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -637,7 +689,9 @@ func Test_Spy_Fatalf(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Fatalf("msg %d", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatalf("msg %d", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -651,7 +705,9 @@ func Test_Spy_FailNow(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, FailNowMsg, func() { spy.FailNow() })
+		msg, panicked := affirm.Panic(t, func() { spy.FailNow() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, FailNowMsg, *msg)
 		affirm.False(t, spy.panicked)
 		affirm.True(t, spy.haveFatal)
 	})
@@ -663,7 +719,9 @@ func Test_Spy_FailNow(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Fatal("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -675,7 +733,9 @@ func Test_Spy_FailNow(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Fatal("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -716,7 +776,10 @@ func Test_Spy_Failed(t *testing.T) {
 
 		spy := New(ti, 0)
 		spy.Close()
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatal("msg", 0) })
+
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, FailNowMsg, *msg)
 
 		// --- When ---
 		have := spy.Failed()
@@ -731,7 +794,10 @@ func Test_Spy_Failed(t *testing.T) {
 
 		spy := New(ti, 0)
 		spy.Close()
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatal("msg", 0) })
+
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, FailNowMsg, *msg)
 		spy.Error("msg", 1)
 
 		// --- When ---
@@ -748,7 +814,9 @@ func Test_Spy_Failed(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Failed() })
+		msg, panicked := affirm.Panic(t, func() { spy.Failed() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -803,8 +871,10 @@ func Test_Spy_ExpectHelpers(t *testing.T) {
 		spy := New(ti)
 
 		// --- Then ---
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectHelpers(-2) })
+		affirm.True(t, panicked)
 		want := "ExpectHelpers cnt must be greater or equal to minus one"
-		affirm.Panic(t, want, func() { spy.ExpectHelpers(-2) })
+		affirm.Equal(t, want, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -815,8 +885,10 @@ func Test_Spy_ExpectHelpers(t *testing.T) {
 		spy.ExpectHelpers(1)
 
 		// --- Then ---
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectHelpers(1) })
+		affirm.True(t, panicked)
 		want := "ExpectHelpers may be called only once"
-		affirm.Panic(t, want, func() { spy.ExpectHelpers(1) })
+		affirm.Equal(t, want, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -828,7 +900,9 @@ func Test_Spy_ExpectHelpers(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectHelpers(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectHelpers(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -840,7 +914,9 @@ func Test_Spy_ExpectHelpers(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectHelpers(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectHelpers(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -882,7 +958,9 @@ func Test_Spy_Helper(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Helper() })
+		msg, panicked := affirm.Panic(t, func() { spy.Helper() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -894,7 +972,9 @@ func Test_Spy_Helper(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Helper() })
+		msg, panicked := affirm.Panic(t, func() { spy.Helper() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -923,7 +1003,9 @@ func Test_Spy_ExpectSetenv(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectSetenv("k0", "v0") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectSetenv("k0", "v0") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -935,7 +1017,9 @@ func Test_Spy_ExpectSetenv(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectSetenv("k0", "v0") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectSetenv("k0", "v0") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -980,7 +1064,9 @@ func Test_Spy_Setenv(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Setenv("k0", "v0") })
+		msg, panicked := affirm.Panic(t, func() { spy.Setenv("k0", "v0") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -992,7 +1078,9 @@ func Test_Spy_Setenv(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Setenv("k0", "v0") })
+		msg, panicked := affirm.Panic(t, func() { spy.Setenv("k0", "v0") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1020,7 +1108,9 @@ func Test_Spy_ExpectSkipped(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectSkipped() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectSkipped() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1032,7 +1122,9 @@ func Test_Spy_ExpectSkipped(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectSkipped() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectSkipped() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1079,7 +1171,9 @@ func Test_Spy_Skip(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Skip("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Skip("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1091,7 +1185,9 @@ func Test_Spy_Skip(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Skip("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Skip("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1119,7 +1215,9 @@ func Test_Spy_ExpectTempDir(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectTempDir(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectTempDir(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1131,7 +1229,9 @@ func Test_Spy_ExpectTempDir(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectTempDir(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectTempDir(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1276,7 +1376,9 @@ func Test_Spy_TempDir(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.TempDir() })
+		msg, panicked := affirm.Panic(t, func() { spy.TempDir() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1288,7 +1390,9 @@ func Test_Spy_TempDir(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.TempDir() })
+		msg, panicked := affirm.Panic(t, func() { spy.TempDir() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1334,7 +1438,9 @@ func Test_Spy_Context(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Context() })
+		msg, panicked := affirm.Panic(t, func() { spy.Context() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1346,7 +1452,9 @@ func Test_Spy_Context(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Context() })
+		msg, panicked := affirm.Panic(t, func() { spy.Context() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1374,7 +1482,9 @@ func Test_Spy_IgnoreLogs(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.IgnoreLogs() })
+		msg, panicked := affirm.Panic(t, func() { spy.IgnoreLogs() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1386,7 +1496,9 @@ func Test_Spy_IgnoreLogs(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.IgnoreLogs() })
+		msg, panicked := affirm.Panic(t, func() { spy.IgnoreLogs() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1398,7 +1510,9 @@ func Test_Spy_IgnoreLogs(t *testing.T) {
 		spy.ExpectLogEqual("abc")
 
 		// --- Then ---
-		affirm.Panic(t, errIgnoreLogsAfterExpectLog, func() { spy.IgnoreLogs() })
+		msg, panicked := affirm.Panic(t, func() { spy.IgnoreLogs() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errIgnoreLogsAfterExpectLog, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1491,7 +1605,9 @@ func Test_Spy_ExpectLog(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectLog(Equal, "msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLog(Equal, "msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1503,7 +1619,9 @@ func Test_Spy_ExpectLog(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectLog(Equal, "msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLog(Equal, "msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1515,7 +1633,9 @@ func Test_Spy_ExpectLog(t *testing.T) {
 		spy.IgnoreLogs()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectLogAfterIgnoreLogs, func() { spy.ExpectLog(Equal, "msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLog(Equal, "msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectLogAfterIgnoreLogs, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1567,7 +1687,9 @@ func Test_Spy_ExpectLogEqual(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectLogEqual("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogEqual("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1579,7 +1701,9 @@ func Test_Spy_ExpectLogEqual(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectLogEqual("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogEqual("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 	})
 
 	t.Run("panics when called after IgnoreLogs", func(t *testing.T) {
@@ -1590,7 +1714,9 @@ func Test_Spy_ExpectLogEqual(t *testing.T) {
 		spy.IgnoreLogs()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectLogAfterIgnoreLogs, func() { spy.ExpectLogEqual("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogEqual("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectLogAfterIgnoreLogs, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1642,7 +1768,9 @@ func Test_Spy_ExpectLogContain(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectLogContain("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogContain("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1654,7 +1782,9 @@ func Test_Spy_ExpectLogContain(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectLogContain("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogContain("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 	})
 
 	t.Run("panics when called after IgnoreLogs", func(t *testing.T) {
@@ -1665,7 +1795,9 @@ func Test_Spy_ExpectLogContain(t *testing.T) {
 		spy.IgnoreLogs()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectLogAfterIgnoreLogs, func() { spy.ExpectLogContain("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogContain("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectLogAfterIgnoreLogs, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1717,7 +1849,9 @@ func Test_Spy_ExpectLogNotContain(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectLogNotContain("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogNotContain("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1729,7 +1863,9 @@ func Test_Spy_ExpectLogNotContain(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectLogNotContain("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogNotContain("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 	})
 
 	t.Run("panics when called after IgnoreLogs", func(t *testing.T) {
@@ -1740,7 +1876,9 @@ func Test_Spy_ExpectLogNotContain(t *testing.T) {
 		spy.IgnoreLogs()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectLogAfterIgnoreLogs, func() { spy.ExpectLogNotContain("msg") })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectLogNotContain("msg") })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectLogAfterIgnoreLogs, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1785,7 +1923,9 @@ func Test_Spy_Log(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Log("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Log("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 	})
 
 	t.Run("panics when called on finished Spy", func(t *testing.T) {
@@ -1796,7 +1936,9 @@ func Test_Spy_Log(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Log("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Log("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1841,7 +1983,9 @@ func Test_Spy_Logf(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Logf("msg %d", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Logf("msg %d", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 	})
 
 	t.Run("panics when called on finished Spy", func(t *testing.T) {
@@ -1852,7 +1996,9 @@ func Test_Spy_Logf(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Logf("msg %d", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Logf("msg %d", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1880,7 +2026,9 @@ func Test_Spy_ExpectedNames(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectedNames(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectedNames(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1892,7 +2040,9 @@ func Test_Spy_ExpectedNames(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectedNames(1) })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectedNames(1) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1947,7 +2097,9 @@ func Test_Name(t *testing.T) {
 		spy := New(ti, 0)
 
 		// --- Then ---
-		affirm.Panic(t, errMockOnNotClosed, func() { spy.Name() })
+		msg, panicked := affirm.Panic(t, func() { spy.Name() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errMockOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -1959,7 +2111,9 @@ func Test_Name(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errActionOnFinished, func() { spy.Name() })
+		msg, panicked := affirm.Panic(t, func() { spy.Name() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errActionOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -1987,8 +2141,10 @@ func Test_Spy_ExpectFail(t *testing.T) {
 		spy.ExpectFatal()
 
 		// --- Then ---
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectFail() })
+		affirm.True(t, panicked)
 		want := "cannot use ExpectFail and ExpectFatal in the same time"
-		affirm.Panic(t, want, func() { spy.ExpectFail() })
+		affirm.Equal(t, want, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -2002,8 +2158,10 @@ func Test_Spy_ExpectFail(t *testing.T) {
 		// --- When ---
 
 		// --- Then ---
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectFail() })
+		affirm.True(t, panicked)
 		want := "cannot use ExpectFail and ExpectError in the same time"
-		affirm.Panic(t, want, func() { spy.ExpectFail() })
+		affirm.Equal(t, want, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -2015,7 +2173,9 @@ func Test_Spy_ExpectFail(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnClosed, func() { spy.ExpectFail() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectFail() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -2027,7 +2187,9 @@ func Test_Spy_ExpectFail(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errExpectOnFinished, func() { spy.ExpectFail() })
+		msg, panicked := affirm.Panic(t, func() { spy.ExpectFail() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errExpectOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -2055,7 +2217,9 @@ func Test_Spy_Close(t *testing.T) {
 		spy.Close()
 
 		// --- Then ---
-		affirm.Panic(t, errDoubleClose, func() { spy.Close() })
+		msg, panicked := affirm.Panic(t, func() { spy.Close() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errDoubleClose, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -2067,7 +2231,9 @@ func Test_Spy_Close(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errCloseOnFinished, func() { spy.Close() })
+		msg, panicked := affirm.Panic(t, func() { spy.Close() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errCloseOnFinished, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -2113,7 +2279,9 @@ func Test_Spy_Finish(t *testing.T) {
 		spy.Finish()
 
 		// --- Then ---
-		affirm.Panic(t, errDoubleFinish, func() { spy.Finish() })
+		msg, panicked := affirm.Panic(t, func() { spy.Finish() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errDoubleFinish, *msg)
 		affirm.True(t, spy.panicked)
 	})
 }
@@ -2164,7 +2332,9 @@ func Test_Spy_AssertExpectations(t *testing.T) {
 		spy := New(ti)
 
 		// --- Then ---
-		affirm.Panic(t, errAssertOnNotClosed, func() { spy.AssertExpectations() })
+		msg, panicked := affirm.Panic(t, func() { spy.AssertExpectations() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errAssertOnNotClosed, *msg)
 		affirm.True(t, spy.panicked)
 	})
 
@@ -2177,7 +2347,9 @@ func Test_Spy_AssertExpectations(t *testing.T) {
 
 		// Make Spy panic.
 		spy.Finish()
-		affirm.Panic(t, errDoubleFinish, func() { spy.Finish() })
+		msg, panicked := affirm.Panic(t, func() { spy.Finish() })
+		affirm.True(t, panicked)
+		affirm.Equal(t, errDoubleFinish, *msg)
 		affirm.True(t, spy.panicked)
 
 		// --- When ---
@@ -2483,7 +2655,9 @@ func Test_Spy_AssertExpectations(t *testing.T) {
 		spy.ExpectFatal()
 		spy.ExpectLogEqual("msg 0")
 		spy.Close()
-		affirm.Panic(t, FailNowMsg, func() { spy.Fatal("msg", 0) })
+		msg, panicked := affirm.Panic(t, func() { spy.Fatal("msg", 0) })
+		affirm.True(t, panicked)
+		affirm.Equal(t, FailNowMsg, *msg)
 		spy.Finish()
 
 		// --- When ---
@@ -3002,7 +3176,9 @@ func Test_Spy_checkState(t *testing.T) {
 			affirm.False(t, ti.Failed()) // Make sure it is not failed.
 
 			// --- Then ---
-			affirm.Panic(t, tc.want, func() { tc.action(spy) })
+			msg, panicked := affirm.Panic(t, func() { tc.action(spy) })
+			affirm.True(t, panicked)
+			affirm.Equal(t, tc.want, *msg)
 			affirm.True(t, spy.panicked)
 			affirm.True(t, ti.Failed())
 		})
