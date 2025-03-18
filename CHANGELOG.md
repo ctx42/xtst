@@ -1,3 +1,11 @@
+## v0.4.0 (Tue, 18 Mar 2025 18:20:26 UTC)
+- Add Go Report Card and Go Doc icons / links.
+- Add Go Test badge.
+- Update affirm.Panic helper to handle errors, and other types that might be passed to panic.
+- Add internal tstkit package with simple golden file reader.
+- Add dump package.
+- Update copyright lines to use SPDX-FileCopyrightText.
+
 ## v0.3.1 (Sat, 15 Mar 2025 12:00:58 UTC)
 - Add work in progress disclaimer and more documentation.
 
