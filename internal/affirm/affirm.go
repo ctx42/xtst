@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Rafal Zajac
+// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
 // Package affirm is an internal package that provides simple affirmation
