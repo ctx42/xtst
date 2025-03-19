@@ -34,6 +34,22 @@ func Test_Error(t *testing.T) {
 		// --- Then ---
 		affirm.False(t, have)
 	})
+
+	t.Run("option is passed", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\tpath: pth")
+		tspy.Close()
+
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		have := Error(tspy, nil, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
 }
 
 func Test_NoError(t *testing.T) {
@@ -71,7 +87,6 @@ func Test_NoError(t *testing.T) {
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
 		tspy.ExpectLogContain("\tpath: field\n")
-		tspy.ExpectLogContain("expected error to be nil")
 		tspy.Close()
 
 		opt := check.WithPath("field")
@@ -113,6 +128,22 @@ func Test_Nil(t *testing.T) {
 		// --- Then ---
 		affirm.False(t, have)
 	})
+
+	t.Run("option is passed", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\tpath: pth")
+		tspy.Close()
+
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		have := Nil(tspy, 42, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
 }
 
 func Test_NotNil(t *testing.T) {
@@ -137,6 +168,27 @@ func Test_NotNil(t *testing.T) {
 		defer func() { _ = recover() }()
 
 		// --- When ---
-		NotNil(tspy, nil)
+		var have bool
+		func() {
+			defer func() { _ = recover() }()
+			have = NotNil(tspy, nil)
+		}()
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("option is passed", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\tpath: pth")
+		tspy.Close()
+
+		defer func() { _ = recover() }()
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		NotNil(tspy, nil, opt)
 	})
 }

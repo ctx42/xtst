@@ -11,7 +11,6 @@ func Error(err error, opts ...Option) error {
 	if err != nil {
 		return nil // nolint: nilerr
 	}
-	// TODO(rz): test this. - options
 	ops := DefaultOptions().set(opts)
 	const mHeader = "expected non-nil error"
 	return notice.New(mHeader).Path(ops.Path)
@@ -42,7 +41,6 @@ func Nil(have any, opts ...Option) error {
 		return nil
 	}
 	ops := DefaultOptions().set(opts)
-	// TODO(rz): test this. - options
 	const mHeader = "expected value to be nil"
 	return notice.New(mHeader).Want("<nil>").
 		Path(ops.Path).
@@ -71,7 +69,6 @@ func NotNil(have any, opts ...Option) error {
 	if !isNil(have) {
 		return nil
 	}
-	// TODO(rz): test this. - options
 	ops := DefaultOptions().set(opts)
 	const mHeader = "expected non-nil value"
 	return notice.New(mHeader).Path(ops.Path)
