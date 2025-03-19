@@ -1,5 +1,7 @@
 # The `check` Package
 
-The `check` package is used by `assert` package to check equivalence of values.
-Unlike `assert`, which returns `true` or `false`, it returns errors which can 
-be examined by a caller, or changed to suite the given case.
+The `check` package is designed for performing assertions in Go tests,
+particularly as a foundational layer for the `assert` package. It provides
+functions that return errors instead of boolean values, allowing callers to
+adjust error messages to particular context, add more contextual information
+about the check, improving assertion message comprehension.
