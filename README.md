@@ -46,12 +46,23 @@ The modularity lets you customize your testing setup to fit your project’s
 exact needs, avoiding unnecessary overhead. Beyond customization, the 
 extensible architecture invites you to create your own test helpers ensuring.
 
+## Installation
+To install Ctx42 Testing Module, use go get:
+
+```shell
+go get github.com/ctx42/xtst
+```
+
+This will make all the package modules available to you.
+
 ## Packages
 
-- Package [dump](pkg/dump) provide configurable renderer of any type to a string.
-- Package [must](pkg/must) provide basic test helpers which panic on error.
+- Package [assert](pkg/assert) provides assertion toolkit.
+- Package [check](pkg/check) provides equality toolkit used by `assert` package.
+- Package [dump](pkg/dump) provides configurable renderer of any type to a string.
+- Package [must](pkg/must) provides basic test helpers which panic on error.
 - Package [notice](pkg/notice) helps to create nicely formated assertion messages.
-- Package [tester](pkg/tester) provide facilities to test `Test Helpers`.
+- Package [tester](pkg/tester) provides facilities to test `Test Helpers`.
 
 Click on the package link to see its README.md file with documentation. Each 
 also package has an `examples_test.go` file with usage examples.

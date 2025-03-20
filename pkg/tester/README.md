@@ -297,5 +297,5 @@ func Test_Spy_IgnoreLogExamination(t *testing.T) {
 
 ## Examples
 
-See [tester.go](../../example/tester.go) and [tester.go](../../example/tester_test.go)
+See [tester.go](../../examples/tester.go) and [tester.go](../../examples/tester_test.go)
 for more examples.

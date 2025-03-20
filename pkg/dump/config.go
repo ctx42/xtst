@@ -7,6 +7,9 @@ import (
 	"reflect"
 )
 
+// Option represents [NewConfig] option.
+type Option func(*Config)
+
 // Flat is option for [NewConfig] which makes [Dump] display values in one line.
 func Flat(cfg *Config) { cfg.Flat = true }
 
@@ -89,7 +92,7 @@ type Config struct {
 }
 
 // NewConfig returns new instance of [Config] with default values.
-func NewConfig(opts ...func(*Config)) Config {
+func NewConfig(opts ...Option) Config {
 	cfg := Config{
 		PrintType: true,
 		UseAny:    true,

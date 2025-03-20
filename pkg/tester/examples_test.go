@@ -1,3 +1,3 @@
 package tester
 
-// See `example/tester.go` and `example/tester_test.go` files.
+// See `examples/tester.go` and `example/tester_test.go` files.

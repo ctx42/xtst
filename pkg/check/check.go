@@ -1,8 +1,13 @@
+// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-License-Identifier: MIT
+
+// Package check provides equality toolkit used by assert package.
 package check
 
 import (
 	"reflect"
 
+	"github.com/ctx42/xtst/pkg/dump"
 	"github.com/ctx42/xtst/pkg/notice"
 )
 
@@ -44,7 +49,7 @@ func Nil(have any, opts ...Option) error {
 	const mHeader = "expected value to be nil"
 	return notice.New(mHeader).Want("<nil>").
 		Path(ops.Path).
-		Have("%s", Dump(have))
+		Have("%s", dump.New(ops.DumpConfig).DumpAny(have))
 }
 
 // isNil returns true if "have" is nil.
