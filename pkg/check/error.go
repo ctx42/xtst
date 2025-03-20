@@ -1,0 +1,136 @@
+// SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
+// SPDX-License-Identifier: MIT
+
+package check
+
+import (
+	"errors"
+	"strings"
+
+	"github.com/ctx42/xtst/pkg/notice"
+)
+
+// Error checks "err" is not nil. Returns an error if it's nil.
+func Error(err error, opts ...Option) error {
+	if err != nil {
+		return nil // nolint: nilerr
+	}
+	ops := DefaultOptions().set(opts)
+	const mHeader = "expected non-nil error"
+	return notice.New(mHeader).Path(ops.Path)
+}
+
+// NoError checks "err" is nil. Returns error it's not nil.
+func NoError(err error, opts ...Option) error {
+	if err == nil {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	const mHeader = "expected error to be nil"
+	if isNil(err) {
+		return notice.New(mHeader).
+			Path(ops.Path).
+			Want("<nil>").Have("%T", err)
+	}
+	return notice.New(mHeader).
+		Path(ops.Path).
+		Want("<nil>").
+		Have("%q", err.Error())
+}
+
+// ErrorIs checks whether any error in "err" tree matches target. Returns nil
+// if it's, otherwise returns an error with a message indicating the expected
+// and actual values.
+func ErrorIs(err, target error, opts ...Option) error {
+	if errors.Is(err, target) {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected err to have target in its tree").
+		Path(ops.Path).
+		Want("(%T) %v", target, target).
+		Have("(%T) %v", err, err)
+}
+
+// ErrorAs checks there is an error in "err" tree that matches target, and if
+// one is found, sets target to that error. Returns nil if target is found,
+// otherwise returns an error with a message indicating the expected and actual
+// values.
+func ErrorAs(err error, target any, opts ...Option) error {
+	if e := Error(err); e != nil {
+		return e
+	}
+	//goland:noinspection GoErrorsAs
+	if errors.As(err, target) {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected err to have target in its tree").
+		Path(ops.Path).
+		Want("(%T) %#v", err, err).
+		Have("(%T) %#v", target, target)
+}
+
+// ErrorEqual checks "err" is not nil and its message equals to "want". Returns
+// nil if it's, otherwise it returns an error with a message indicating the
+// expected and actual values.
+func ErrorEqual(want string, err error, opts ...Option) error {
+	ops := DefaultOptions().set(opts)
+	if err != nil && want == err.Error() {
+		return nil
+	}
+	var have any
+	have = nil
+	if err != nil {
+		have = err.Error()
+	}
+	return notice.New("expected error message to be").
+		Path(ops.Path).
+		Want("%q", want).
+		Have("%#v", have)
+}
+
+// ErrorContain checks "err" is not nil and its message contains "want".
+// Returns nil if it's, otherwise it returns an error with a message indicating
+// the expected and actual values.
+func ErrorContain(want string, err error, opts ...Option) error {
+	ops := DefaultOptions().set(opts)
+	if isNil(err) {
+		return notice.New("expected error not to be nil").
+			Path(ops.Path).
+			Want("<non-nil>").
+			Have("%T", err)
+	}
+	if strings.Contains(err.Error(), want) {
+		return nil
+	}
+	var have any
+	have = err.Error()
+	return notice.New("expected error message to contain").
+		Path(ops.Path).
+		Want("%q", want).
+		Have("%#v", have)
+}
+
+// ErrorRegexp checks "err" is not nil and its message matches the "want" regex.
+// Returns nil if it is, otherwise it returns an error with a message
+// indicating the expected and actual values.
+//
+// The "want" can be either regular expression string or instance of
+// [regexp.Regexp]. The [fmt.Sprint] is used to get string representation of
+// have argument.
+func ErrorRegexp(want any, err error, opts ...Option) error {
+	ops := DefaultOptions().set(opts)
+	if isNil(err) {
+		return notice.New("expected error not to be nil").
+			Path(ops.Path).
+			Want("<non-nil>").
+			Have("%T", err)
+	}
+	if e := Regexp(want, err.Error()); e != nil {
+		return notice.From(e).
+			Path(ops.Path).
+			SetHeader("expected error message to match regexp")
+	}
+	return nil
+}
