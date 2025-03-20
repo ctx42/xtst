@@ -44,10 +44,10 @@ func Test_Error(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\tpath: pth")
+		tspy.ExpectLogContain("\ttrail: type.field")
 		tspy.Close()
 
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		have := Error(tspy, nil, opt)
@@ -91,10 +91,10 @@ func Test_NoError(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
-		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.ExpectLogContain("\ttrail: type.field\n")
 		tspy.Close()
 
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		var have bool
@@ -149,12 +149,12 @@ func Test_ErrorIs(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
-		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.ExpectLogContain("\ttrail: type.field\n")
 		tspy.Close()
 
 		err0 := errors.New("err0")
 		err1 := errors.New("err1")
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		var have bool
@@ -203,11 +203,11 @@ func Test_ErrorAs(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.ExpectLogContain("\ttrail: type.field\n")
 		tspy.Close()
 
 		var target types.TVal
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		have := ErrorAs(tspy, &types.TPtr{Val: "A"}, &target, opt)
@@ -248,10 +248,10 @@ func Test_ErrorEqual(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.ExpectLogContain("\ttrail: type.field\n")
 		tspy.Close()
 
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		have := ErrorEqual(tspy, "e1", errors.New("e0"), opt)
@@ -291,10 +291,10 @@ func Test_ErrorContain(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.ExpectLogContain("\ttrail: type.field\n")
 		tspy.Close()
 
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		have := ErrorContain(tspy, "xyz", errors.New("abc def ghi"), opt)
@@ -334,10 +334,10 @@ func Test_ErrorRegexp(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t  path: pth\n")
+		tspy.ExpectLogContain("\t trail: type.field\n")
 		tspy.Close()
 
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		have := ErrorRegexp(tspy, "abc$", errors.New("abc def ghi"), opt)

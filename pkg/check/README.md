@@ -13,14 +13,14 @@ You use checks like any other function returning error.
 ```go
 	have := errors.New("test error")
 
-	err := NoError(have, WithPath("path"))
+	err := NoError(have, WithTrail("type.field"))
 
 	fmt.Println(err)
 	// Output:
 	// expected error to be nil:
-	//	path: path
-	//	want: <nil>
-	//	have: "test error"
+	//	trail: type.field
+	//	 want: <nil>
+	//	 have: "test error"
 ```
 
 The main purpose of returning an error from a check, instead of true false like 
@@ -30,15 +30,15 @@ message and/or add context.
 ```go
 have := errors.New("test error")
 
-err := NoError(have, WithPath("path"))
+err := NoError(have, WithTrail("type.field"))
 
 err = notice.From(err, "prefix").Append("context", "wow")
 
 fmt.Println(err)
 // Output:
 // [prefix] expected error to be nil:
-//	   path: path
-//	   want: <nil>
-//	   have: "test error"
+//	   trail: type.field
+//	    want: <nil>
+//	    have: "test error"
 //	context: wow
 ```

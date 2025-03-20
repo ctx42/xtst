@@ -11,14 +11,15 @@ import (
 	"strings"
 )
 
-// fieldPath represents a row name with special meaning.
+// trail represents a row name with special meaning representing a trail (path)
+// to the field / element or key the notice message is about.
 //
-// Path examples:
+// Trail examples:
 //
 //   - Type
 //   - Type[1].Field
 //   - Type["key"].Field
-const fieldPath = "path"
+const trail = "trail"
 
 // ErrAssert represents an error that occurs during an assertion. It is
 // typically used when a condition fails to meet the expected value.
@@ -102,36 +103,36 @@ func (msg *Notice) AppendRow(desc ...Row) *Notice {
 // exists, it is moved to the beginning of the [Notice.Order] slice.
 // Implements fluent interface.
 func (msg *Notice) Prepend(name, format string, args ...any) *Notice {
-	hasPath := slices.Contains(msg.Order, fieldPath)
+	hasPath := slices.Contains(msg.Order, trail)
 	msg.Order = slices.DeleteFunc(msg.Order, func(s string) bool {
-		if hasPath && s == fieldPath {
+		if hasPath && s == trail {
 			return true
 		}
 		return name == s
 	})
 	msg.Rows[name] = fmt.Sprintf(format, args...)
 	var prepend []string
-	if hasPath && name != fieldPath {
-		prepend = []string{fieldPath}
+	if hasPath && name != trail {
+		prepend = []string{trail}
 	}
 	prepend = append(prepend, name)
 	msg.Order = append(prepend, msg.Order...)
 	return msg
 }
 
-// Path adds path row if path is not empty string. If the path row already
+// Trail adds trail row if "tr" is not empty string. If the trail row already
 // exists it overwrites it. Implements fluent interface.
 //
-// Path examples:
+// Trail examples:
 //
 //   - Type
 //   - Type[1].Field
 //   - Type["key"].Field
-func (msg *Notice) Path(path string) *Notice {
-	if path == "" {
+func (msg *Notice) Trail(tr string) *Notice {
+	if tr == "" {
 		return msg
 	}
-	return msg.Prepend(fieldPath, "%s", path)
+	return msg.Prepend(trail, "%s", tr)
 }
 
 // Want uses Append method to append a row with "want" name.

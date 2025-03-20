@@ -41,10 +41,10 @@ func Test_Nil(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\tpath: pth")
+		tspy.ExpectLogContain("\ttrail: type.field\n")
 		tspy.Close()
 
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		have := Nil(tspy, 42, opt)
@@ -90,11 +90,11 @@ func Test_NotNil(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\tpath: pth")
+		tspy.ExpectLogContain("\ttrail: type.field")
 		tspy.Close()
 
 		defer func() { _ = recover() }()
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		NotNil(tspy, nil, opt)

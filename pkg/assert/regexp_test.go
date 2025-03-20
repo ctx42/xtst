@@ -41,10 +41,10 @@ func Test_Regexp(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t  path: pth\n")
+		tspy.ExpectLogContain("\t trail: type.field\n")
 		tspy.Close()
 
-		opt := check.WithPath("pth")
+		opt := check.WithTrail("type.field")
 
 		// --- When ---
 		have := Regexp(tspy, "^abc42.*$", "abc1234", opt)

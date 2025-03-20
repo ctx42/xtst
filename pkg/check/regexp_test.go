@@ -44,7 +44,7 @@ func Test_Regexp(t *testing.T) {
 
 	t.Run("no match with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := Regexp("^abc42.*$", "abc1234", opt)
@@ -52,7 +52,7 @@ func Test_Regexp(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected regexp to match:\n" +
-			"\t  path: pth\n" +
+			"\t trail: type.field\n" +
 			"\tregexp: ^abc42.*$\n" +
 			"\t  have: \"abc1234\""
 		affirm.Equal(t, wMsg, err.Error())

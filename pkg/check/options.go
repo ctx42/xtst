@@ -20,10 +20,11 @@ type SingleCheck func(have any, opts ...Option) error
 // Option represents [Check] and [SingleCheck] option.
 type Option func(Options) Options
 
-// WithPath is [Check] option setting initial field/element/key path.
-func WithPath(pth string) Option {
+// WithTrail is [Check] option setting initial field/element/key breadcrumb
+// trail.
+func WithTrail(pth string) Option {
 	return func(ops Options) Options {
-		ops.Path = pth
+		ops.Trail = pth
 		return ops
 	}
 }
@@ -44,9 +45,9 @@ type DumpConfig = dump.Config
 type Options struct {
 	DumpConfig // Dump configuration.
 
-	// Field/element/key path which uniquely describes nested object being
-	// checked.
-	Path string
+	// Field/element/key breadcrumb trail which uniquely describes nested
+	// object being checked.
+	Trail string
 }
 
 // DefaultOptions returns default [Options].

@@ -31,9 +31,9 @@ func Test_Nil(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with path option", func(t *testing.T) {
+	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := Nil(42, opt)
@@ -41,9 +41,9 @@ func Test_Nil(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected value to be nil:\n" +
-			"\tpath: pth\n" +
-			"\twant: <nil>\n" +
-			"\thave: 42"
+			"\ttrail: type.field\n" +
+			"\t want: <nil>\n" +
+			"\t have: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -86,16 +86,16 @@ func Test_NotNil(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with path option", func(t *testing.T) {
+	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := NotNil(nil, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected non-nil value:\n\tpath: pth"
+		wMsg := "expected non-nil value:\n\ttrail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

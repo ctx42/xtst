@@ -96,7 +96,7 @@ func ExampleNotice_AppendRow() {
 
 func ExampleNotice_Prepend() {
 	msg := New("expected %s to be equal", "values").
-		Path("Struct.Path").
+		Trail("type.field").
 		Want("%s", "abc").
 		Have("%s", "xyz").
 		Prepend("name", "%d", 5)
@@ -104,24 +104,24 @@ func ExampleNotice_Prepend() {
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	path: Struct.Path
-	//	name: 5
-	//	want: abc
-	//	have: xyz
+	//	trail: type.field
+	//	 name: 5
+	//	 want: abc
+	//	 have: xyz
 }
 
-func ExampleNotice_Path() {
+func ExampleNotice_Trail() {
 	msg := New("expected %s to be equal", "values").
-		Path("Struct.Path").
+		Trail("type.field").
 		Want("%s", "abc").
 		Have("%s", "xyz")
 
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	path: Struct.Path
-	//	want: abc
-	//	have: xyz
+	//	trail: type.field
+	//	 want: abc
+	//	 have: xyz
 }
 
 func ExampleLines() {

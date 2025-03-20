@@ -31,16 +31,17 @@ func Test_Error(t *testing.T) {
 		affirm.Equal(t, "expected non-nil error", err.Error())
 	})
 
-	t.Run("error with path option", func(t *testing.T) {
+	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := Error(nil, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		affirm.Equal(t, "expected non-nil error:\n\tpath: pth", err.Error())
+		wMsg := "expected non-nil error:\n\ttrail: type.field"
+		affirm.Equal(t, wMsg, err.Error())
 	})
 }
 
@@ -65,9 +66,9 @@ func Test_NoError(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with path option", func(t *testing.T) {
+	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := NoError(errors.New("e0"), opt)
@@ -75,9 +76,9 @@ func Test_NoError(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected error to be nil:\n" +
-			"\tpath: pth\n" +
-			"\twant: <nil>\n" +
-			"\thave: \"e0\""
+			"\ttrail: type.field\n" +
+			"\t want: <nil>\n" +
+			"\t have: \"e0\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -99,7 +100,7 @@ func Test_NoError(t *testing.T) {
 	t.Run("nil interface with option", func(t *testing.T) {
 		// --- Given ---
 		var e *types.TPtr
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := NoError(e, opt)
@@ -107,9 +108,9 @@ func Test_NoError(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected error to be nil:\n" +
-			"\tpath: pth\n" +
-			"\twant: <nil>\n" +
-			"\thave: *types.TPtr"
+			"\ttrail: type.field\n" +
+			"\t want: <nil>\n" +
+			"\t have: *types.TPtr"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -132,7 +133,7 @@ func Test_NoError(t *testing.T) {
 func Test_ErrorIs(t *testing.T) {
 	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		have := ErrorIs(errors.New("err0"), errors.New("err0"), opt)
@@ -140,9 +141,9 @@ func Test_ErrorIs(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, have)
 		wMsg := "expected err to have target in its tree:\n" +
-			"\tpath: pth\n" +
-			"\twant: (*errors.errorString) err0\n" +
-			"\thave: (*errors.errorString) err0"
+			"\ttrail: type.field\n" +
+			"\t want: (*errors.errorString) err0\n" +
+			"\t have: (*errors.errorString) err0"
 		affirm.Equal(t, wMsg, have.Error())
 	})
 }
@@ -267,7 +268,7 @@ func Test_ErrorAs(t *testing.T) {
 
 	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 		var target types.TVal
 
 		// --- When ---
@@ -276,9 +277,9 @@ func Test_ErrorAs(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected err to have target in its tree:\n" +
-			"\tpath: pth\n" +
-			"\twant: (*types.TPtr) &types.TPtr{Val:\"A\"}\n" +
-			"\thave: (*types.TVal) &types.TVal{Val:\"\"}"
+			"\ttrail: type.field\n" +
+			"\t want: (*types.TPtr) &types.TPtr{Val:\"A\"}\n" +
+			"\t have: (*types.TVal) &types.TVal{Val:\"\"}"
 		affirm.Equal(t, wMsg, err.Error())
 
 		affirm.Equal(t, "", target.Val)
@@ -324,7 +325,7 @@ func Test_ErrorEqual(t *testing.T) {
 
 	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := ErrorEqual("e1", errors.New("e0"), opt)
@@ -332,9 +333,9 @@ func Test_ErrorEqual(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected error message to be:\n" +
-			"\tpath: pth\n" +
-			"\twant: \"e1\"\n" +
-			"\thave: \"e0\""
+			"\ttrail: type.field\n" +
+			"\t want: \"e1\"\n" +
+			"\t have: \"e0\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -374,7 +375,7 @@ func Test_ErrorContain(t *testing.T) {
 
 	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := ErrorContain("xyz", errors.New("abc def ghi"), opt)
@@ -382,9 +383,9 @@ func Test_ErrorContain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected error message to contain:\n" +
-			"\tpath: pth\n" +
-			"\twant: \"xyz\"\n" +
-			"\thave: \"abc def ghi\""
+			"\ttrail: type.field\n" +
+			"\t want: \"xyz\"\n" +
+			"\t have: \"abc def ghi\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -400,9 +401,9 @@ func Test_ErrorContain(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("nil error with path", func(t *testing.T) {
+	t.Run("nil error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("field")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := ErrorContain("xyz", nil, opt)
@@ -410,9 +411,9 @@ func Test_ErrorContain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected error not to be nil:\n" +
-			"\tpath: field\n" +
-			"\twant: <non-nil>\n" +
-			"\thave: <nil>"
+			"\ttrail: type.field\n" +
+			"\t want: <non-nil>\n" +
+			"\t have: <nil>"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -474,7 +475,7 @@ func Test_ErrorRegexp(t *testing.T) {
 
 	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("pth")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := ErrorRegexp("^xyz", errors.New("abc def ghi"), opt)
@@ -482,7 +483,7 @@ func Test_ErrorRegexp(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected error message to match regexp:\n" +
-			"\t  path: pth\n" +
+			"\t trail: type.field\n" +
 			"\tregexp: ^xyz\n" +
 			"\t  have: \"abc def ghi\""
 		affirm.Equal(t, wMsg, err.Error())
@@ -511,9 +512,9 @@ func Test_ErrorRegexp(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("nil error with path", func(t *testing.T) {
+	t.Run("nil error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("field")
+		opt := WithTrail("type.field")
 
 		// --- When ---
 		err := ErrorRegexp("^ab", nil, opt)
@@ -521,9 +522,9 @@ func Test_ErrorRegexp(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected error not to be nil:\n" +
-			"\tpath: field\n" +
-			"\twant: <non-nil>\n" +
-			"\thave: <nil>"
+			"\ttrail: type.field\n" +
+			"\t want: <non-nil>\n" +
+			"\t have: <nil>"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 

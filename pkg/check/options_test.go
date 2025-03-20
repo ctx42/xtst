@@ -11,16 +11,16 @@ import (
 	"github.com/ctx42/xtst/pkg/dump"
 )
 
-func Test_WithPath(t *testing.T) {
+func Test_WithTrail(t *testing.T) {
 	// --- Given ---
 	ops := Options{}
 
 	// --- When ---
-	have := WithPath("pth")(ops)
+	have := WithTrail("type.field")(ops)
 
 	// --- Then ---
-	affirm.Equal(t, "", ops.Path)
-	affirm.Equal(t, "pth", have.Path)
+	affirm.Equal(t, "", ops.Trail)
+	affirm.Equal(t, "type.field", have.Trail)
 }
 
 func Test_WithDump(t *testing.T) {
@@ -40,7 +40,7 @@ func Test_DefaultOptions(t *testing.T) {
 	have := DefaultOptions()
 
 	// --- Then ---
-	affirm.Equal(t, "", have.Path)
+	affirm.Equal(t, "", have.Trail)
 	affirm.Equal(t, false, have.PtrAddr)
 	affirm.Equal(t, 2, reflect.ValueOf(have).NumField())
 }
@@ -50,9 +50,9 @@ func Test_Options_set(t *testing.T) {
 	ops := Options{}
 
 	// --- When ---
-	have := ops.set([]Option{WithPath("pth")})
+	have := ops.set([]Option{WithTrail("type.field")})
 
 	// --- Then ---
-	affirm.Equal(t, "", ops.Path)
-	affirm.Equal(t, "pth", have.Path)
+	affirm.Equal(t, "", ops.Trail)
+	affirm.Equal(t, "type.field", have.Trail)
 }

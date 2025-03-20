@@ -218,17 +218,17 @@ func Test_Message_Prepend(t *testing.T) {
 		affirm.DeepEqual(t, []string{"second", "first"}, msg.Order)
 	})
 
-	t.Run("prepend when path row exists", func(t *testing.T) {
+	t.Run("prepend when trail row exists", func(t *testing.T) {
 		// --- Given ---
-		msg := New("header").Path("type.path")
+		msg := New("header").Trail("type.field")
 
 		// --- When ---
 		_ = msg.Prepend("second", "%dnd", 2)
 
 		// --- Then ---
-		wRows := map[string]string{"path": "type.path", "second": "2nd"}
+		wRows := map[string]string{trail: "type.field", "second": "2nd"}
 		affirm.DeepEqual(t, wRows, msg.Rows)
-		affirm.DeepEqual(t, []string{"path", "second"}, msg.Order)
+		affirm.DeepEqual(t, []string{trail, "second"}, msg.Order)
 	})
 
 	t.Run("prepend existing name changes it", func(t *testing.T) {
@@ -246,18 +246,18 @@ func Test_Message_Prepend(t *testing.T) {
 }
 
 //goland:noinspection GoDirectComparisonOfErrors
-func Test_Message_Path(t *testing.T) {
+func Test_Message_Trail(t *testing.T) {
 	t.Run("add as first row", func(t *testing.T) {
 		// --- Given ---
 		msg := New("header")
 
 		// --- When ---
-		have := msg.Path("type.path")
+		have := msg.Trail("type.field")
 
 		// --- Then ---
 		affirm.True(t, msg == have)
-		affirm.DeepEqual(t, map[string]string{"path": "type.path"}, msg.Rows)
-		affirm.DeepEqual(t, []string{"path"}, msg.Order)
+		affirm.DeepEqual(t, map[string]string{trail: "type.field"}, msg.Rows)
+		affirm.DeepEqual(t, []string{trail}, msg.Order)
 	})
 
 	t.Run("add to existing rows", func(t *testing.T) {
@@ -265,20 +265,20 @@ func Test_Message_Path(t *testing.T) {
 		msg := New("header").Prepend("first", "%dst", 1)
 
 		// --- When ---
-		_ = msg.Path("type.path")
+		_ = msg.Trail("type.field")
 
 		// --- Then ---
-		wRows := map[string]string{"path": "type.path", "first": "1st"}
+		wRows := map[string]string{trail: "type.field", "first": "1st"}
 		affirm.DeepEqual(t, wRows, msg.Rows)
-		affirm.DeepEqual(t, []string{"path", "first"}, msg.Order)
+		affirm.DeepEqual(t, []string{trail, "first"}, msg.Order)
 	})
 
-	t.Run("is not adding empty paths", func(t *testing.T) {
+	t.Run("is not adding empty trails", func(t *testing.T) {
 		// --- Given ---
 		msg := New("header").Prepend("first", "%dst", 1)
 
 		// --- When ---
-		_ = msg.Path("")
+		_ = msg.Trail("")
 
 		// --- Then ---
 		wRows := map[string]string{"first": "1st"}
@@ -286,17 +286,17 @@ func Test_Message_Path(t *testing.T) {
 		affirm.DeepEqual(t, []string{"first"}, msg.Order)
 	})
 
-	t.Run("setting path again changes it", func(t *testing.T) {
+	t.Run("setting trail again changes it", func(t *testing.T) {
 		// --- Given ---
-		msg := New("header").Path("type.path[0]")
+		msg := New("header").Trail("type.field[0]")
 
 		// --- When ---
-		_ = msg.Path("type.path[1]")
+		_ = msg.Trail("type.field[1]")
 
 		// --- Then ---
-		wRows := map[string]string{"path": "type.path[1]"}
+		wRows := map[string]string{trail: "type.field[1]"}
 		affirm.DeepEqual(t, wRows, msg.Rows)
-		affirm.DeepEqual(t, []string{"path"}, msg.Order)
+		affirm.DeepEqual(t, []string{trail}, msg.Order)
 	})
 }
 

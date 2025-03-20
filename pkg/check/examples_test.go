@@ -30,30 +30,30 @@ func ExampleNoError() {
 	//	have: "test error"
 }
 
-func ExampleNoError_withPath() {
+func ExampleNoError_withTrail() {
 	have := errors.New("test error")
 
-	err := NoError(have, WithPath("pth"))
+	err := NoError(have, WithTrail("type.field"))
 
 	fmt.Println(err)
 	// Output:
 	// expected error to be nil:
-	//	path: pth
-	//	want: <nil>
-	//	have: "test error"
+	//	trail: type.field
+	//	 want: <nil>
+	//	 have: "test error"
 }
 
 func ExampleNoError_changeMessage() {
 	have := errors.New("test error")
 
-	err := NoError(have, WithPath("pth"))
+	err := NoError(have, WithTrail("type.field"))
 
 	err = notice.From(err, "prefix").Append("context", "wow")
 
 	fmt.Println(err)
 	// Output:
 	// [prefix] expected error to be nil:
-	//	   path: pth
+	//	  trail: type.field
 	//	   want: <nil>
 	//	   have: "test error"
 	//	context: wow

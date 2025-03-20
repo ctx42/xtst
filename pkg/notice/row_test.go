@@ -32,13 +32,13 @@ func Test_NewRow(t *testing.T) {
 	})
 }
 
-func Test_Path(t *testing.T) {
+func Test_Trail(t *testing.T) {
 	// --- When ---
-	have := Path("name")
+	have := Trail("type.field")
 
 	// --- Then ---
-	affirm.Equal(t, "path", have.Name)
-	affirm.Equal(t, "name", have.Format)
+	affirm.Equal(t, trail, have.Name)
+	affirm.Equal(t, "type.field", have.Format)
 	affirm.NotNil(t, have.Args)
 	affirm.Equal(t, 0, len(have.Args))
 }
