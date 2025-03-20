@@ -351,6 +351,87 @@ func Test_ErrorEqual(t *testing.T) {
 	})
 }
 
+func Test_ErrorContain(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- When ---
+		err := ErrorContain("def", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- When ---
+		err := ErrorContain("xyz", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to contain:\n" +
+			"\twant: \"xyz\"\n" +
+			"\thave: \"abc def ghi\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		opt := WithPath("pth")
+
+		// --- When ---
+		err := ErrorContain("xyz", errors.New("abc def ghi"), opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to contain:\n" +
+			"\tpath: pth\n" +
+			"\twant: \"xyz\"\n" +
+			"\thave: \"abc def ghi\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil error", func(t *testing.T) {
+		// --- When ---
+		err := ErrorContain("xyz", nil)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error not to be nil:\n" +
+			"\twant: <non-nil>\n" +
+			"\thave: <nil>"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil error with path", func(t *testing.T) {
+		// --- Given ---
+		opt := WithPath("field")
+
+		// --- When ---
+		err := ErrorContain("xyz", nil, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error not to be nil:\n" +
+			"\tpath: field\n" +
+			"\twant: <non-nil>\n" +
+			"\thave: <nil>"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil interface", func(t *testing.T) {
+		// --- Given ---
+		var e *types.TPtr
+
+		// --- When ---
+		err := ErrorContain("abc", e)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error not to be nil:\n" +
+			"\twant: <non-nil>\n" +
+			"\thave: *types.TPtr"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_Nil(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---

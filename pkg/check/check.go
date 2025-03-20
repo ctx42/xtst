@@ -7,6 +7,7 @@ package check
 import (
 	"errors"
 	"reflect"
+	"strings"
 
 	"github.com/ctx42/xtst/pkg/dump"
 	"github.com/ctx42/xtst/pkg/notice"
@@ -87,6 +88,28 @@ func ErrorEqual(want string, err error, opts ...Option) error {
 		have = err.Error()
 	}
 	return notice.New("expected error message to be").
+		Path(ops.Path).
+		Want("%q", want).
+		Have("%#v", have)
+}
+
+// ErrorContain checks "err" is not nil and its message contains "want".
+// Returns nil if it's, otherwise it returns an error with a message indicating
+// the expected and actual values.
+func ErrorContain(want string, err error, opts ...Option) error {
+	ops := DefaultOptions().set(opts)
+	if isNil(err) {
+		return notice.New("expected error not to be nil").
+			Path(ops.Path).
+			Want("<non-nil>").
+			Have("%T", err)
+	}
+	if strings.Contains(err.Error(), want) {
+		return nil
+	}
+	var have any
+	have = err.Error()
+	return notice.New("expected error message to contain").
 		Path(ops.Path).
 		Want("%q", want).
 		Have("%#v", have)

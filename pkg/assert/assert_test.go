@@ -261,6 +261,49 @@ func Test_ErrorEqual(t *testing.T) {
 	})
 }
 
+func Test_ErrorContain(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		have := ErrorContain(tspy, "def", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		have := ErrorContain(tspy, "xyz", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with path", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.Close()
+
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		have := ErrorContain(tspy, "xyz", errors.New("abc def ghi"), opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
 func Test_Nil(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
