@@ -73,6 +73,25 @@ func ErrorAs(err error, target any, opts ...Option) error {
 		Have("(%T) %#v", target, target)
 }
 
+// ErrorEqual checks "err" is not nil and its message equals to "want". Returns
+// nil if it's, otherwise it returns an error with a message indicating the
+// expected and actual values.
+func ErrorEqual(want string, err error, opts ...Option) error {
+	ops := DefaultOptions().set(opts)
+	if err != nil && want == err.Error() {
+		return nil
+	}
+	var have any
+	have = nil
+	if err != nil {
+		have = err.Error()
+	}
+	return notice.New("expected error message to be").
+		Path(ops.Path).
+		Want("%q", want).
+		Have("%#v", have)
+}
+
 // Nil checks "have" is nil. Returns nil if it's, otherwise returns an error
 // with a message indicating the expected and actual values.
 func Nil(have any, opts ...Option) error {

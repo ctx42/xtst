@@ -218,6 +218,49 @@ func Test_ErrorAs(t *testing.T) {
 	})
 }
 
+func Test_ErrorEqual(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		have := ErrorEqual(tspy, "e0", errors.New("e0"))
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		have := ErrorEqual(tspy, "e1", errors.New("e0"))
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.Close()
+
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		have := ErrorEqual(tspy, "e1", errors.New("e0"), opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
 func Test_Nil(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---

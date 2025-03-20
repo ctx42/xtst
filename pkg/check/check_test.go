@@ -285,6 +285,72 @@ func Test_ErrorAs(t *testing.T) {
 	})
 }
 
+func Test_ErrorEqual(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- When ---
+		err := ErrorEqual("e0", errors.New("e0"))
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("success with format", func(t *testing.T) {
+		// --- When ---
+		err := ErrorEqual("e00", errors.New("e00"))
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("success with percent in want", func(t *testing.T) {
+		// --- When ---
+		err := ErrorEqual("e0%", errors.New("e0%"))
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- When ---
+		err := ErrorEqual("e1", errors.New("e0"))
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to be:\n" +
+			"\twant: \"e1\"\n" +
+			"\thave: \"e0\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		opt := WithPath("pth")
+
+		// --- When ---
+		err := ErrorEqual("e1", errors.New("e0"), opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to be:\n" +
+			"\tpath: pth\n" +
+			"\twant: \"e1\"\n" +
+			"\thave: \"e0\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil error", func(t *testing.T) {
+		// --- When ---
+		err := ErrorEqual("e1", nil)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to be:\n" +
+			"\twant: \"e1\"\n" +
+			"\thave: <nil>"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_Nil(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---

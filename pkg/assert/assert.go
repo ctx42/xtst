@@ -55,6 +55,18 @@ func ErrorAs(t tester.T, err error, target any, opts ...check.Option) bool {
 	return true
 }
 
+// ErrorEqual asserts "err" is not nil and its message equals to "want".
+// Returns true if it's, otherwise marks the test as failed, writes error
+// message to test log and returns false.
+func ErrorEqual(t tester.T, want string, err error, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.ErrorEqual(want, err, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}
+
 // Nil asserts "have" is nil. Returns true if it is, otherwise marks the test
 // as failed, writes error message to test log and returns false.
 func Nil(t tester.T, have any, opts ...check.Option) bool {
