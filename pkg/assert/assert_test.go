@@ -5,6 +5,7 @@ package assert
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/ctx42/xtst/internal/affirm"
@@ -99,6 +100,66 @@ func Test_NoError(t *testing.T) {
 		func() {
 			defer func() { _ = recover() }()
 			have = NoError(tspy, errors.New("e0"), opt)
+		}()
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
+func Test_ErrorIs(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		err0 := errors.New("err0")
+		err1 := errors.New("err1")
+		err2 := fmt.Errorf("wrap: %w %w", err0, err1)
+
+		// --- When ---
+		have := ErrorIs(tspy, err2, err1)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFatal()
+		tspy.ExpectLogContain("expected err to have target in its tree")
+		tspy.Close()
+
+		err0 := errors.New("err0")
+		err1 := errors.New("err1")
+
+		// --- When ---
+		var have bool
+		func() {
+			defer func() { _ = recover() }()
+			have = ErrorIs(tspy, err0, err1)
+		}()
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFatal()
+		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.Close()
+
+		err0 := errors.New("err0")
+		err1 := errors.New("err1")
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		var have bool
+		func() {
+			defer func() { _ = recover() }()
+			have = ErrorIs(tspy, err0, err1, opt)
 		}()
 
 		// --- Then ---

@@ -5,6 +5,7 @@ package check
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/ctx42/xtst/internal/affirm"
@@ -126,6 +127,99 @@ func Test_NoError(t *testing.T) {
 			"\thave: \"\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
+}
+
+func Test_ErrorIs(t *testing.T) {
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		opt := WithPath("field")
+
+		// --- When ---
+		have := ErrorIs(errors.New("err0"), errors.New("err0"), opt)
+
+		// --- Then ---
+		affirm.NotNil(t, have)
+		wMsg := "expected err to have target in its tree:\n" +
+			"\tpath: field\n" +
+			"\twant: (*errors.errorString) err0\n" +
+			"\thave: (*errors.errorString) err0"
+		affirm.Equal(t, wMsg, have.Error())
+	})
+}
+
+func Test_ErrorIs_success_tabular(t *testing.T) {
+	err0 := errors.New("err0")
+	err1 := errors.New("err1")
+	err2 := fmt.Errorf("wrap: %w %w", err0, err1)
+
+	tt := []struct {
+		testN string
+
+		err    error
+		target error
+	}{
+		{"nil nil", nil, nil},
+		{"same error", err0, err0},
+		{"related 0", err2, err0},
+		{"related 1", err2, err1},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			err := ErrorIs(tc.err, tc.target)
+
+			// --- Then ---
+			affirm.Nil(t, err)
+		})
+	}
+}
+
+func Test_ErrorIs_error_tabular(t *testing.T) {
+	err0 := errors.New("err0")
+	err1 := errors.New("err1")
+	err2 := fmt.Errorf("wrap: %w %w", err0, err1)
+
+	tt := []struct {
+		testN string
+
+		have     error
+		haveType string
+		haveStr  string
+		want     error
+		wantType string
+		wantStr  string
+	}{
+		{"err nil", err0, "*errors.errorString", "err0", nil, "<nil>", "<nil>"},
+		{"nil err", nil, "<nil>", "<nil>", err0, "*errors.errorString", "err0"},
+		{"not related", err0, "*errors.errorString", "err0", err1, "*errors.errorString", "err1"},
+		{"not related 0", err0, "*errors.errorString", "err0", err2, "*fmt.wrapErrors", "wrap: err0 err1"},
+		{"not related 1", err1, "*errors.errorString", "err1", err2, "*fmt.wrapErrors", "wrap: err0 err1"},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			const format = "expected err to have target in its tree:\n" +
+				"\twant: (%s) %s\n" +
+				"\thave: (%s) %s"
+
+			wantLog := fmt.Sprintf(
+				format,
+				tc.wantType,
+				tc.wantStr,
+				tc.haveType,
+				tc.haveStr,
+			)
+
+			// --- When ---
+			err := ErrorIs(tc.have, tc.want)
+
+			// --- Then ---
+			affirm.NotNil(t, err)
+			affirm.Equal(t, wantLog, err.Error())
+		})
+	}
 }
 
 func Test_Nil(t *testing.T) {

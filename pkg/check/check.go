@@ -5,6 +5,7 @@
 package check
 
 import (
+	"errors"
 	"reflect"
 
 	"github.com/ctx42/xtst/pkg/dump"
@@ -37,6 +38,20 @@ func NoError(err error, opts ...Option) error {
 		Path(ops.Path).
 		Want("<nil>").
 		Have("%q", err.Error())
+}
+
+// ErrorIs checks whether any error in "err" tree matches target. Returns nil
+// if it's, otherwise returns an error with a message indicating the expected
+// and actual values.
+func ErrorIs(err, target error, opts ...Option) error {
+	if errors.Is(err, target) {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected err to have target in its tree").
+		Path(ops.Path).
+		Want("(%T) %v", target, target).
+		Have("(%T) %v", err, err)
 }
 
 // Nil checks "have" is nil. Returns nil if it's, otherwise returns an error
