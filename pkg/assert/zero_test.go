@@ -5,19 +5,20 @@ package assert
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ctx42/xtst/internal/affirm"
 	"github.com/ctx42/xtst/pkg/check"
 	"github.com/ctx42/xtst/pkg/tester"
 )
 
-func Test_Empty(t *testing.T) {
+func Test_Zero(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t).Close()
 
 		// --- When ---
-		have := Empty(tspy, "")
+		have := Zero(tspy, time.Time{})
 
 		// --- Then ---
 		affirm.True(t, have)
@@ -31,7 +32,7 @@ func Test_Empty(t *testing.T) {
 		tspy.Close()
 
 		// --- When ---
-		have := Empty(tspy, "abc")
+		have := Zero(tspy, time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC))
 
 		// --- Then ---
 		affirm.False(t, have)
@@ -47,20 +48,20 @@ func Test_Empty(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		have := Empty(tspy, "abc", opt)
+		have := Zero(tspy, time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC), opt)
 
 		// --- Then ---
 		affirm.False(t, have)
 	})
 }
 
-func Test_NotEmpty(t *testing.T) {
+func Test_NotZero(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t).Close()
 
 		// --- When ---
-		have := NotEmpty(tspy, "abc")
+		have := NotZero(tspy, time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC))
 
 		// --- Then ---
 		affirm.True(t, have)
@@ -74,7 +75,7 @@ func Test_NotEmpty(t *testing.T) {
 		tspy.Close()
 
 		// --- When ---
-		have := NotEmpty(tspy, "")
+		have := NotZero(tspy, time.Time{})
 
 		// --- Then ---
 		affirm.False(t, have)
@@ -84,13 +85,13 @@ func Test_NotEmpty(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field")
+		tspy.ExpectLogContain("\ttrail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		have := NotEmpty(tspy, "", opt)
+		have := NotZero(tspy, time.Time{}, opt)
 
 		// --- Then ---
 		affirm.False(t, have)

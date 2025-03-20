@@ -5,15 +5,16 @@ package check
 
 import (
 	"testing"
+	"time"
 
 	"github.com/ctx42/xtst/internal/affirm"
 	"github.com/ctx42/xtst/internal/cases"
 )
 
-func Test_Empty(t *testing.T) {
+func Test_Zero(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		err := Empty("")
+		err := Zero(time.Time{})
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -21,13 +22,23 @@ func Test_Empty(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
-		err := Empty("abc")
+		err := Zero(time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC))
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected argument to be empty:\n" +
-			"\twant: <empty>\n" +
-			"\thave: \"abc\""
+	})
+}
+
+func Test_zeroError(t *testing.T) {
+	t.Run("error", func(t *testing.T) {
+		// --- When ---
+		err := zeroError(42)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected argument to be zero value:\n" +
+			"\twant: <zero>\n" +
+			"\thave: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -36,30 +47,30 @@ func Test_Empty(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := Empty("abc", opt)
+		err := zeroError(42, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected argument to be empty:\n" +
+		wMsg := "expected argument to be zero value:\n" +
 			"\ttrail: type.field\n" +
-			"\t want: <empty>\n" +
-			"\t have: \"abc\""
+			"\t want: <zero>\n" +
+			"\t have: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
 
-func Test_Empty_ZENValues(t *testing.T) {
+func Test_Zero_ZENValues(t *testing.T) {
 	for _, tc := range cases.ZENValues() {
-		t.Run("Empty "+tc.Desc, func(t *testing.T) {
+		t.Run("Zero "+tc.Desc, func(t *testing.T) {
 			// --- When ---
-			have := Empty(tc.Val)
+			have := Zero(tc.Val)
 
 			// --- Then ---
-			if tc.IsEmpty && have != nil {
+			if tc.IsZero && have != nil {
 				format := "expected nil error:\n\thave: %#v"
 				t.Errorf(format, have)
 			}
-			if !tc.IsEmpty && have == nil {
+			if !tc.IsZero && have == nil {
 				format := "expected not-nil error:\n\thave: %#v"
 				t.Errorf(format, have)
 			}
@@ -67,10 +78,10 @@ func Test_Empty_ZENValues(t *testing.T) {
 	}
 }
 
-func Test_NotEmpty(t *testing.T) {
+func Test_NotZero(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		err := NotEmpty("abc")
+		err := NotZero(time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC))
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -78,11 +89,13 @@ func Test_NotEmpty(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
-		err := NotEmpty("")
+		err := NotZero(time.Time{})
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected non-empty value"
+		wMsg := "expected argument not to be zero value:\n" +
+			"\twant: <non-zero>\n" +
+			"\thave: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -91,12 +104,14 @@ func Test_NotEmpty(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := NotEmpty("", opt)
+		err := NotZero(time.Time{}, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected non-empty value:\n" +
-			"\ttrail: type.field"
+		wMsg := "expected argument not to be zero value:\n" +
+			"\ttrail: type.field\n" +
+			"\t want: <non-zero>\n" +
+			"\t have: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
