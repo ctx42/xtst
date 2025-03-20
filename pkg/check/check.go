@@ -54,6 +54,25 @@ func ErrorIs(err, target error, opts ...Option) error {
 		Have("(%T) %v", err, err)
 }
 
+// ErrorAs checks there is an error in "err" tree that matches target, and if
+// one is found, sets target to that error. Returns nil if target is found,
+// otherwise returns an error with a message indicating the expected and actual
+// values.
+func ErrorAs(err error, target any, opts ...Option) error {
+	if e := Error(err); e != nil {
+		return e
+	}
+	//goland:noinspection GoErrorsAs
+	if errors.As(err, target) {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected err to have target in its tree").
+		Path(ops.Path).
+		Want("(%T) %#v", err, err).
+		Have("(%T) %#v", target, target)
+}
+
 // Nil checks "have" is nil. Returns nil if it's, otherwise returns an error
 // with a message indicating the expected and actual values.
 func Nil(have any, opts ...Option) error {

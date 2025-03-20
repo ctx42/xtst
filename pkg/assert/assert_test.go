@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/ctx42/xtst/internal/affirm"
+	"github.com/ctx42/xtst/internal/types"
 	"github.com/ctx42/xtst/pkg/check"
 	"github.com/ctx42/xtst/pkg/tester"
 )
@@ -90,10 +91,10 @@ func Test_NoError(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
-		tspy.ExpectLogContain("\tpath: field\n")
+		tspy.ExpectLogContain("\tpath: pth\n")
 		tspy.Close()
 
-		opt := check.WithPath("field")
+		opt := check.WithPath("pth")
 
 		// --- When ---
 		var have bool
@@ -164,6 +165,56 @@ func Test_ErrorIs(t *testing.T) {
 
 		// --- Then ---
 		affirm.False(t, have)
+	})
+}
+
+func Test_ErrorAs(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		var target *types.TPtr
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		have := ErrorAs(tspy, &types.TPtr{Val: "A"}, &target)
+
+		// --- Then ---
+		affirm.True(t, have)
+		affirm.Equal(t, "A", target.Val)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		var target types.TVal
+
+		// --- When ---
+		have := ErrorAs(tspy, &types.TPtr{Val: "A"}, &target)
+
+		// --- Then ---
+		affirm.False(t, have)
+		affirm.Equal(t, "", target.Val)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\tpath: pth\n")
+		tspy.Close()
+
+		var target types.TVal
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		have := ErrorAs(tspy, &types.TPtr{Val: "A"}, &target, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+		affirm.Equal(t, "", target.Val)
 	})
 }
 

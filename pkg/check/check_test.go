@@ -132,7 +132,7 @@ func Test_NoError(t *testing.T) {
 func Test_ErrorIs(t *testing.T) {
 	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
-		opt := WithPath("field")
+		opt := WithPath("pth")
 
 		// --- When ---
 		have := ErrorIs(errors.New("err0"), errors.New("err0"), opt)
@@ -140,7 +140,7 @@ func Test_ErrorIs(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, have)
 		wMsg := "expected err to have target in its tree:\n" +
-			"\tpath: field\n" +
+			"\tpath: pth\n" +
 			"\twant: (*errors.errorString) err0\n" +
 			"\thave: (*errors.errorString) err0"
 		affirm.Equal(t, wMsg, have.Error())
@@ -220,6 +220,69 @@ func Test_ErrorIs_error_tabular(t *testing.T) {
 			affirm.Equal(t, wantLog, err.Error())
 		})
 	}
+}
+
+func Test_ErrorAs(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		var target *types.TPtr
+
+		// --- When ---
+		err := ErrorAs(&types.TPtr{Val: "A"}, &target)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+		affirm.Equal(t, "A", target.Val)
+	})
+
+	t.Run("nil", func(t *testing.T) {
+		// --- Given ---
+		var target *types.TPtr
+
+		// --- When ---
+		err := ErrorAs(nil, target)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected non-nil error"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		var target types.TVal
+
+		// --- When ---
+		err := ErrorAs(&types.TPtr{Val: "A"}, &target)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected err to have target in its tree:\n" +
+			"\twant: (*types.TPtr) &types.TPtr{Val:\"A\"}\n" +
+			"\thave: (*types.TVal) &types.TVal{Val:\"\"}"
+		affirm.Equal(t, wMsg, err.Error())
+
+		affirm.Equal(t, "", target.Val)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		opt := WithPath("pth")
+		var target types.TVal
+
+		// --- When ---
+		err := ErrorAs(&types.TPtr{Val: "A"}, &target, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected err to have target in its tree:\n" +
+			"\tpath: pth\n" +
+			"\twant: (*types.TPtr) &types.TPtr{Val:\"A\"}\n" +
+			"\thave: (*types.TVal) &types.TVal{Val:\"\"}"
+		affirm.Equal(t, wMsg, err.Error())
+
+		affirm.Equal(t, "", target.Val)
+	})
 }
 
 func Test_Nil(t *testing.T) {

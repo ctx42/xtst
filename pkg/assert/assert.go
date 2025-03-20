@@ -43,6 +43,18 @@ func ErrorIs(t tester.T, err, target error, opts ...check.Option) bool {
 	return true
 }
 
+// ErrorAs finds the first error in "err" tree that matches target, and if one
+// is found, sets target to that error. Returns true if it does, otherwise
+// marks the test as failed, writes error message to test log and returns false.
+func ErrorAs(t tester.T, err error, target any, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.ErrorAs(err, target, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}
+
 // Nil asserts "have" is nil. Returns true if it is, otherwise marks the test
 // as failed, writes error message to test log and returns false.
 func Nil(t tester.T, have any, opts ...check.Option) bool {

@@ -33,12 +33,12 @@ func ExampleNoError() {
 func ExampleNoError_withPath() {
 	have := errors.New("test error")
 
-	err := NoError(have, WithPath("path"))
+	err := NoError(have, WithPath("pth"))
 
 	fmt.Println(err)
 	// Output:
 	// expected error to be nil:
-	//	path: path
+	//	path: pth
 	//	want: <nil>
 	//	have: "test error"
 }
@@ -46,14 +46,14 @@ func ExampleNoError_withPath() {
 func ExampleNoError_changeMessage() {
 	have := errors.New("test error")
 
-	err := NoError(have, WithPath("path"))
+	err := NoError(have, WithPath("pth"))
 
 	err = notice.From(err, "prefix").Append("context", "wow")
 
 	fmt.Println(err)
 	// Output:
 	// [prefix] expected error to be nil:
-	//	   path: path
+	//	   path: pth
 	//	   want: <nil>
 	//	   have: "test error"
 	//	context: wow
