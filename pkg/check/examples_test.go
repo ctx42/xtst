@@ -1,17 +1,18 @@
 // SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package check
+package check_test
 
 import (
 	"errors"
 	"fmt"
 
+	"github.com/ctx42/xtst/pkg/check"
 	"github.com/ctx42/xtst/pkg/notice"
 )
 
 func ExampleError() {
-	err := Error(nil)
+	err := check.Error(nil)
 
 	fmt.Println(err)
 	// Output:
@@ -21,7 +22,7 @@ func ExampleError() {
 func ExampleNoError() {
 	have := errors.New("test error")
 
-	err := NoError(have)
+	err := check.NoError(have)
 
 	fmt.Println(err)
 	// Output:
@@ -33,7 +34,7 @@ func ExampleNoError() {
 func ExampleNoError_withTrail() {
 	have := errors.New("test error")
 
-	err := NoError(have, WithTrail("type.field"))
+	err := check.NoError(have, check.WithTrail("type.field"))
 
 	fmt.Println(err)
 	// Output:
@@ -46,7 +47,7 @@ func ExampleNoError_withTrail() {
 func ExampleNoError_changeMessage() {
 	have := errors.New("test error")
 
-	err := NoError(have, WithTrail("type.field"))
+	err := check.NoError(have, check.WithTrail("type.field"))
 
 	err = notice.From(err, "prefix").Append("context", "wow")
 

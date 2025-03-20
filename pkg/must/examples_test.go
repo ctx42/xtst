@@ -1,7 +1,9 @@
-package must
+package must_test
 
 import (
 	"fmt"
+
+	"github.com/ctx42/xtst/pkg/must"
 )
 
 // nolint:unparam
@@ -13,7 +15,7 @@ func ExampleFirst() {
 		return []Row{{"a"}, {"b"}}, nil
 	}
 
-	have := First(query())
+	have := must.First(query())
 
 	fmt.Println(have)
 	// Output:
@@ -30,7 +32,7 @@ func ExampleSingle() {
 	}
 
 	// Will panic if database returned more than one error.
-	have := Single(query())
+	have := must.Single(query())
 
 	fmt.Println(have)
 	// Output:
