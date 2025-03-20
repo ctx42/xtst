@@ -6,6 +6,7 @@ package check
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/ctx42/xtst/internal/affirm"
@@ -422,6 +423,117 @@ func Test_ErrorContain(t *testing.T) {
 
 		// --- When ---
 		err := ErrorContain("abc", e)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error not to be nil:\n" +
+			"\twant: <non-nil>\n" +
+			"\thave: *types.TPtr"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_ErrorRegexp(t *testing.T) {
+	t.Run("success string", func(t *testing.T) {
+		// --- When ---
+		err := ErrorRegexp("def", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("success regex", func(t *testing.T) {
+		// --- Given ---
+		rx := regexp.MustCompile(".* def .*")
+
+		// --- When ---
+		err := ErrorRegexp(rx, errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("success regex", func(t *testing.T) {
+		// --- When ---
+		err := ErrorRegexp("ghi$", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- When ---
+		err := ErrorRegexp("^xyz", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to match regexp:\n" +
+			"\tregexp: ^xyz\n" +
+			"\t  have: \"abc def ghi\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		opt := WithPath("pth")
+
+		// --- When ---
+		err := ErrorRegexp("^xyz", errors.New("abc def ghi"), opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to match regexp:\n" +
+			"\t  path: pth\n" +
+			"\tregexp: ^xyz\n" +
+			"\t  have: \"abc def ghi\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid regexp", func(t *testing.T) {
+		// --- When ---
+		err := ErrorRegexp("[a-z", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error message to match regexp:\n" +
+			"\terror: \"error parsing regexp: missing closing ]: `[a-z`\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil error", func(t *testing.T) {
+		// --- When ---
+		err := ErrorRegexp("xyz", nil)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error not to be nil:\n" +
+			"\twant: <non-nil>\n" +
+			"\thave: <nil>"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil error with path", func(t *testing.T) {
+		// --- Given ---
+		opt := WithPath("field")
+
+		// --- When ---
+		err := ErrorRegexp("^ab", nil, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected error not to be nil:\n" +
+			"\tpath: field\n" +
+			"\twant: <non-nil>\n" +
+			"\thave: <nil>"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil interface", func(t *testing.T) {
+		// --- Given ---
+		var e *types.TPtr
+
+		// --- When ---
+		err := ErrorRegexp("^ab", e)
 
 		// --- Then ---
 		affirm.NotNil(t, err)

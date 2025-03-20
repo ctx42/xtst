@@ -304,6 +304,63 @@ func Test_ErrorContain(t *testing.T) {
 	})
 }
 
+func Test_ErrorRegexp(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		have := ErrorRegexp(tspy, "^abc", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		have := ErrorRegexp(tspy, "abc$", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\t  path: pth\n")
+		tspy.Close()
+
+		opt := check.WithPath("pth")
+
+		// --- When ---
+		have := ErrorRegexp(tspy, "abc$", errors.New("abc def ghi"), opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("invalid regex", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		have := ErrorRegexp(tspy, "[a-z", errors.New("abc def ghi"))
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
 func Test_Nil(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---

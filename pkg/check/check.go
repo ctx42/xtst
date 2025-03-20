@@ -115,6 +115,29 @@ func ErrorContain(want string, err error, opts ...Option) error {
 		Have("%#v", have)
 }
 
+// ErrorRegexp checks "err" is not nil and its message matches the "want" regex.
+// Returns nil if it is, otherwise it returns an error with a message
+// indicating the expected and actual values.
+//
+// The "want" can be either regular expression string or instance of
+// [regexp.Regexp]. The [fmt.Sprint] is used to get string representation of
+// have argument.
+func ErrorRegexp(want any, err error, opts ...Option) error {
+	ops := DefaultOptions().set(opts)
+	if isNil(err) {
+		return notice.New("expected error not to be nil").
+			Path(ops.Path).
+			Want("<non-nil>").
+			Have("%T", err)
+	}
+	if e := Regexp(want, err.Error()); e != nil {
+		return notice.From(e).
+			Path(ops.Path).
+			SetHeader("expected error message to match regexp")
+	}
+	return nil
+}
+
 // Nil checks "have" is nil. Returns nil if it's, otherwise returns an error
 // with a message indicating the expected and actual values.
 func Nil(have any, opts ...Option) error {
