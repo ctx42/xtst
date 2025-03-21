@@ -99,6 +99,49 @@ func Test_NoFileExist(t *testing.T) {
 	})
 }
 
+func Test_FileContain(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		have := FileContain(tspy, "ghi\njkl", "testdata/file.txt")
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		have := FileContain(tspy, "not there", "testdata/file.txt")
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := FileContain(tspy, "not there", "testdata/file.txt", opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
 func Test_DirExist(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---

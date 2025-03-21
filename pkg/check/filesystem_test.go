@@ -85,6 +85,80 @@ func Test_NoFileExist(t *testing.T) {
 	})
 }
 
+func Test_FileContain(t *testing.T) {
+	t.Run("contains string", func(t *testing.T) {
+		// --- When ---
+		err := FileContain("ghi\njkl", "testdata/file.txt")
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("contains byte slice", func(t *testing.T) {
+		// --- When ---
+		err := FileContain([]byte("ghi\njkl"), "testdata/file.txt")
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("does not contain string", func(t *testing.T) {
+		// --- When ---
+		err := FileContain("not there", "testdata/file.txt")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected file to contain string:\n" +
+			"\tpath: testdata/file.txt\n" +
+			"\twant: \"not there\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("does not contain byte slice", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := FileContain([]byte("not there"), "testdata/file.txt", opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected file to contain string:\n" +
+			"\ttrail: type.field\n" +
+			"\t path: testdata/file.txt\n" +
+			"\t want: \"not there\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("file does not exist", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := FileContain("content", "testdata/not_existing.txt", opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected no error reading file:\n" +
+			"\ttrail: type.field\n" +
+			"\t path: testdata/not_existing.txt\n" +
+			"\terror: open testdata/not_existing.txt: no such file or directory"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("is a directory", func(t *testing.T) {
+		// --- When ---
+		err := FileContain("content", "testdata/dir")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected no error reading file:\n" +
+			"\t path: testdata/dir\n" +
+			"\terror: read testdata/dir: is a directory"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_DirExist(t *testing.T) {
 	t.Run("exists", func(t *testing.T) {
 		// --- When ---

@@ -5,6 +5,7 @@ package check
 
 import (
 	"os"
+	"strings"
 
 	"github.com/ctx42/xtst/pkg/notice"
 )
@@ -61,6 +62,29 @@ func NoFileExist(pth string, opts ...Option) error {
 // Content declares type constraint for file content.
 type Content interface {
 	string | []byte
+}
+
+// FileContain checks file at "pth" can be read and its string content contains
+// "want". It fails if the path points to a filesystem entry which is not a
+// file or there is an error reading the file. The file is read in full then
+// [strings.Contains] is used to check it contains "want" string. When it fails
+// it returns an error with a message indicating the expected and actual values.
+func FileContain[T Content](want T, pth string, opts ...Option) error {
+	content, err := os.ReadFile(pth)
+	ops := DefaultOptions().set(opts)
+	if err != nil {
+		return notice.New("expected no error reading file").
+			Trail(ops.Trail).
+			Append("path", "%s", pth).
+			Append("error", "%s", err)
+	}
+	if strings.Contains(string(content), string(want)) {
+		return nil
+	}
+	return notice.New("expected file to contain string").
+		Trail(ops.Trail).
+		Append("path", "%s", pth).
+		Want("%q", want)
 }
 
 // DirExist checks "pth" points to an existing directory. It fails if the path
