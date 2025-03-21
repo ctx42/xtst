@@ -5,6 +5,7 @@
 package check
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/ctx42/xtst/pkg/notice"
@@ -37,4 +38,20 @@ func Count(count int, what, where any, opts ...Option) error {
 	}
 	return notice.New("unsupported \"where\" type: %T", where).
 		Trail(ops.Trail)
+}
+
+// SameType checks that both arguments are of the same type. Returns nil if
+// they are, otherwise it returns an error with a message indicating the
+// expected and actual values.
+func SameType(want, have any, opts ...Option) error {
+	wTyp := reflect.TypeOf(want)
+	hTyp := reflect.TypeOf(have)
+	if wTyp == hTyp {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected same types").
+		Trail(ops.Trail).
+		Want("%T", want).
+		Have("%T", have)
 }

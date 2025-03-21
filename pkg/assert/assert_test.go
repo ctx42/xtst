@@ -54,3 +54,49 @@ func Test_Count(t *testing.T) {
 		affirm.False(t, have)
 	})
 }
+
+func Test_SameType(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		have := SameType(tspy, true, true)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFatal()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		defer func() { _ = recover() }()
+
+		// --- When ---
+		have := SameType(tspy, 1, uint(1))
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with options", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFatal()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		defer func() { _ = recover() }()
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := SameType(tspy, 1, uint(1), opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
