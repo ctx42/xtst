@@ -69,3 +69,98 @@ func Test_Len(t *testing.T) {
 		affirm.False(t, have)
 	})
 }
+
+func Test_Has(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		have := Has(tspy, 2, val)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		have := Has(tspy, 42, val)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		val := []int{1, 2, 3}
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := Has(tspy, 42, val, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
+func Test_HasNo(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		have := HasNo(tspy, 4, val)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		have := HasNo(tspy, 2, val)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		val := []int{1, 2, 3}
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := HasNo(tspy, 2, val, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}

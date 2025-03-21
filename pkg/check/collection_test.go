@@ -93,3 +93,106 @@ func Test_Len_error_tabular(t *testing.T) {
 		})
 	}
 }
+
+func Test_Has(t *testing.T) {
+	t.Run("has", func(t *testing.T) {
+		// --- Given ---
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		err := Has(2, val)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("has not", func(t *testing.T) {
+		// --- Given ---
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		err := Has(42, val)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected slice to have a value:\n" +
+			"\t want: 42\n" +
+			"\tslice: []int{1, 2, 3}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("has not with option", func(t *testing.T) {
+		// --- Given ---
+		val := []int{1, 2, 3}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := Has(42, val, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected slice to have a value:\n" +
+			"\ttrail: type.field\n" +
+			"\t want: 42\n" +
+			"\tslice: []int{1, 2, 3}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_HasNo(t *testing.T) {
+	t.Run("doesnt have", func(t *testing.T) {
+		// --- Given ---
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		err := HasNo(4, val)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("has", func(t *testing.T) {
+		// --- Given ---
+		val := []int{1, 2, 3}
+
+		// --- When ---
+		err := HasNo(2, val)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected slice not to have value:\n" +
+			"\t want: 2\n" +
+			"\tindex: 1\n" +
+			"\tslice: []int{\n1,\n2,\n3,\n}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("has with option", func(t *testing.T) {
+		// --- Given ---
+		val := []int{1, 2, 3}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := HasNo(2, val, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected slice not to have value:\n" +
+			"\ttrail: type.field\n" +
+			"\t want: 2\n" +
+			"\tindex: 1\n" +
+			"\tslice: []int{\n1,\n2,\n3,\n}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil slice", func(t *testing.T) {
+		// --- Given ---
+		var val []any
+
+		// --- When ---
+		err := HasNo(2, val)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+}
