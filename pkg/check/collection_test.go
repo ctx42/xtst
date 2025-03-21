@@ -355,3 +355,61 @@ func Test_HasKeyValue(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
+
+func Test_SliceSubset(t *testing.T) {
+	t.Run("slices equal", func(t *testing.T) {
+		// --- Given ---
+		want := []string{"A", "B", "C"}
+		have := []string{"C", "B", "A"}
+
+		// --- When ---
+		err := SliceSubset(want, have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("want slice is subset of have slice", func(t *testing.T) {
+		// --- Given ---
+		want := []string{"A", "B", "C"}
+		have := []string{"D", "C", "B", "A"}
+
+		// --- When ---
+		err := SliceSubset(want, have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("want slice is not a subset of have slice", func(t *testing.T) {
+		// --- Given ---
+		want := []string{"X", "Y", "A", "B", "C"}
+		have := []string{"C", "B", "A"}
+
+		// --- When ---
+		err := SliceSubset(want, have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected \"want\" slice to be a subset of \"have\" slice:\n" +
+			"\tmissing values: []string{\n\"X\",\n\"Y\",\n}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		want := []string{"X", "Y", "A", "B", "C"}
+		have := []string{"C", "B", "A"}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := SliceSubset(want, have, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected \"want\" slice to be a subset of \"have\" slice:\n" +
+			"\t         trail: type.field\n" +
+			"\tmissing values: []string{\n\"X\",\n\"Y\",\n}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}

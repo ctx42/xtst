@@ -82,3 +82,15 @@ func HasKeyValue[K, V comparable](t tester.T, key K, want V, set map[K]V, opts .
 	}
 	return true
 }
+
+// SliceSubset checks the "have" is a subset "want". In other words all values
+// in "want" slice must be in "have" slice. Returns nil if it's, otherwise
+// returns an error with a message indicating the expected and actual values.
+func SliceSubset[T comparable](t tester.T, want, have []T, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.SliceSubset(want, have, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}

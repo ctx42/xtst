@@ -111,3 +111,104 @@ func HasKeyValue[K, V comparable](key K, want V, set map[K]V, opts ...Option) er
 		Want("%#v", want).
 		Have("%#v", have)
 }
+
+// TODO(rz):
+// // MapSubset checks the "have" is a subset of "want". In other words all keys
+// // and values in "want" map must be in "have" map, and it is not an error when
+// // "have" map has some other keys. Returns error if "want" is not a subset of
+// // "have" with a message indicating the expected and actual values.
+// func MapSubset[K cmp.Ordered, V any](want, have map[K]V, opts ...Option) error {
+// 	return mapSubset(want, have, opts...)
+// }
+//
+// // mapSubset checks the "have" map is a subset of "want" map. In other words
+// // all keys and values in "want" map must be in "have" map, and it's not an
+// // error when "have" map have some other keys.
+// func mapSubset[K cmp.Ordered, V any](want, have map[K]V, opts ...Option) error {
+// 	wKeys := make([]K, 0, len(want))
+// 	for wKey := range want {
+// 		wKeys = append(wKeys, wKey)
+// 	}
+// 	sort.Slice(wKeys, func(i, j int) bool { return wKeys[i] < wKeys[j] })
+//
+// 	var ers []error
+// 	var missing []K
+//     ops := DefaultOptions().set(opts)
+// 	for _, wKey := range wKeys {
+// 		hVal, exist := have[wKey]
+// 		if !exist {
+// 			missing = append(missing, wKey)
+// 			continue
+// 		}
+// 		pth := ops.Trail + "[" + valToString(reflect.ValueOf(wKey)) + "]"
+// 		if err := Equal(want[wKey], hVal, WithPath(pth)); err != nil {
+// 			ers = append(ers, notice.Unwrap(err)...)
+// 		}
+// 	}
+//
+// 	var mKeys []string
+// 	for _, wKey := range missing {
+// 		mKeys = append(mKeys, valToString(reflect.ValueOf(wKey)))
+// 	}
+// 	sort.Strings(mKeys)
+// 	if len(mKeys) > 0 {
+// 		err := notice.New(`expected "have" map to have key(s)`).
+// 			Append("missing key(s)", "%s", strings.Join(mKeys, ", "))
+// 		ers = append(ers, err)
+// 	}
+// 	return errors.Join(ers...)
+// }
+//
+// // MapsSubset checks all the "have" maps are subset of corresponding "want"
+// // maps. In other words it iterates over "want" slice and checks map at the
+// // same index is a subset of the map in "have" slice. Returns an error if any
+// // of the "want" maps is not a subset of corresponding "have" map.
+// func MapsSubset[K cmp.Ordered, V any](want, have []map[K]V, opts ...Option) error {
+// 	ops := DefaultOptions().set(opts)
+// 	if len(want) != len(have) {
+// 		msg := "expected \"want\" and \"have\" to have the same number of " +
+// 			"elements"
+// 		return notice.New(msg).
+// 			Trail(ops.Trail).
+// 			Want("%d", len(want)).
+// 			Have("%d", len(have))
+// 	}
+//
+// 	var ers []error
+// 	for i := range want {
+// 		pth := fmt.Sprintf("[%d]map", i)
+// 		if err := mapSubset(want[i], have[i], pth); err != nil {
+// 			ers = append(ers, notice.Unwrap(err)...)
+// 		}
+// 	}
+// 	return errors.Join(ers...)
+// }
+
+// SliceSubset checks the "have" is a subset "want". In other words all values
+// in "want" slice must be in "have" slice. Returns nil if it does, otherwise
+// returns an error with a message indicating the expected and actual values.
+func SliceSubset[V comparable](want, have []V, opts ...Option) error {
+	var missing []V
+	for _, wantVal := range want {
+		found := false
+		for _, haveVal := range have {
+			if wantVal == haveVal {
+				found = true
+				break
+			}
+		}
+		if !found {
+			missing = append(missing, wantVal)
+		}
+	}
+	if len(missing) == 0 {
+		return nil
+	}
+
+	ops := DefaultOptions().set(opts)
+	dmp := dump.New(ops.DumpConfig)
+	const hHeader = "expected \"want\" slice to be a subset of \"have\" slice"
+	return notice.New(hHeader).
+		Trail(ops.Trail).
+		Append("missing values", "%s", dmp.DumpAny(missing))
+}

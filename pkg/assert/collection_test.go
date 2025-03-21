@@ -310,3 +310,55 @@ func Test_HasKeyValue(t *testing.T) {
 		affirm.False(t, have)
 	})
 }
+
+func Test_SliceSubset(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		sWant := []string{"A", "B", "C"}
+		sHave := []string{"C", "B", "A"}
+
+		// --- When ---
+		have := SliceSubset(tspy, sWant, sHave)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		sWant := []string{"X", "Y", "A", "B", "C"}
+		sHave := []string{"C", "B", "A"}
+
+		// --- When ---
+		have := SliceSubset(tspy, sWant, sHave)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("\t         trail: type.field\n")
+		tspy.Close()
+
+		sWant := []string{"X", "Y", "A", "B", "C"}
+		sHave := []string{"C", "B", "A"}
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := SliceSubset(tspy, sWant, sHave, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
