@@ -6,6 +6,7 @@ package internal
 import (
 	"reflect"
 	"runtime"
+	"runtime/debug"
 	"unsafe"
 )
 
@@ -98,4 +99,22 @@ func Len(v any) (length int, ok bool) {
 		}
 	}()
 	return vv.Len(), true
+}
+
+// DidPanic returns true if the passed function panicked, otherwise it returns
+// false. Additionally, when a function panics it returns the value passed to
+// panic and the stack trace.
+func DidPanic(fn func()) (didPanic bool, val any, stack string) {
+	didPanic = true
+
+	defer func() {
+		val = recover()
+		if didPanic {
+			stack = string(debug.Stack())
+		}
+	}()
+
+	fn() // Call the target function
+	didPanic = false
+	return
 }

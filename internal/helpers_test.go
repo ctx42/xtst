@@ -6,6 +6,7 @@ package internal
 import (
 	"testing"
 
+	"github.com/ctx42/xtst/internal/affirm"
 	"github.com/ctx42/xtst/internal/types"
 )
 
@@ -134,11 +135,7 @@ func Test_Same_tabular(t *testing.T) {
 			have := Same(tc.want, tc.have)
 
 			// --- Then ---
-			want := tc.same
-			if want != have {
-				format := "expected:\n\twant: %#v\n\thave: %#v"
-				t.Errorf(format, want, have)
-			}
+			affirm.DeepEqual(t, tc.same, have)
 		})
 	}
 }
@@ -169,14 +166,36 @@ func Test_Len_tabular(t *testing.T) {
 			haveLen, haveOK := Len(tc.val)
 
 			// --- Then ---
-			if haveOK != tc.ok {
-				format := "expected len is possible:\n\twant: %#v\n\thave: %#v"
-				t.Errorf(format, tc.ok, haveOK)
-			}
-			if haveOK != tc.ok {
-				format := "expected length:\n\twant: %#v\n\thave: %#v"
-				t.Errorf(format, tc.want, haveLen)
-			}
+			affirm.Equal(t, tc.want, haveLen)
+			affirm.Equal(t, tc.ok, haveOK)
 		})
 	}
+}
+
+func Test_DidPanic(t *testing.T) {
+	t.Run("panicked", func(t *testing.T) {
+		// --- Given ---
+		fn := func() { panic("panic") }
+
+		// --- When ---
+		did, val, stack := DidPanic(fn)
+
+		// --- Then ---
+		affirm.True(t, did)
+		affirm.Equal(t, "panic", val)
+		affirm.True(t, len(stack) > 0)
+	})
+
+	t.Run("no panic", func(t *testing.T) {
+		// --- Given ---
+		fn := func() {}
+
+		// --- When ---
+		did, val, stack := DidPanic(fn)
+
+		// --- Then ---
+		affirm.False(t, did)
+		affirm.Nil(t, val)
+		affirm.Equal(t, 0, len(stack))
+	})
 }
