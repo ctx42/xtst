@@ -47,3 +47,26 @@ func HasNo[T comparable](t tester.T, want T, bag []T, opts ...check.Option) bool
 	}
 	return true
 }
+
+// HasKey asserts map has a key. Returns true if it does, otherwise marks the
+// test as failed, writes error message to test log and returns false.
+func HasKey[K comparable, V any](t tester.T, key K, set map[K]V, opts ...check.Option) (V, bool) {
+	t.Helper()
+	val, e := check.HasKey(key, set, opts...)
+	if e != nil {
+		t.Error(e)
+		return val, false
+	}
+	return val, true
+}
+
+// HasNoKey asserts map has no key. Returns true if it doesn't, otherwise marks
+// the test as failed, writes error message to test log and returns false.
+func HasNoKey[K comparable, V any](t tester.T, key K, set map[K]V, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.HasNoKey(key, set, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}

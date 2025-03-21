@@ -106,7 +106,7 @@ func Test_Has(t *testing.T) {
 		affirm.Nil(t, err)
 	})
 
-	t.Run("has not", func(t *testing.T) {
+	t.Run("error", func(t *testing.T) {
 		// --- Given ---
 		val := []int{1, 2, 3}
 
@@ -117,11 +117,11 @@ func Test_Has(t *testing.T) {
 		affirm.NotNil(t, err)
 		wMsg := "expected slice to have a value:\n" +
 			"\t want: 42\n" +
-			"\tslice: []int{1, 2, 3}"
+			"\tslice: []int{\n1,\n2,\n3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("has not with option", func(t *testing.T) {
+	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
 		val := []int{1, 2, 3}
 		opt := WithTrail("type.field")
@@ -134,7 +134,7 @@ func Test_Has(t *testing.T) {
 		wMsg := "expected slice to have a value:\n" +
 			"\ttrail: type.field\n" +
 			"\t want: 42\n" +
-			"\tslice: []int{1, 2, 3}"
+			"\tslice: []int{\n1,\n2,\n3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -151,7 +151,7 @@ func Test_HasNo(t *testing.T) {
 		affirm.Nil(t, err)
 	})
 
-	t.Run("has", func(t *testing.T) {
+	t.Run("error", func(t *testing.T) {
 		// --- Given ---
 		val := []int{1, 2, 3}
 
@@ -167,7 +167,7 @@ func Test_HasNo(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("has with option", func(t *testing.T) {
+	t.Run("error with option", func(t *testing.T) {
 		// --- Given ---
 		val := []int{1, 2, 3}
 		opt := WithTrail("type.field")
@@ -194,5 +194,116 @@ func Test_HasNo(t *testing.T) {
 
 		// --- Then ---
 		affirm.Nil(t, err)
+	})
+}
+
+func Test_HasKey(t *testing.T) {
+	t.Run("has", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		haveValue, err := HasKey("B", val)
+
+		// --- Then ---
+		affirm.Equal(t, 2, haveValue)
+		affirm.Nil(t, err)
+	})
+
+	t.Run("has not", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		haveValue, err := HasKey("X", val)
+
+		// --- Then ---
+		affirm.Equal(t, 0, haveValue)
+		affirm.NotNil(t, err)
+		wMsg := "expected map to have a key:\n" +
+			"\tkey: \"X\"\n" +
+			"\tmap: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("nil map", func(t *testing.T) {
+		// --- Given ---
+		var m map[string]any
+
+		// --- When ---
+		haveValue, err := HasKey("X", m)
+
+		// --- Then ---
+		affirm.Nil(t, haveValue)
+		affirm.NotNil(t, err)
+		wMsg := "expected map to have a key:\n" +
+			"\tkey: \"X\"\n" +
+			"\tmap: map[string]any(nil)"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		var m map[string]any
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		haveValue, err := HasKey("X", m, opt)
+
+		// --- Then ---
+		affirm.Nil(t, haveValue)
+		affirm.NotNil(t, err)
+		wMsg := "expected map to have a key:\n" +
+			"\ttrail: type.field\n" +
+			"\t  key: \"X\"\n" +
+			"\t  map: map[string]any(nil)"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_HasNoKey(t *testing.T) {
+	t.Run("has not", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		err := HasNoKey("D", val)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		err := HasNoKey("B", val)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected map not to have a key:\n" +
+			"\t  key: \"B\"\n" +
+			"\tvalue: 2\n" +
+			"\t  map: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := HasNoKey("B", val, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected map not to have a key:\n" +
+			"\ttrail: type.field\n" +
+			"\t  key: \"B\"\n" +
+			"\tvalue: 2\n" +
+			"\t  map: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+		affirm.Equal(t, wMsg, err.Error())
 	})
 }

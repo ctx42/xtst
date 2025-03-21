@@ -36,10 +36,11 @@ func Has[T comparable](want T, bag []T, opts ...Option) error {
 		}
 	}
 	ops := DefaultOptions().set(opts)
+	dmp := dump.New(ops.DumpConfig)
 	return notice.New("expected slice to have a value").
 		Trail(ops.Trail).
 		Want("%#v", want).
-		Append("slice", "%#v", bag)
+		Append("slice", "%s", dmp.DumpAny(bag))
 }
 
 // HasNo checks slice does not have "want" value. Returns nil if it doesn't,
@@ -58,4 +59,36 @@ func HasNo[T comparable](want T, set []T, opts ...Option) error {
 		}
 	}
 	return nil
+}
+
+// HasKey checks map has a key. If the key exists it returns its value and nil,
+// otherwise it returns zero value and an error with a message indicating the
+// expected and actual values.
+func HasKey[K comparable, V any](key K, set map[K]V, opts ...Option) (V, error) {
+	val, ok := set[key]
+	if ok {
+		return val, nil
+	}
+	ops := DefaultOptions().set(opts)
+	dmp := dump.New(ops.DumpConfig)
+	return val, notice.New("expected map to have a key").
+		Trail(ops.Trail).
+		Append("key", "%#v", key).
+		Append("map", "%s", dmp.DumpAny(set))
+}
+
+// HasNoKey checks map has no key. Returns nil if it doesn't, otherwise it
+// returns an error with a message indicating the expected and actual values.
+func HasNoKey[K comparable, V any](key K, set map[K]V, opts ...Option) error {
+	val, ok := set[key]
+	if !ok {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	dmp := dump.New(ops.DumpConfig)
+	return notice.New("expected map not to have a key").
+		Trail(ops.Trail).
+		Append("key", "%#v", key).
+		Append("value", "%#v", val).
+		Append("map", "%s", dmp.DumpAny(set))
 }

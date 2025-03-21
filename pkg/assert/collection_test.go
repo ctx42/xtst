@@ -164,3 +164,102 @@ func Test_HasNo(t *testing.T) {
 		affirm.False(t, have)
 	})
 }
+
+func Test_HasKey(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		haveValue, success := HasKey(tspy, "B", val)
+
+		// --- Then ---
+		affirm.Equal(t, 2, haveValue)
+		affirm.True(t, success)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		haveValue, success := HasKey(tspy, "X", val)
+
+		// --- Then ---
+		affirm.Equal(t, 0, haveValue)
+		affirm.False(t, success)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		haveValue, success := HasKey(tspy, "X", val, opt)
+
+		// --- Then ---
+		affirm.Equal(t, 0, haveValue)
+		affirm.False(t, success)
+	})
+}
+
+func Test_HasNoKey(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		success := HasNoKey(tspy, "D", val)
+
+		// --- Then ---
+		affirm.True(t, success)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		success := HasNoKey(tspy, "B", val)
+
+		// --- Then ---
+		affirm.False(t, success)
+	})
+
+	t.Run("error with option", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		success := HasNoKey(tspy, "B", val, opt)
+
+		// --- Then ---
+		affirm.False(t, success)
+	})
+}
