@@ -42,7 +42,7 @@ func Test_Regexp(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("no match with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 

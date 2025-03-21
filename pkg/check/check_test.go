@@ -37,7 +37,7 @@ func Test_Count(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error count with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 
@@ -111,7 +111,7 @@ func Test_Count_error_tabular(t *testing.T) {
 }
 
 func Test_SameType(t *testing.T) {
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 

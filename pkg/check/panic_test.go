@@ -31,7 +31,7 @@ func Test_Panic(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("not panicked with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 
@@ -60,7 +60,7 @@ func Test_NoPanic(t *testing.T) {
 		affirm.True(t, strings.Contains(hMsg, "panic stack:"))
 	})
 
-	t.Run("panicked with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 
@@ -109,7 +109,7 @@ func Test_PanicContain(t *testing.T) {
 		affirm.True(t, strings.Contains(hMsg, "panic stack:"))
 	})
 
-	t.Run("with options", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 
@@ -184,7 +184,7 @@ func Test_PanicMsg(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("no panic with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 

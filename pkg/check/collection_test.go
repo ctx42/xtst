@@ -10,7 +10,7 @@ import (
 )
 
 func Test_Len(t *testing.T) {
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 
@@ -121,7 +121,7 @@ func Test_Has(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		val := []int{1, 2, 3}
 		opt := WithTrail("type.field")
@@ -167,7 +167,7 @@ func Test_HasNo(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		val := []int{1, 2, 3}
 		opt := WithTrail("type.field")
@@ -242,7 +242,7 @@ func Test_HasKey(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		var m map[string]any
 		opt := WithTrail("type.field")
@@ -289,7 +289,7 @@ func Test_HasNoKey(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
 		opt := WithTrail("type.field")
@@ -303,6 +303,54 @@ func Test_HasNoKey(t *testing.T) {
 			"\ttrail: type.field\n" +
 			"\t  key: \"B\"\n" +
 			"\tvalue: 2\n" +
+			"\t  map: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_HasKeyValue(t *testing.T) {
+	t.Run("has key and value matches", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		err := HasKeyValue("B", 2, val)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("has key but value does not match", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := HasKeyValue("B", 100, val, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected map to have a key with a value:\n" +
+			"\ttrail: type.field\n" +
+			"\t  key: \"B\"\n" +
+			"\t want: 100\n" +
+			"\t have: 2"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("has no key", func(t *testing.T) {
+		// --- Given ---
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := HasKeyValue("X", 2, val, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected map to have a key:\n" +
+			"\ttrail: type.field\n" +
+			"\t  key: \"X\"\n" +
 			"\t  map: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})

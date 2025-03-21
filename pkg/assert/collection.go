@@ -70,3 +70,15 @@ func HasNoKey[K comparable, V any](t tester.T, key K, set map[K]V, opts ...check
 	}
 	return true
 }
+
+// HasKeyValue asserts map has a key with given value. Returns true if it
+// doesn't, otherwise marks the test as failed, writes error message to test
+// log and returns false.
+func HasKeyValue[K, V comparable](t tester.T, key K, want V, set map[K]V, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.HasKeyValue(key, want, set, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}

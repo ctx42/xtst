@@ -76,7 +76,7 @@ func Test_Same(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -127,7 +127,7 @@ func Test_NotSame(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()

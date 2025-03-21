@@ -53,7 +53,7 @@ func Test_Len(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -100,7 +100,7 @@ func Test_Has(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
@@ -147,7 +147,7 @@ func Test_HasNo(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
@@ -197,7 +197,7 @@ func Test_HasKey(t *testing.T) {
 		affirm.False(t, success)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
@@ -246,7 +246,7 @@ func Test_HasNoKey(t *testing.T) {
 		affirm.False(t, success)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
@@ -261,5 +261,52 @@ func Test_HasNoKey(t *testing.T) {
 
 		// --- Then ---
 		affirm.False(t, success)
+	})
+}
+
+func Test_HasKeyValue(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		have := HasKeyValue(tspy, "B", 2, val)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+
+		// --- When ---
+		have := HasKeyValue(tspy, "B", 100, val)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		val := map[string]int{"A": 1, "B": 2, "C": 3}
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := HasKeyValue(tspy, "B", 100, val, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
 	})
 }

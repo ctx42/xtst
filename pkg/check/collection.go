@@ -92,3 +92,22 @@ func HasNoKey[K comparable, V any](key K, set map[K]V, opts ...Option) error {
 		Append("value", "%#v", val).
 		Append("map", "%s", dmp.DumpAny(set))
 }
+
+// HasKeyValue checks map has a key with given value. Returns nil if it doesn't,
+// otherwise it returns an error with a message indicating the expected and
+// actual values.
+func HasKeyValue[K, V comparable](key K, want V, set map[K]V, opts ...Option) error {
+	have, err := HasKey(key, set, opts...)
+	if err != nil {
+		return err
+	}
+	if want == have {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected map to have a key with a value").
+		Trail(ops.Trail).
+		Append("key", "%#v", key).
+		Want("%#v", want).
+		Have("%#v", have)
+}

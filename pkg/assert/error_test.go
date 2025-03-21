@@ -87,7 +87,7 @@ func Test_NoError(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
@@ -145,7 +145,7 @@ func Test_ErrorIs(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
@@ -199,7 +199,7 @@ func Test_ErrorAs(t *testing.T) {
 		affirm.Equal(t, "", target.Val)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -244,7 +244,7 @@ func Test_ErrorEqual(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
@@ -330,7 +330,7 @@ func Test_ErrorRegexp(t *testing.T) {
 		affirm.False(t, have)
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
