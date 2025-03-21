@@ -3,3 +3,20 @@
 
 // Package assert provides assertion functions.
 package assert
+
+import (
+	"github.com/ctx42/xtst/pkg/check"
+	"github.com/ctx42/xtst/pkg/tester"
+)
+
+// Count asserts there is "count" occurrences of "what" in "where". Returns
+// true if the count matches, otherwise marks the test as failed, writes error
+// message to test log and returns false.
+func Count(t tester.T, count int, what, where any, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.Count(count, what, where, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}
