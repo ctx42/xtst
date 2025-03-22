@@ -98,7 +98,7 @@ func Test_NewConfig(t *testing.T) {
 	// --- Then ---
 	affirm.False(t, have.Flat)
 	affirm.False(t, have.Compact)
-	affirm.Equal(t, "", have.TimeFormat)
+	affirm.Equal(t, time.RFC3339Nano, have.TimeFormat)
 	affirm.Equal(t, "", have.DurationFormat)
 	affirm.False(t, have.PtrAddr)
 	affirm.True(t, have.UseAny)

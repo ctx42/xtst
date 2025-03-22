@@ -5,6 +5,7 @@ package dump
 
 import (
 	"reflect"
+	"time"
 )
 
 // Option represents [NewConfig] option.
@@ -94,10 +95,11 @@ type Config struct {
 // NewConfig returns new instance of [Config] with default values.
 func NewConfig(opts ...Option) Config {
 	cfg := Config{
-		PrintType: true,
-		UseAny:    true,
-		Dumpers:   make(map[reflect.Type]Dumper),
-		Depth:     6,
+		TimeFormat: time.RFC3339Nano,
+		PrintType:  true,
+		UseAny:     true,
+		Dumpers:    make(map[reflect.Type]Dumper),
+		Depth:      6,
 	}
 	for _, opt := range opts {
 		opt(&cfg)

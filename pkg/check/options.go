@@ -4,6 +4,8 @@
 package check
 
 import (
+	"time"
+
 	"github.com/ctx42/xtst/pkg/dump"
 )
 
@@ -29,29 +31,43 @@ func WithTrail(pth string) Option {
 	}
 }
 
-// WithDump is [Check] and [SingleCheck] option setting [dump.Config] options.
-func WithDump(dopts ...dump.Option) Option {
-	return func(copts Options) Options {
-		for _, opt := range dopts {
-			opt(&copts.DumpConfig)
-		}
-		return copts
+// WithTimeFormat is [Check] option setting time format when parsing dates.
+func WithTimeFormat(format string) Option {
+	return func(ops Options) Options {
+		ops.TimeFormat = format
+		return ops
 	}
 }
 
-type DumpConfig = dump.Config
+// WithDump is [Check] and [SingleCheck] option setting [dump.Config] options.
+func WithDump(optsD ...dump.Option) Option {
+	return func(optsC Options) Options {
+		for _, opt := range optsD {
+			opt(&optsC.DumpCfg)
+		}
+		return optsC
+	}
+}
 
 // Options represents options used by [Check] and [SingleCheck] functions.
 type Options struct {
-	DumpConfig // Dump configuration.
+	// Dump configuration.
+	DumpCfg dump.Config
 
-	// Field/element/key breadcrumb trail which uniquely describes nested
-	// object being checked.
+	// Time format when parsing time strings (default: [time.RFC3339]).
+	TimeFormat string
+
+	// Field/element/key breadcrumb trail being checked.
 	Trail string
 }
 
 // DefaultOptions returns default [Options].
-func DefaultOptions() Options { return Options{DumpConfig: dump.NewConfig()} }
+func DefaultOptions() Options {
+	return Options{
+		DumpCfg:    dump.NewConfig(),
+		TimeFormat: time.RFC3339Nano,
+	}
+}
 
 // set sets [Options] from slice of [Option] functions.
 func (ops Options) set(opts []Option) Options {

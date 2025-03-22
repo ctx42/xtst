@@ -42,7 +42,7 @@ func Test_DefaultDump(t *testing.T) {
 		// --- Then ---
 		affirm.False(t, dmp.cfg.Flat)
 		affirm.False(t, dmp.cfg.Compact)
-		affirm.Equal(t, "", dmp.cfg.TimeFormat)
+		affirm.Equal(t, time.RFC3339Nano, dmp.cfg.TimeFormat)
 		affirm.Equal(t, "", dmp.cfg.DurationFormat)
 		affirm.False(t, dmp.cfg.PtrAddr)
 		affirm.True(t, dmp.cfg.UseAny)
