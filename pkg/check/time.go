@@ -77,6 +77,35 @@ func Time(want, have any, opts ...Option) error {
 	return nil
 }
 
+// TimeExact checks dates are equal and have the same timezone. The "want" and
+// "have" might be date representations in form of string, int, int64 or
+// [time.Time]. For string representations the [Options.TimeFormat] is used
+// during parsing and the returned date is always in UTC. The int and int64
+// types are interpreted as Unix Timestamp and the date returned is also in UTC.
+// Returns nil if dates are the same, otherwise it returns an error with a
+// message indicating the expected and actual values.
+func TimeExact(want, have any, opts ...Option) error {
+	wTim, wTyp, err := getTime(want, opts...)
+	if err != nil {
+		return notice.From(err, "want")
+	}
+	hTim, hTyp, err := getTime(have, opts...)
+	if err != nil {
+		return notice.From(err, "have")
+	}
+	if err = timeEqual(wTim, hTim, opts...); err != nil {
+		if !errors.Is(err, ErrTimeParse) && wTyp == timeTypeStr {
+			err = notice.From(err).Want("%s", want)
+		}
+		if !errors.Is(err, ErrTimeParse) && hTyp == timeTypeStr {
+			err = notice.From(err).Have("%s", have)
+		}
+		return err
+	}
+
+	return Zone(wTim.Location(), hTim.Location(), opts...)
+}
+
 // timeEqual is internal implementation of [Time] which takes field path.
 func timeEqual(want, have time.Time, opts ...Option) error {
 	if want.Equal(have) {
@@ -121,6 +150,28 @@ func Zone(want, have *time.Location, opts ...Option) error {
 		Trail(ops.Trail).
 		Want("%s", want.String()).
 		Have("%s", have.String())
+}
+
+// Duration checks durations are equal. Returns nil if it is, otherwise it
+// returns an error with a message indicating the expected and actual values.
+func Duration(want, have any, opts ...Option) error {
+	wDur, _, err := getDur(want, opts...)
+	if err != nil {
+		return notice.From(err, "want")
+	}
+	hDur, _, err := getDur(have, opts...)
+	if err != nil {
+		return notice.From(err, "have")
+	}
+
+	if wDur == hDur {
+		return nil
+	}
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected equal time durations").
+		Trail(ops.Trail).
+		Want("%s", wDur.String()).
+		Have("%s", hDur.String())
 }
 
 // FormatDates formats two dates for comparison in an error message.

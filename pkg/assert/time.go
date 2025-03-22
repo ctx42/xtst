@@ -26,11 +26,38 @@ func Time(t tester.T, want, have any, opts ...check.Option) bool {
 	return true
 }
 
+// TimeExact asserts dates are equal and have the same timezone. The "want" and
+// "have" might be date representations in form of string, int, int64 or
+// [time.Time]. For string representations the [Options.TimeFormat] is used
+// during parsing and the returned date is always in UTC. The int and int64
+// types are interpreted as Unix Timestamp and the date returned is also in UTC.
+// Returns nil if dates are the same, otherwise it returns an error with a
+// message indicating the expected and actual values.
+func TimeExact(t tester.T, want, have any, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.TimeExact(want, have, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}
+
 // Zone checks timezones are equal. Returns true if they are, otherwise marks
 // the test as failed, writes error message to test log and returns false.
 func Zone(t tester.T, want, have *time.Location, opts ...check.Option) bool {
 	t.Helper()
 	if e := check.Zone(want, have, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}
+
+// Duration checks durations are equal. Returns true if they are, otherwise
+// marks the test as failed, writes error message to test log and returns false.
+func Duration(t tester.T, want, have time.Duration, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.Duration(want, have, opts...); e != nil {
 		t.Error(e)
 		return false
 	}

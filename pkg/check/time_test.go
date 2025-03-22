@@ -110,6 +110,21 @@ func Test_Time(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
+	t.Run("invalid option date format", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTimeFormat("abc")
+
+		// --- When ---
+		err := Time("2022-02-18", time.Now(), opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[want] failed to parse time:\n" +
+			"\tformat: abc\n" +
+			"\t value: 2022-02-18"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
 	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -127,6 +142,132 @@ func Test_Time(t *testing.T) {
 			"\t have: 2000-01-02T04:04:06+01:00 (2000-01-02T03:04:06Z)\n" +
 			"\t diff: -1s"
 		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_TimeExact(t *testing.T) {
+	t.Run("exactly", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		err := TimeExact(want, have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+		affirm.True(t, want.Equal(have))
+	})
+
+	t.Run("error not exact date", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+
+		// --- When ---
+		err := TimeExact(want, have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected equal dates:\n" +
+			"\twant: 2000-01-02T03:04:05Z (2000-01-02T03:04:05Z)\n" +
+			"\thave: 2000-01-02T03:04:06Z (2000-01-02T03:04:06Z)\n" +
+			"\tdiff: -1s"
+		affirm.Equal(t, wMsg, err.Error())
+		affirm.False(t, want.Equal(have))
+	})
+
+	t.Run("error not exact date want is string", func(t *testing.T) {
+		// --- Given ---
+		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+
+		// --- When ---
+		err := TimeExact("2000-01-02T03:04:05Z", have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected equal dates:\n" +
+			"\twant: 2000-01-02T03:04:05Z\n" +
+			"\thave: 2000-01-02T03:04:06Z (2000-01-02T03:04:06Z)\n" +
+			"\tdiff: -1s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error not exact date have is string", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+
+		// --- When ---
+		err := TimeExact(want, "2000-01-02T03:04:05Z")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected equal dates:\n" +
+			"\twant: 2000-01-02T03:04:06Z (2000-01-02T03:04:06Z)\n" +
+			"\thave: 2000-01-02T03:04:05Z\n" +
+			"\tdiff: 1s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error not exact timezone", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 4, 4, 5, 0, types.WAW)
+
+		// --- When ---
+		err := TimeExact(want, have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected same timezone:\n" +
+			"\twant: UTC\n" +
+			"\thave: Europe/Warsaw"
+		affirm.Equal(t, wMsg, err.Error())
+		affirm.True(t, want.Equal(have))
+	})
+
+	t.Run("invalid want date format", func(t *testing.T) {
+		// --- When ---
+		err := TimeExact("2022-02-18", time.Now())
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[want] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: 2022-02-18"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid have date format", func(t *testing.T) {
+		// --- When ---
+		err := TimeExact(time.Now(), "2022-02-18")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[have] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: 2022-02-18"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := TimeExact(want, have, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected equal dates:\n" +
+			"\ttrail: type.field\n" +
+			"\t want: 2000-01-02T03:04:05Z (2000-01-02T03:04:05Z)\n" +
+			"\t have: 2000-01-02T03:04:06Z (2000-01-02T03:04:06Z)\n" +
+			"\t diff: -1s"
+		affirm.Equal(t, wMsg, err.Error())
+		affirm.False(t, want.Equal(have))
 	})
 }
 
@@ -190,6 +331,44 @@ func Test_Zone(t *testing.T) {
 			"\ttrail: type.field\n" +
 			"\t want: UTC\n" +
 			"\t have: Europe/Warsaw"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_Duration(t *testing.T) {
+	t.Run("equal", func(t *testing.T) {
+		// --- When ---
+		err := Duration(time.Second, time.Second)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error not equal", func(t *testing.T) {
+		// --- When ---
+		err := Duration(time.Second, 2*time.Second)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected equal time durations:\n" +
+			"\twant: 1s\n" +
+			"\thave: 2s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := Duration(time.Second, 2*time.Second, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected equal time durations:\n" +
+			"\ttrail: type.field\n" +
+			"\t want: 1s\n" +
+			"\t have: 2s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

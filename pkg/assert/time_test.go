@@ -68,16 +68,69 @@ func Test_Time(t *testing.T) {
 	})
 }
 
+func Test_TimeExact(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		got := TimeExact(tspy, want, have)
+
+		// --- Then ---
+		affirm.True(t, got)
+		affirm.True(t, want.Equal(have))
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
+
+		// --- When ---
+		got := TimeExact(tspy, want, have)
+
+		// --- Then ---
+		affirm.False(t, got)
+		affirm.False(t, want.Equal(have))
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		got := TimeExact(tspy, want, have, opt)
+
+		// --- Then ---
+		affirm.False(t, got)
+		affirm.False(t, want.Equal(have))
+	})
+}
+
 func Test_Zone(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t).Close()
 
 		// --- When ---
-		got := Zone(tspy, time.UTC, time.UTC)
+		have := Zone(tspy, time.UTC, time.UTC)
 
 		// --- Then ---
-		affirm.True(t, got)
+		affirm.True(t, have)
 	})
 
 	t.Run("error", func(t *testing.T) {
@@ -88,10 +141,10 @@ func Test_Zone(t *testing.T) {
 		tspy.Close()
 
 		// --- When ---
-		got := Zone(tspy, nil, time.UTC)
+		have := Zone(tspy, nil, time.UTC)
 
 		// --- Then ---
-		affirm.False(t, got)
+		affirm.False(t, have)
 	})
 
 	t.Run("log message with trail", func(t *testing.T) {
@@ -104,9 +157,52 @@ func Test_Zone(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		got := Zone(tspy, nil, time.UTC, opt)
+		have := Zone(tspy, nil, time.UTC, opt)
 
 		// --- Then ---
-		affirm.False(t, got)
+		affirm.False(t, have)
+	})
+}
+
+func Test_Duration(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		have := Duration(tspy, time.Second, time.Second)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		have := Duration(tspy, time.Second, 2*time.Second)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := Duration(tspy, time.Second, 2*time.Second, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
 	})
 }
