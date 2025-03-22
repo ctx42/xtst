@@ -301,41 +301,89 @@ func Test_Message_Trail(t *testing.T) {
 }
 
 func Test_Message_Want(t *testing.T) {
-	// --- Given ---
-	msg := New("header").Append("first", "0")
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		msg := New("header").Append("first", "0")
 
-	// --- When ---
-	have := msg.Want("want %s", "row")
+		// --- When ---
+		have := msg.Want("want %s", "row")
 
-	// --- Then ---
-	//goland:noinspection GoDirectComparisonOfErrors
-	affirm.True(t, msg == have)
-	affirm.Equal(t, "header", msg.Header)
-	wRows := map[string]string{
-		"first": "0",
-		"want":  "want row",
-	}
-	affirm.DeepEqual(t, wRows, msg.Rows)
-	affirm.DeepEqual(t, []string{"first", "want"}, msg.Order)
+		// --- Then ---
+		//goland:noinspection GoDirectComparisonOfErrors
+		affirm.True(t, msg == have)
+		affirm.Equal(t, "header", msg.Header)
+		wRows := map[string]string{
+			"first": "0",
+			"want":  "want row",
+		}
+		affirm.DeepEqual(t, wRows, msg.Rows)
+		affirm.DeepEqual(t, []string{"first", "want"}, msg.Order)
+	})
+
+	t.Run("want row already exists", func(t *testing.T) {
+		// --- Given ---
+		msg := New("header").Append("first", "0").
+			Want("orig").
+			Append("second", "1")
+
+		// --- When ---
+		have := msg.Want("want %s", "row")
+
+		// --- Then ---
+		//goland:noinspection GoDirectComparisonOfErrors
+		affirm.True(t, msg == have)
+		affirm.Equal(t, "header", msg.Header)
+		wRows := map[string]string{
+			"first":  "0",
+			"want":   "want row",
+			"second": "1",
+		}
+		affirm.DeepEqual(t, wRows, msg.Rows)
+		affirm.DeepEqual(t, []string{"first", "want", "second"}, msg.Order)
+	})
 }
 
 //goland:noinspection GoDirectComparisonOfErrors
 func Test_Message_Have(t *testing.T) {
-	// --- Given ---
-	msg := New("header").Append("first", "0")
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		msg := New("header").Append("first", "0")
 
-	// --- When ---
-	have := msg.Have("have %s", "row")
+		// --- When ---
+		have := msg.Have("have %s", "row")
 
-	// --- Then ---
-	affirm.True(t, msg == have)
-	affirm.Equal(t, "header", msg.Header)
-	wRows := map[string]string{
-		"first": "0",
-		"have":  "have row",
-	}
-	affirm.DeepEqual(t, wRows, msg.Rows)
-	affirm.DeepEqual(t, []string{"first", "have"}, msg.Order)
+		// --- Then ---
+		affirm.True(t, msg == have)
+		affirm.Equal(t, "header", msg.Header)
+		wRows := map[string]string{
+			"first": "0",
+			"have":  "have row",
+		}
+		affirm.DeepEqual(t, wRows, msg.Rows)
+		affirm.DeepEqual(t, []string{"first", "have"}, msg.Order)
+	})
+
+	t.Run("have row already exists", func(t *testing.T) {
+		// --- Given ---
+		msg := New("header").
+			Append("first", "0").
+			Have("orig").
+			Append("second", "1")
+
+		// --- When ---
+		have := msg.Have("have %s", "row")
+
+		// --- Then ---
+		affirm.True(t, msg == have)
+		affirm.Equal(t, "header", msg.Header)
+		wRows := map[string]string{
+			"first":  "0",
+			"have":   "have row",
+			"second": "1",
+		}
+		affirm.DeepEqual(t, wRows, msg.Rows)
+		affirm.DeepEqual(t, []string{"first", "have", "second"}, msg.Order)
+	})
 }
 
 //goland:noinspection GoDirectComparisonOfErrors

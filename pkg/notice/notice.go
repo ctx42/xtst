@@ -135,22 +135,20 @@ func (msg *Notice) Trail(tr string) *Notice {
 	return msg.Prepend(trail, "%s", tr)
 }
 
-// Want uses Append method to append a row with "want" name.
+// Want uses Append method to append a row with "want" name. If the "want" row
+// already exists it will just replace its value.
 func (msg *Notice) Want(format string, args ...any) *Notice {
 	if _, ok := msg.Rows["want"]; ok {
-		// TODO(rz): test this.
-		// TODO(rz): document this.
 		msg.Rows["want"] = fmt.Sprintf(format, args...)
 		return msg
 	}
 	return msg.Append("want", format, args...)
 }
 
-// Have uses Append method to append a row with "have" name.
+// Have uses Append method to append a row with "have" name. If the "have" row
+// already exists it will just replace its value.
 func (msg *Notice) Have(format string, args ...any) *Notice {
 	if _, ok := msg.Rows["have"]; ok {
-		// TODO(rz): test this.
-		// TODO(rz): document this.
 		msg.Rows["have"] = fmt.Sprintf(format, args...)
 		return msg
 	}
