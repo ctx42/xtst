@@ -271,6 +271,104 @@ func Test_TimeExact(t *testing.T) {
 	})
 }
 
+func Test_Within(t *testing.T) {
+	t.Run("within ahead", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+
+		// --- When ---
+		err := Within(want, "1s", have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("within behind", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 4, 0, time.UTC)
+
+		// --- When ---
+		err := Within(want, "1s", have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("not within", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, int(500*time.Millisecond), time.UTC)
+
+		// --- When ---
+		err := Within(want, "1s", have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected dates to be within:\n" +
+			"\t     want: 2000-01-02T03:04:05Z   (2000-01-02T03:04:05Z)\n" +
+			"\t     have: 2000-01-02T03:04:06.5Z (2000-01-02T03:04:06.5Z)\n" +
+			"\t max diff: 1s\n" +
+			"\thave diff: -1.5s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid want date format", func(t *testing.T) {
+		// --- When ---
+		err := Within("2022-02-18", "1s", time.Now())
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[want] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: 2022-02-18"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid within format", func(t *testing.T) {
+		// --- When ---
+		err := Within(time.Now(), "abc", "2000-01-02T03:04:05Z")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "failed to parse duration:\n\tvalue: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid have date format", func(t *testing.T) {
+		// --- When ---
+		err := Within(time.Now(), "1s", "2022-02-18")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[have] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: 2022-02-18"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, int(500*time.Millisecond), time.UTC)
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := Within(want, "1s", have, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected dates to be within:\n" +
+			"\t    trail: type.field\n" +
+			"\t     want: 2000-01-02T03:04:05Z   (2000-01-02T03:04:05Z)\n" +
+			"\t     have: 2000-01-02T03:04:06.5Z (2000-01-02T03:04:06.5Z)\n" +
+			"\t max diff: 1s\n" +
+			"\thave diff: -1.5s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_Zone(t *testing.T) {
 	t.Run("equal", func(t *testing.T) {
 		// --- When ---

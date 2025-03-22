@@ -6,6 +6,7 @@ package check
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -106,6 +107,40 @@ func TimeExact(want, have any, opts ...Option) error {
 	return Zone(wTim.Location(), hTim.Location(), opts...)
 }
 
+// Within checks dates are equal within given duration as string. Returns
+// nil if it is, otherwise it returns an error with a message indicating the
+// expected and actual values.
+func Within(want, within, have any, opts ...Option) error {
+	wTim, _, err := getTime(want, opts...)
+	if err != nil {
+		return notice.From(err, "want")
+	}
+	hTim, _, err := getTime(have, opts...)
+	if err != nil {
+		return notice.From(err, "have")
+	}
+
+	diel := hTim.In(wTim.Location())
+	diff := wTim.Sub(diel)
+
+	dur, _, err := getDur(within, opts...)
+	if err != nil {
+		return err
+	}
+	if math.Abs(float64(diff)) <= math.Abs(float64(dur)) {
+		return nil
+	}
+
+	wantFmt, haveFmt := FormatDates(wTim, hTim)
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected dates to be within").
+		Trail(ops.Trail).
+		Want("%s", wantFmt).
+		Have("%s", haveFmt).
+		Append("max diff", "%s", dur).
+		Append("have diff", "%s", diff.String())
+}
+
 // timeEqual is internal implementation of [Time] which takes field path.
 func timeEqual(want, have time.Time, opts ...Option) error {
 	if want.Equal(have) {
@@ -154,6 +189,7 @@ func Zone(want, have *time.Location, opts ...Option) error {
 
 // Duration checks durations are equal. Returns nil if it is, otherwise it
 // returns an error with a message indicating the expected and actual values.
+// TODO(rz): document any
 func Duration(want, have any, opts ...Option) error {
 	wDur, _, err := getDur(want, opts...)
 	if err != nil {

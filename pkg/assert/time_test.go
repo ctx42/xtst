@@ -121,6 +121,91 @@ func Test_TimeExact(t *testing.T) {
 	})
 }
 
+func Test_Within(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+
+		// --- When ---
+		got := Within(tspy, want, "1s", have)
+
+		// --- Then ---
+		affirm.True(t, got)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, int(500*time.Millisecond), time.UTC)
+
+		// --- When ---
+		got := Within(tspy, want, "1s", have)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\t    trail: type.field\n")
+		tspy.Close()
+
+		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := time.Date(2000, 1, 2, 3, 4, 6, int(500*time.Millisecond), time.UTC)
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		got := Within(tspy, want, "1s", have, opt)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+
+	t.Run("want is not time.Time", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		wMsg := "[want] failed to parse time:\n\tcause: not supported time type"
+		tspy.ExpectLogEqual(wMsg)
+		tspy.Close()
+
+		have := time.Date(2000, 1, 2, 4, 4, 6, 0, types.WAW)
+
+		// --- When ---
+		got := Within(tspy, true, "1s", have)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+
+	t.Run("have is not time.Time", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		wMsg := "[have] failed to parse time:\n\tcause: not supported time type"
+		tspy.ExpectLogEqual(wMsg)
+		tspy.Close()
+
+		want := time.Date(2000, 1, 2, 4, 4, 6, 0, types.WAW)
+
+		// --- When ---
+		got := Within(tspy, want, "1s", true)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+}
+
 func Test_Zone(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
