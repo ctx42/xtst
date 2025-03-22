@@ -15,13 +15,12 @@ import (
 // if it's, otherwise it returns an error with a message indicating the
 // expected and actual values.
 func Count(count int, what, where any, opts ...Option) error {
-	ops := DefaultOptions().set(opts)
-
 	if src, ok := where.(string); ok {
 		var ok bool
 		var subT string
 		if subT, ok = what.(string); !ok {
 			const mHeader = "expected argument \"what\" to be string got %T"
+			ops := DefaultOptions().set(opts)
 			return notice.New(mHeader, what).
 				Trail(ops.Trail)
 		}
@@ -29,6 +28,8 @@ func Count(count int, what, where any, opts ...Option) error {
 		if count == haveCnt {
 			return nil
 		}
+
+		ops := DefaultOptions().set(opts)
 		return notice.New("expected string to contain substrings").
 			Trail(ops.Trail).
 			Append("want count", "%d", count).
@@ -36,6 +37,8 @@ func Count(count int, what, where any, opts ...Option) error {
 			Append("what", "%q", what).
 			Append("where", "%q", where)
 	}
+
+	ops := DefaultOptions().set(opts)
 	return notice.New("unsupported \"where\" type: %T", where).
 		Trail(ops.Trail)
 }

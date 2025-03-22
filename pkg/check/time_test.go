@@ -130,6 +130,70 @@ func Test_TimeEqual(t *testing.T) {
 	})
 }
 
+func Test_TimeLocation(t *testing.T) {
+	t.Run("equal", func(t *testing.T) {
+		// --- When ---
+		err := TimeLoc(time.UTC, time.UTC)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("want nil", func(t *testing.T) {
+		// --- When ---
+		err := TimeLoc(nil, time.UTC)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected time location:\n" +
+			"\twhich: want\n" +
+			"\t want: <not-nil>\n" +
+			"\t have: <nil>"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("have nil", func(t *testing.T) {
+		// --- When ---
+		err := TimeLoc(time.UTC, nil)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected time location:\n" +
+			"\twhich: have\n" +
+			"\t want: <not-nil>\n" +
+			"\t have: <nil>"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("not equal", func(t *testing.T) {
+		// --- When ---
+		err := TimeLoc(time.UTC, types.WAW)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected same time location:\n" +
+			"\twant: UTC\n" +
+			"\thave: Europe/Warsaw"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := TimeLoc(time.UTC, types.WAW, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected same time location:\n" +
+			"\ttrail: type.field\n" +
+			"\t want: UTC\n" +
+			"\t have: Europe/Warsaw"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_FormatDates(t *testing.T) {
 	t.Run("default format", func(t *testing.T) {
 		// --- Given ---

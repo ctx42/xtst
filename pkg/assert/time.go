@@ -4,6 +4,8 @@
 package assert
 
 import (
+	"time"
+
 	"github.com/ctx42/xtst/pkg/check"
 	"github.com/ctx42/xtst/pkg/tester"
 )
@@ -18,6 +20,17 @@ import (
 func TimeEqual(t tester.T, want, have any, opts ...check.Option) bool {
 	t.Helper()
 	if e := check.TimeEqual(want, have, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}
+
+// TimeLoc checks timezones are equal. Returns true if they are, otherwise
+// marks the test as failed, writes error message to test log and returns false.
+func TimeLoc(t tester.T, want, have *time.Location, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.TimeLoc(want, have, opts...); e != nil {
 		t.Error(e)
 		return false
 	}

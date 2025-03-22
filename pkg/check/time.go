@@ -62,10 +62,11 @@ func TimeEqual(want, have any, opts ...Option) error {
 
 // timeEqual is internal implementation of [TimeEqual] which takes field path.
 func timeEqual(want, have time.Time, opts ...Option) error {
-	ops := DefaultOptions().set(opts)
 	if want.Equal(have) {
 		return nil
 	}
+
+	ops := DefaultOptions().set(opts)
 	wantFmt, haveFmt := FormatDates(want, have)
 	diff := want.Sub(have)
 	return notice.New("expected equal dates").
@@ -73,6 +74,36 @@ func timeEqual(want, have time.Time, opts ...Option) error {
 		Want("%s", wantFmt).
 		Have("%s", haveFmt).
 		Append("diff", "%s", diff.String())
+}
+
+// TimeLoc checks timezones are equal. Returns nil if they are, otherwise it
+// returns an error with a message indicating the expected and actual values.
+func TimeLoc(want, have *time.Location, opts ...Option) error {
+	if want == nil {
+		ops := DefaultOptions().set(opts)
+		return notice.New("expected time location").
+			Trail(ops.Trail).
+			Append("which", "want").
+			Want("<not-nil>").
+			Have("<nil>")
+	}
+	if have == nil {
+		ops := DefaultOptions().set(opts)
+		return notice.New("expected time location").
+			Trail(ops.Trail).
+			Append("which", "have").
+			Want("<not-nil>").
+			Have("<nil>")
+	}
+	if want.String() == have.String() {
+		return nil
+	}
+
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected same time location").
+		Trail(ops.Trail).
+		Want("%s", want.String()).
+		Have("%s", have.String())
 }
 
 // FormatDates formats two dates for comparison in an error message.

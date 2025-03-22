@@ -67,3 +67,46 @@ func Test_TimeEqual(t *testing.T) {
 		affirm.False(t, want.Equal(have))
 	})
 }
+
+func Test_TimeLoc(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		// --- When ---
+		got := TimeLoc(tspy, time.UTC, time.UTC)
+
+		// --- Then ---
+		affirm.True(t, got)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		got := TimeLoc(tspy, nil, time.UTC)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		got := TimeLoc(tspy, nil, time.UTC, opt)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+}

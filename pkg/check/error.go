@@ -75,7 +75,6 @@ func ErrorAs(err error, target any, opts ...Option) error {
 // nil if it's, otherwise it returns an error with a message indicating the
 // expected and actual values.
 func ErrorEqual(want string, err error, opts ...Option) error {
-	ops := DefaultOptions().set(opts)
 	if err != nil && want == err.Error() {
 		return nil
 	}
@@ -84,6 +83,8 @@ func ErrorEqual(want string, err error, opts ...Option) error {
 	if err != nil {
 		have = err.Error()
 	}
+
+	ops := DefaultOptions().set(opts)
 	return notice.New("expected error message to be").
 		Trail(ops.Trail).
 		Want("%q", want).
@@ -94,8 +95,8 @@ func ErrorEqual(want string, err error, opts ...Option) error {
 // Returns nil if it's, otherwise it returns an error with a message indicating
 // the expected and actual values.
 func ErrorContain(want string, err error, opts ...Option) error {
-	ops := DefaultOptions().set(opts)
 	if isNil(err) {
+		ops := DefaultOptions().set(opts)
 		return notice.New("expected error not to be nil").
 			Trail(ops.Trail).
 			Want("<non-nil>").
@@ -104,6 +105,8 @@ func ErrorContain(want string, err error, opts ...Option) error {
 	if strings.Contains(err.Error(), want) {
 		return nil
 	}
+
+	ops := DefaultOptions().set(opts)
 	var have any
 	have = err.Error()
 	return notice.New("expected error message to contain").
@@ -120,14 +123,15 @@ func ErrorContain(want string, err error, opts ...Option) error {
 // [regexp.Regexp]. The [fmt.Sprint] is used to get string representation of
 // have argument.
 func ErrorRegexp(want any, err error, opts ...Option) error {
-	ops := DefaultOptions().set(opts)
 	if isNil(err) {
+		ops := DefaultOptions().set(opts)
 		return notice.New("expected error not to be nil").
 			Trail(ops.Trail).
 			Want("<non-nil>").
 			Have("%T", err)
 	}
 	if e := Regexp(want, err.Error()); e != nil {
+		ops := DefaultOptions().set(opts)
 		return notice.From(e).
 			Trail(ops.Trail).
 			SetHeader("expected error message to match regexp")
