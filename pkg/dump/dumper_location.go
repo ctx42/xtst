@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+// TODO(rz): rename to zoneDumper
+
 // locationDumper requires val to be dereferenced representation of
 // [reflect.Struct] which can be cast to [time.Location] and returns its
 // string representation in format defined by [Dump] configuration.

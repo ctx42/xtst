@@ -12,14 +12,14 @@ import (
 	"github.com/ctx42/xtst/internal/types"
 )
 
-func Test_TimeEqual(t *testing.T) {
+func Test_Time(t *testing.T) {
 	t.Run("equal both time.Time", func(t *testing.T) {
 		// --- Given ---
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 		have := time.Date(2000, 1, 2, 4, 4, 5, 0, types.WAW)
 
 		// --- When ---
-		err := TimeEqual(want, have)
+		err := Time(want, have)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -32,7 +32,7 @@ func Test_TimeEqual(t *testing.T) {
 		have := time.Date(2000, 1, 2, 4, 4, 6, 0, types.WAW)
 
 		// --- When ---
-		err := TimeEqual(want, have)
+		err := Time(want, have)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -48,7 +48,7 @@ func Test_TimeEqual(t *testing.T) {
 		have := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := TimeEqual("2000-01-02T04:04:05+01:00", have)
+		err := Time("2000-01-02T04:04:05+01:00", have)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -59,7 +59,7 @@ func Test_TimeEqual(t *testing.T) {
 		have := time.Date(2000, 1, 2, 2, 4, 4, 0, time.UTC)
 
 		// --- When ---
-		err := TimeEqual("2000-01-02T03:04:05+01:00", have)
+		err := Time("2000-01-02T03:04:05+01:00", have)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -75,7 +75,7 @@ func Test_TimeEqual(t *testing.T) {
 		want := time.Date(2000, 1, 2, 2, 4, 4, 0, time.UTC)
 
 		// --- When ---
-		err := TimeEqual(want, "2000-01-02T03:04:05+01:00")
+		err := Time(want, "2000-01-02T03:04:05+01:00")
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -88,7 +88,7 @@ func Test_TimeEqual(t *testing.T) {
 
 	t.Run("invalid want date format", func(t *testing.T) {
 		// --- When ---
-		err := TimeEqual("2022-02-18", time.Now())
+		err := Time("2022-02-18", time.Now())
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -100,7 +100,7 @@ func Test_TimeEqual(t *testing.T) {
 
 	t.Run("invalid have date format", func(t *testing.T) {
 		// --- When ---
-		err := TimeEqual(time.Now(), "2022-02-18")
+		err := Time(time.Now(), "2022-02-18")
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -117,7 +117,7 @@ func Test_TimeEqual(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := TimeEqual(want, have, opt)
+		err := Time(want, have, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -130,10 +130,10 @@ func Test_TimeEqual(t *testing.T) {
 	})
 }
 
-func Test_TimeLocation(t *testing.T) {
+func Test_Zone(t *testing.T) {
 	t.Run("equal", func(t *testing.T) {
 		// --- When ---
-		err := TimeLoc(time.UTC, time.UTC)
+		err := Zone(time.UTC, time.UTC)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -141,11 +141,11 @@ func Test_TimeLocation(t *testing.T) {
 
 	t.Run("want nil", func(t *testing.T) {
 		// --- When ---
-		err := TimeLoc(nil, time.UTC)
+		err := Zone(nil, time.UTC)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected time location:\n" +
+		wMsg := "expected timezone:\n" +
 			"\twhich: want\n" +
 			"\t want: <not-nil>\n" +
 			"\t have: <nil>"
@@ -154,11 +154,11 @@ func Test_TimeLocation(t *testing.T) {
 
 	t.Run("have nil", func(t *testing.T) {
 		// --- When ---
-		err := TimeLoc(time.UTC, nil)
+		err := Zone(time.UTC, nil)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected time location:\n" +
+		wMsg := "expected timezone:\n" +
 			"\twhich: have\n" +
 			"\t want: <not-nil>\n" +
 			"\t have: <nil>"
@@ -167,11 +167,11 @@ func Test_TimeLocation(t *testing.T) {
 
 	t.Run("not equal", func(t *testing.T) {
 		// --- When ---
-		err := TimeLoc(time.UTC, types.WAW)
+		err := Zone(time.UTC, types.WAW)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected same time location:\n" +
+		wMsg := "expected same timezone:\n" +
 			"\twant: UTC\n" +
 			"\thave: Europe/Warsaw"
 		affirm.Equal(t, wMsg, err.Error())
@@ -182,11 +182,11 @@ func Test_TimeLocation(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := TimeLoc(time.UTC, types.WAW, opt)
+		err := Zone(time.UTC, types.WAW, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected same time location:\n" +
+		wMsg := "expected same timezone:\n" +
 			"\ttrail: type.field\n" +
 			"\t want: UTC\n" +
 			"\t have: Europe/Warsaw"
@@ -264,6 +264,7 @@ func Test_getTime(t *testing.T) {
 			"\tformat: 2006-01-02T15:04:05Z07:00\n" +
 			"\t value: 2000-01-02"
 		affirm.Equal(t, wMsg, err.Error())
+		affirm.True(t, errors.Is(err, ErrTimeParse))
 	})
 
 	t.Run("empty option time format", func(t *testing.T) {
@@ -281,6 +282,7 @@ func Test_getTime(t *testing.T) {
 			"\t value: 2000-01-02\n" +
 			"\t error: extra text: \"2000-01-02\""
 		affirm.Equal(t, wMsg, err.Error())
+		affirm.True(t, errors.Is(err, ErrTimeParse))
 	})
 
 	t.Run("log message with trail", func(t *testing.T) {
@@ -321,11 +323,11 @@ func Test_getTime_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		opts     []Option
-		have     any
-		haveType timeRep
-		want     time.Time
-		wantTZ   *time.Location
+		opts    []Option
+		have    any
+		haveRep timeRep
+		want    time.Time
+		wantTZ  *time.Location
 	}{
 		{
 			"time.Time in UTC",
@@ -376,9 +378,85 @@ func Test_getTime_success_tabular(t *testing.T) {
 
 			// --- Then ---
 			affirm.Nil(t, err)
-			affirm.Equal(t, tc.haveType, haveType)
+			affirm.Equal(t, tc.haveRep, haveType)
 			affirm.True(t, tc.want.Equal(haveTim))
 			affirm.Equal(t, tc.wantTZ.String(), haveTim.Location().String())
+		})
+	}
+}
+
+func Test_getDur(t *testing.T) {
+	t.Run("invalid string duration", func(t *testing.T) {
+		// --- When ---
+		haveDur, haveRep, err := getDur("abc")
+
+		// --- Then ---
+		affirm.Equal(t, time.Duration(0), haveDur)
+		affirm.Equal(t, durTypeStr, haveRep)
+		wMsg := "failed to parse duration:\n\tvalue: abc"
+		affirm.Equal(t, wMsg, err.Error())
+		affirm.True(t, errors.Is(err, ErrDurParse))
+	})
+
+	t.Run("error unsupported type", func(t *testing.T) {
+		// --- When ---
+		haveDur, haveRep, err := getDur(true)
+
+		// --- Then ---
+		affirm.Equal(t, time.Duration(0), haveDur)
+		affirm.Equal(t, "", haveRep)
+		wMsg := "failed to parse duration:\n" +
+			"\tcause: not supported duration type"
+		affirm.Equal(t, wMsg, err.Error())
+		affirm.True(t, errors.Is(err, ErrDurType))
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		haveDur, haveRep, err := getDur(true, opt)
+
+		// --- Then ---
+		affirm.Equal(t, time.Duration(0), haveDur)
+		affirm.Equal(t, "", haveRep)
+		wMsg := "failed to parse duration:\n" +
+			"\ttrail: type.field\n" +
+			"\tcause: not supported duration type"
+		affirm.Equal(t, wMsg, err.Error())
+		affirm.True(t, errors.Is(err, ErrDurType))
+	})
+}
+
+func Test_getDur_success_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		have    any
+		haveRep durRep
+		want    time.Duration
+	}{
+		{"time.Duration", time.Second, durTypeDur, time.Second},
+		{"time.Duration as string", "1s", durTypeStr, time.Second},
+		{"time.Duration as int", 12345678, durTypeInt, time.Duration(12345678)},
+		{
+			"time.Duration as int",
+			int64(12345678),
+			durTypeInt64,
+			time.Duration(12345678),
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			haveDur, haveRep, err := getDur(tc.have)
+
+			// --- Then ---
+			affirm.Nil(t, err)
+			affirm.Equal(t, tc.haveRep, haveRep)
+			affirm.Equal(t, tc.want, haveDur)
 		})
 	}
 }

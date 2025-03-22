@@ -14,32 +14,49 @@ import (
 
 // Sentinel errors.
 var (
-	// ErrTimeType is returned when time representation is not supported
+	// ErrTimeType is returned when time representation is not supported.
 	ErrTimeType = fmt.Errorf("not supported time type")
 
-	// ErrTimeParsing is used when date parsing fails for whatever reason.
-	ErrTimeParsing = fmt.Errorf("time parsing")
+	// ErrTimeParse is used when date parsing fails for whatever reason.
+	ErrTimeParse = fmt.Errorf("time parsing")
+
+	// ErrDurType is returned when duration representation is not supported.
+	ErrDurType = fmt.Errorf("not supported duration type")
+
+	// ErrDurParse is used when duration parsing fails for whatever reason.
+	ErrDurParse = fmt.Errorf("duration parsing")
 )
 
 // timeRep is time representation.
 type timeRep string
 
-// The time representations the [TimeEqual] supports.
+// The time representations the [Time] supports.
 const (
-	timeTypeTim   timeRep = "time.Time"
-	timeTypeStr   timeRep = "string"
-	timeTypeInt   timeRep = "int"
-	timeTypeInt64 timeRep = "int64"
+	timeTypeTim   timeRep = "tim-tim"
+	timeTypeStr   timeRep = "tim-string"
+	timeTypeInt   timeRep = "tim-int"
+	timeTypeInt64 timeRep = "tim-int64"
 )
 
-// TimeEqual checks dates are equal. The "want" and "have" might be date
+// durRep is duration representation.
+type durRep string
+
+// The duration representations the [Duration] supports.
+const (
+	durTypeDur   durRep = "dur-dur"
+	durTypeStr   durRep = "dur-str"
+	durTypeInt   durRep = "dur-int"
+	durTypeInt64 durRep = "dur-int64"
+)
+
+// Time checks dates are equal. The "want" and "have" might be date
 // representations in form of string, int, int64 or [time.Time]. For string
 // representations the [Options.TimeFormat] is used during parsing and the
 // returned date is always in UTC. The int and int64 types are interpreted as
 // Unix Timestamp and the date returned is also in UTC. Returns nil if dates
 // are the same, otherwise it returns an error with a message indicating the
 // expected and actual values.
-func TimeEqual(want, have any, opts ...Option) error {
+func Time(want, have any, opts ...Option) error {
 	wTim, wTyp, err := getTime(want, opts...)
 	if err != nil {
 		return notice.From(err, "want")
@@ -49,10 +66,10 @@ func TimeEqual(want, have any, opts ...Option) error {
 		return notice.From(err, "have")
 	}
 	if err = timeEqual(wTim, hTim, opts...); err != nil {
-		if !errors.Is(err, ErrTimeParsing) && wTyp == timeTypeStr {
+		if !errors.Is(err, ErrTimeParse) && wTyp == timeTypeStr {
 			err = notice.From(err).Want("%s", want)
 		}
-		if !errors.Is(err, ErrTimeParsing) && hTyp == timeTypeStr {
+		if !errors.Is(err, ErrTimeParse) && hTyp == timeTypeStr {
 			err = notice.From(err).Have("%s", have)
 		}
 		return err
@@ -60,7 +77,7 @@ func TimeEqual(want, have any, opts ...Option) error {
 	return nil
 }
 
-// timeEqual is internal implementation of [TimeEqual] which takes field path.
+// timeEqual is internal implementation of [Time] which takes field path.
 func timeEqual(want, have time.Time, opts ...Option) error {
 	if want.Equal(have) {
 		return nil
@@ -76,12 +93,12 @@ func timeEqual(want, have time.Time, opts ...Option) error {
 		Append("diff", "%s", diff.String())
 }
 
-// TimeLoc checks timezones are equal. Returns nil if they are, otherwise it
+// Zone checks timezones are equal. Returns nil if they are, otherwise it
 // returns an error with a message indicating the expected and actual values.
-func TimeLoc(want, have *time.Location, opts ...Option) error {
+func Zone(want, have *time.Location, opts ...Option) error {
 	if want == nil {
 		ops := DefaultOptions().set(opts)
-		return notice.New("expected time location").
+		return notice.New("expected timezone").
 			Trail(ops.Trail).
 			Append("which", "want").
 			Want("<not-nil>").
@@ -89,7 +106,7 @@ func TimeLoc(want, have *time.Location, opts ...Option) error {
 	}
 	if have == nil {
 		ops := DefaultOptions().set(opts)
-		return notice.New("expected time location").
+		return notice.New("expected timezone").
 			Trail(ops.Trail).
 			Append("which", "have").
 			Want("<not-nil>").
@@ -100,7 +117,7 @@ func TimeLoc(want, have *time.Location, opts ...Option) error {
 	}
 
 	ops := DefaultOptions().set(opts)
-	return notice.New("expected same time location").
+	return notice.New("expected same timezone").
 		Trail(ops.Trail).
 		Want("%s", want.String()).
 		Have("%s", have.String())
@@ -136,8 +153,10 @@ func FormatDates(tim0, tim1 time.Time, opts ...Option) (string, string) {
 // argument passed to the function. For values that need to be parsed or
 // interpreted it always returns time in UTC.
 //
-// When "tim" is of type:
-//   - time.Time  - the "tim" is returned as it is.
+// Returned error will have [ErrTimeParse] or [ErrTimeType] in its chain.
+//
+// When "tim" must be of type:
+//   - time.Time  - the "tim" is returned as is.
 //   - string     - the "tim" is parsed using "format".
 //   - int, int64 - the "tim" is treated as Unix Timestamp.
 //
@@ -160,7 +179,7 @@ func getTime(tim any, opts ...Option) (time.Time, timeRep, error) {
 				Trail(ops.Trail).
 				Append("format", "%s", ops.TimeFormat).
 				Append("value", "%s", pe.Value).
-				Wrap(ErrTimeParsing)
+				Wrap(ErrTimeParse)
 			if pe.Message != "" {
 				msg = msg.Append("error", "%s", strings.Trim(pe.Message, " :"))
 			}
@@ -180,5 +199,50 @@ func getTime(tim any, opts ...Option) (time.Time, timeRep, error) {
 			Append("cause", "%s", ErrTimeType).
 			Wrap(ErrTimeType)
 		return time.Time{}, "", msg
+	}
+}
+
+// getDur returns [time.Duration] based on "dur" and the recognized type of the
+// argument passed to the function.
+//
+// Returned error will have [ErrDurParse] or [ErrDurType] in its chain.
+//
+// When "dur" must be of type:
+//   - time.Duration  - the "dur" is returned as is.
+//   - string         - the "dur" is parsed.
+//   - int, int64     - the "dur" is cast to time.Duration type.
+//
+// For other types function returns [ErrDurType].
+func getDur(dur any, opts ...Option) (time.Duration, durRep, error) {
+	switch val := dur.(type) {
+	case time.Duration:
+		return val, durTypeDur, nil
+
+	case string:
+		have, err := time.ParseDuration(val)
+		if err == nil {
+			return have, durTypeStr, nil
+		}
+
+		ops := DefaultOptions().set(opts)
+		msg := notice.New("failed to parse duration").
+			Trail(ops.Trail).
+			Append("value", "%s", dur).
+			Wrap(ErrDurParse)
+		return 0, durTypeStr, msg
+
+	case int:
+		return time.Duration(val), durTypeInt, nil
+
+	case int64:
+		return time.Duration(val), durTypeInt64, nil
+
+	default:
+		ops := DefaultOptions().set(opts)
+		msg := notice.New("failed to parse duration").
+			Trail(ops.Trail).
+			Append("cause", "%s", ErrDurType).
+			Wrap(ErrDurType)
+		return 0, "", msg
 	}
 }

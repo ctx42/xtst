@@ -13,7 +13,7 @@ import (
 	"github.com/ctx42/xtst/pkg/tester"
 )
 
-func Test_TimeEqual(t *testing.T) {
+func Test_Time(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
@@ -23,7 +23,7 @@ func Test_TimeEqual(t *testing.T) {
 		have := time.Date(2000, 1, 2, 4, 4, 5, 0, types.WAW)
 
 		// --- When ---
-		got := TimeEqual(tspy, want, have)
+		got := Time(tspy, want, have)
 
 		// --- Then ---
 		affirm.True(t, got)
@@ -41,7 +41,7 @@ func Test_TimeEqual(t *testing.T) {
 		have := time.Date(2000, 1, 2, 4, 4, 6, 0, types.WAW)
 
 		// --- When ---
-		got := TimeEqual(tspy, want, have)
+		got := Time(tspy, want, have)
 
 		// --- Then ---
 		affirm.False(t, got)
@@ -60,7 +60,7 @@ func Test_TimeEqual(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		got := TimeEqual(tspy, want, have, opt)
+		got := Time(tspy, want, have, opt)
 
 		// --- Then ---
 		affirm.False(t, got)
@@ -68,13 +68,13 @@ func Test_TimeEqual(t *testing.T) {
 	})
 }
 
-func Test_TimeLoc(t *testing.T) {
+func Test_Zone(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t).Close()
 
 		// --- When ---
-		got := TimeLoc(tspy, time.UTC, time.UTC)
+		got := Zone(tspy, time.UTC, time.UTC)
 
 		// --- Then ---
 		affirm.True(t, got)
@@ -88,7 +88,7 @@ func Test_TimeLoc(t *testing.T) {
 		tspy.Close()
 
 		// --- When ---
-		got := TimeLoc(tspy, nil, time.UTC)
+		got := Zone(tspy, nil, time.UTC)
 
 		// --- Then ---
 		affirm.False(t, got)
@@ -104,7 +104,7 @@ func Test_TimeLoc(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		got := TimeLoc(tspy, nil, time.UTC, opt)
+		got := Zone(tspy, nil, time.UTC, opt)
 
 		// --- Then ---
 		affirm.False(t, got)
