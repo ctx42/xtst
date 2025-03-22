@@ -4,9 +4,12 @@
 package check
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/ctx42/xtst/pkg/notice"
 )
 
 // ErrTimeType is returned when value of type "any" is not [time.Time], string,
@@ -48,17 +51,29 @@ func FormatDates(tim0, tim1 time.Time, opts ...Option) (string, string) {
 //   - int, int64 - the "tim" is treated as Unix Timestamp.
 //
 // For other types function returns [ErrTimeType].
-func getTime(format string, tim any) (time.Time, error) {
+func getTime(tim any, opt Options) (time.Time, error) {
 	switch val := tim.(type) {
 	case time.Time:
 		return val, nil
 
 	case string:
-		t, err := time.Parse(format, val)
-		if err != nil {
-			return time.Time{}, err
+		have, err := time.Parse(opt.TimeFormat, val)
+		if err == nil {
+			return have.UTC(), nil
 		}
-		return t.UTC(), nil
+
+		var pe *time.ParseError
+		if errors.As(err, &pe) {
+			msg := notice.New("failed to parse time").
+				Trail(opt.Trail).
+				Append("format", "%s", opt.TimeFormat).
+				Append("value", "%q", pe.Value)
+			if pe.Message != "" {
+				msg = msg.Append("error", "%s", strings.Trim(pe.Message, " :"))
+			}
+			err = msg
+		}
+		return time.Time{}, err
 
 	case int:
 		return time.Unix(int64(val), 0).UTC(), nil
@@ -67,6 +82,10 @@ func getTime(format string, tim any) (time.Time, error) {
 		return time.Unix(val, 0).UTC(), nil
 
 	default:
-		return time.Time{}, ErrTimeType
+		msg := notice.New("failed to parse time").
+			Trail(opt.Trail).
+			Append("cause", "%s", ErrTimeType).
+			Wrap(ErrTimeType)
+		return time.Time{}, msg
 	}
 }

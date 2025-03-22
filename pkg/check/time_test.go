@@ -53,46 +53,110 @@ func Test_FormatDates(t *testing.T) {
 	})
 }
 
+func Test_getTime(t *testing.T) {
+	t.Run("wrong time format", func(t *testing.T) {
+		// --- Given ---
+		opts := Options{TimeFormat: time.RFC3339}
+
+		// --- When ---
+		have, err := getTime("2000-01-02", opts)
+
+		// --- Then ---
+		affirm.True(t, have.IsZero())
+		wMsg := "failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05Z07:00\n" +
+			"\t value: \"2000-01-02\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("empty option time format", func(t *testing.T) {
+		// --- Given ---
+		opts := Options{TimeFormat: ""}
+
+		// --- When ---
+		have, err := getTime("2000-01-02", opts)
+
+		// --- Then ---
+		affirm.True(t, have.IsZero())
+		wMsg := "failed to parse time:\n" +
+			"\tformat: \n" +
+			"\t value: \"2000-01-02\"\n" +
+			"\t error: extra text: \"2000-01-02\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		opts := Options{TimeFormat: "", Trail: "type.field"}
+
+		// --- When ---
+		have, err := getTime("2000-01-02", opts)
+
+		// --- Then ---
+		affirm.True(t, have.IsZero())
+		wMsg := "failed to parse time:\n" +
+			"\t trail: type.field\n" +
+			"\tformat: \n" +
+			"\t value: \"2000-01-02\"\n" +
+			"\t error: extra text: \"2000-01-02\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("unsupported type", func(t *testing.T) {
+		// --- Given ---
+		opts := Options{TimeFormat: ""}
+
+		// --- When ---
+		have, err := getTime(true, opts)
+
+		// --- Then ---
+		affirm.True(t, have.IsZero())
+		wMsg := "failed to parse time:\n" +
+			"\tcause: not supported time type"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_getTime_success_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		format string
+		opts   Options
 		have   any
 		want   time.Time
 		wantTZ *time.Location
 	}{
 		{
 			"time.Time in UTC",
-			"",
+			Options{TimeFormat: time.RFC3339},
 			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 			time.UTC,
 		},
 		{
 			"time.Time in WAW",
-			"",
+			Options{TimeFormat: time.RFC3339},
 			time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
 			time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
 			types.WAW,
 		},
 		{
 			"RFC3339",
-			time.RFC3339,
+			Options{TimeFormat: time.RFC3339},
 			"2000-01-02T03:04:05+01:00",
 			time.Date(2000, 1, 2, 2, 4, 5, 0, time.UTC),
 			time.UTC,
 		},
 		{
 			"Unix timestamp int",
-			time.RFC3339,
+			Options{TimeFormat: time.RFC3339},
 			946778645,
 			time.Date(2000, 1, 2, 2, 4, 5, 0, time.UTC),
 			time.UTC,
 		},
 		{
 			"Unix timestamp int64",
-			time.RFC3339,
+			Options{TimeFormat: time.RFC3339},
 			int64(946778645),
 			time.Date(2000, 1, 2, 2, 4, 5, 0, time.UTC),
 			time.UTC,
@@ -102,7 +166,7 @@ func Test_getTime_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			have, err := getTime(tc.format, tc.have)
+			have, err := getTime(tc.have, tc.opts)
 
 			// --- Then ---
 			affirm.Nil(t, err)
