@@ -50,13 +50,15 @@ const (
 	durTypeInt64 durRep = "dur-int64"
 )
 
-// Time checks dates are equal. The "want" and "have" might be date
-// representations in form of string, int, int64 or [time.Time]. For string
-// representations the [Options.TimeFormat] is used during parsing and the
-// returned date is always in UTC. The int and int64 types are interpreted as
-// Unix Timestamp and the date returned is also in UTC. Returns nil if dates
-// are the same, otherwise it returns an error with a message indicating the
-// expected and actual values.
+// Time checks "want" and "have" dates are equal. Returns nil if they are,
+// otherwise returns an error with a message indicating the expected and actual
+// values.
+//
+// The "want" and "have" might be date representations in form of string, int,
+// int64 or [time.Time]. For string representations the [Options.TimeFormat] is
+// used during parsing and the returned date is always in UTC. The int and
+// int64 types are interpreted as Unix Timestamp and the date returned is also
+// in UTC.
 func Time(want, have any, opts ...Option) error {
 	wTim, wTyp, err := getTime(want, opts...)
 	if err != nil {
@@ -78,13 +80,15 @@ func Time(want, have any, opts ...Option) error {
 	return nil
 }
 
-// TimeExact checks dates are equal and have the same timezone. The "want" and
-// "have" might be date representations in form of string, int, int64 or
-// [time.Time]. For string representations the [Options.TimeFormat] is used
-// during parsing and the returned date is always in UTC. The int and int64
-// types are interpreted as Unix Timestamp and the date returned is also in UTC.
-// Returns nil if dates are the same, otherwise it returns an error with a
-// message indicating the expected and actual values.
+// TimeExact checks "want" and "have" dates are equal and are in the same
+// timezone. Returns nil they are, otherwise returns an error with a message
+// indicating the expected and actual values.
+//
+// The "want" and "have" might be date representations in form of string, int,
+// int64 or [time.Time]. For string representations the [Options.TimeFormat] is
+// used during parsing and the returned date is always in UTC. The int and
+// int64 types are interpreted as Unix Timestamp and the date returned is also
+// in UTC.
 func TimeExact(want, have any, opts ...Option) error {
 	wTim, wTyp, err := getTime(want, opts...)
 	if err != nil {
@@ -107,9 +111,18 @@ func TimeExact(want, have any, opts ...Option) error {
 	return Zone(wTim.Location(), hTim.Location(), opts...)
 }
 
-// Within checks dates are equal within given duration as string. Returns
-// nil if it is, otherwise it returns an error with a message indicating the
-// expected and actual values.
+// Within checks "want" and "have" dates are equal "within" given duration.
+// Returns nil if they are, otherwise returns an error with a message
+// indicating the expected and actual values.
+//
+// The "want" and "have" might be date representations in form of string, int,
+// int64 or [time.Time]. For string representations the [Options.TimeFormat] is
+// used during parsing and the returned date is always in UTC. The int and
+// int64 types are interpreted as Unix Timestamp and the date returned is also
+// in UTC.
+//
+// The "within" might be duration representation in form of string, int, int64
+// or [time.Duration].
 func Within(want, within, have any, opts ...Option) error {
 	wTim, _, err := getTime(want, opts...)
 	if err != nil {
@@ -141,7 +154,9 @@ func Within(want, within, have any, opts ...Option) error {
 		Append("have diff", "%s", diff.String())
 }
 
-// timeEqual is internal implementation of [Time] which takes field path.
+// timeEqual checks "want" and have dates are equal. Returns nil if they are,
+// otherwise returns an error with a message indicating the expected and actual
+// values.
 func timeEqual(want, have time.Time, opts ...Option) error {
 	if want.Equal(have) {
 		return nil
@@ -157,8 +172,9 @@ func timeEqual(want, have time.Time, opts ...Option) error {
 		Append("diff", "%s", diff.String())
 }
 
-// Zone checks timezones are equal. Returns nil if they are, otherwise it
-// returns an error with a message indicating the expected and actual values.
+// Zone checks "want" and "have" timezones are equal. Returns nil if they are,
+// otherwise returns an error with a message indicating the expected and actual
+// values.
 func Zone(want, have *time.Location, opts ...Option) error {
 	if want == nil {
 		ops := DefaultOptions().set(opts)
@@ -187,9 +203,12 @@ func Zone(want, have *time.Location, opts ...Option) error {
 		Have("%s", have.String())
 }
 
-// Duration checks durations are equal. Returns nil if it is, otherwise it
-// returns an error with a message indicating the expected and actual values.
-// TODO(rz): document any
+// Duration checks "want" and "have" durations are equal. Returns nil if they
+// are, otherwise returns an error with a message indicating the expected and
+// actual values.
+//
+// The "want" and "have" might be duration representation in form of string,
+// int, int64 or [time.Duration].
 func Duration(want, have any, opts ...Option) error {
 	wDur, _, err := getDur(want, opts...)
 	if err != nil {
@@ -236,18 +255,14 @@ func FormatDates(tim0, tim1 time.Time, opts ...Option) (string, string) {
 	return ret0, ret1
 }
 
-// getTime returns [time.Time] based on "tim" and the recognized type of the
-// argument passed to the function. For values that need to be parsed or
-// interpreted it always returns time in UTC.
+// getTime returns date represented by "tim". The "tim" might be date
+// representation in form of string, int, int64 or [time.Time]. For string
+// representations the [Options.TimeFormat] is used during parsing and the
+// returned date is always in UTC. The int and int64 types are interpreted as
+// Unix Timestamp and the date returned is also in UTC.
 //
-// Returned error will have [ErrTimeParse] or [ErrTimeType] in its chain.
-//
-// When "tim" must be of type:
-//   - time.Time  - the "tim" is returned as is.
-//   - string     - the "tim" is parsed using "format".
-//   - int, int64 - the "tim" is treated as Unix Timestamp.
-//
-// For other types function returns [ErrTimeType].
+// When error is returned it will always have [ErrTimeParse], [ErrTimeType] in
+// its chain.
 func getTime(tim any, opts ...Option) (time.Time, timeRep, error) {
 	ops := DefaultOptions().set(opts)
 	switch val := tim.(type) {
@@ -289,17 +304,11 @@ func getTime(tim any, opts ...Option) (time.Time, timeRep, error) {
 	}
 }
 
-// getDur returns [time.Duration] based on "dur" and the recognized type of the
-// argument passed to the function.
+// getDur returns duration represented by "dur". The "dur" might be duration
+// represented by string, int, int64 or [time.Duration].
 //
-// Returned error will have [ErrDurParse] or [ErrDurType] in its chain.
-//
-// When "dur" must be of type:
-//   - time.Duration  - the "dur" is returned as is.
-//   - string         - the "dur" is parsed.
-//   - int, int64     - the "dur" is cast to time.Duration type.
-//
-// For other types function returns [ErrDurType].
+// When error is returned it will always have [ErrDurParse], [ErrDurType] in
+// its chain.
 func getDur(dur any, opts ...Option) (time.Duration, durRep, error) {
 	switch val := dur.(type) {
 	case time.Duration:
