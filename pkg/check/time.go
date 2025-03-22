@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+// ErrTimeType is returned when value of type "any" is not [time.Time], string,
+// int64.
+var ErrTimeType = fmt.Errorf("not supported time type")
+
 // FormatDates formats two dates for comparison in an error message.
 //
 // Example:
@@ -33,4 +37,36 @@ func FormatDates(tim0, tim1 time.Time, opts ...Option) (string, string) {
 	ret0 := fmt.Sprintf("%s %s(%s)", tim0date, tim0pad, tim0inUTC)
 	ret1 := fmt.Sprintf("%s %s(%s)", tim1date, tim1pad, tim1inUTC)
 	return ret0, ret1
+}
+
+// getTime returns [time.Time] based on "tim". For values that need to be
+// parsed or interpreted it always returns time in UTC.
+//
+// When "tim" is of type:
+//   - time.Time  - the "tim" is returned as it is.
+//   - string     - the "tim" is parsed using "format".
+//   - int, int64 - the "tim" is treated as Unix Timestamp.
+//
+// For other types function returns [ErrTimeType].
+func getTime(format string, tim any) (time.Time, error) {
+	switch val := tim.(type) {
+	case time.Time:
+		return val, nil
+
+	case string:
+		t, err := time.Parse(format, val)
+		if err != nil {
+			return time.Time{}, err
+		}
+		return t.UTC(), nil
+
+	case int:
+		return time.Unix(int64(val), 0).UTC(), nil
+
+	case int64:
+		return time.Unix(val, 0).UTC(), nil
+
+	default:
+		return time.Time{}, ErrTimeType
+	}
 }

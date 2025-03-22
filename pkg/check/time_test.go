@@ -52,3 +52,62 @@ func Test_FormatDates(t *testing.T) {
 		affirm.Equal(t, "2001-01-02T03:04:05+01:00 (2001-01-02T02:04:05Z)", have1)
 	})
 }
+
+func Test_getTime_success_tabular(t *testing.T) {
+	tt := []struct {
+		testN string
+
+		format string
+		have   any
+		want   time.Time
+		wantTZ *time.Location
+	}{
+		{
+			"time.Time in UTC",
+			"",
+			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
+			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
+			time.UTC,
+		},
+		{
+			"time.Time in WAW",
+			"",
+			time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
+			time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
+			types.WAW,
+		},
+		{
+			"RFC3339",
+			time.RFC3339,
+			"2000-01-02T03:04:05+01:00",
+			time.Date(2000, 1, 2, 2, 4, 5, 0, time.UTC),
+			time.UTC,
+		},
+		{
+			"Unix timestamp int",
+			time.RFC3339,
+			946778645,
+			time.Date(2000, 1, 2, 2, 4, 5, 0, time.UTC),
+			time.UTC,
+		},
+		{
+			"Unix timestamp int64",
+			time.RFC3339,
+			int64(946778645),
+			time.Date(2000, 1, 2, 2, 4, 5, 0, time.UTC),
+			time.UTC,
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			have, err := getTime(tc.format, tc.have)
+
+			// --- Then ---
+			affirm.Nil(t, err)
+			affirm.True(t, tc.want.Equal(have))
+			affirm.Equal(t, tc.wantTZ.String(), have.Location().String())
+		})
+	}
+}
