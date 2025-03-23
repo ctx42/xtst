@@ -338,6 +338,73 @@ func Test_Before(t *testing.T) {
 	})
 }
 
+func Test_After(t *testing.T) {
+	t.Run("after", func(t *testing.T) {
+		// --- Given ---
+		date := time.Date(2001, 1, 2, 3, 4, 5, 0, time.UTC)
+		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		err := After(date, mark)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("equal", func(t *testing.T) {
+		// --- Given ---
+		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		err := After(mark, date)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected date to be after mark:\n" +
+			"\tdate: 2000-01-02T03:04:05Z\n" +
+			"\tmark: 2000-01-02T03:04:05Z\n" +
+			"\tdiff: 0s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("before", func(t *testing.T) {
+		// --- Given ---
+		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		mark := time.Date(2001, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		err := After(date, mark)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected date to be after mark:\n" +
+			"\tdate: 2000-01-02T03:04:05Z\n" +
+			"\tmark: 2001-01-02T03:04:05Z\n" +
+			"\tdiff: -8784h0m0s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		mark := time.Date(2001, 1, 2, 3, 4, 5, 0, time.UTC)
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := After(date, mark, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected date to be after mark:\n" +
+			"\ttrail: type.field\n" +
+			"\t date: 2000-01-02T03:04:05Z\n" +
+			"\t mark: 2001-01-02T03:04:05Z\n" +
+			"\t diff: -8784h0m0s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_Within(t *testing.T) {
 	t.Run("within ahead", func(t *testing.T) {
 		// --- Given ---

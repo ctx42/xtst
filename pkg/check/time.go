@@ -125,13 +125,13 @@ func TimeExact(want, have any, opts ...Option) error {
 // int64 types are interpreted as Unix Timestamp and the date returned is also
 // in UTC.
 func Before(date, mark any, opts ...Option) error {
-	mTim, mStr, _, err := getTime(mark, opts...)
-	if err != nil {
-		return notice.From(err, "want")
-	}
 	dTim, dStr, _, err := getTime(date, opts...)
 	if err != nil {
 		return notice.From(err, "have")
+	}
+	mTim, mStr, _, err := getTime(mark, opts...)
+	if err != nil {
+		return notice.From(err, "want")
 	}
 	if dTim.Before(mTim) {
 		return nil
@@ -141,6 +141,37 @@ func Before(date, mark any, opts ...Option) error {
 	markFmt, dateFmt := formatDates(mTim, mStr, dTim, dStr)
 	ops := DefaultOptions().set(opts)
 	return notice.New("expected date to be before mark").
+		Trail(ops.Trail).
+		Append("date", "%s", dateFmt).
+		Append("mark", "%s", markFmt).
+		Append("diff", "%s", diff.String())
+}
+
+// After checks "date" is after "mark". Returns nil if it is, otherwise it
+// returns an error with a message indicating the expected and actual values.
+//
+// The "mark" and "date" might be date representations in form of string, int,
+// int64 or [time.Time]. For string representations the [Options.TimeFormat] is
+// used during parsing and the returned date is always in UTC. The int and
+// int64 types are interpreted as Unix Timestamp and the date returned is also
+// in UTC.
+func After(date, mark any, opts ...Option) error {
+	dTim, dStr, _, err := getTime(date, opts...)
+	if err != nil {
+		return notice.From(err, "have")
+	}
+	mTim, mStr, _, err := getTime(mark, opts...)
+	if err != nil {
+		return notice.From(err, "want")
+	}
+	if dTim.After(mTim) {
+		return nil
+	}
+
+	diff := dTim.Sub(mTim)
+	markFmt, dateFmt := formatDates(mTim, mStr, dTim, dStr)
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected date to be after mark").
 		Trail(ops.Trail).
 		Append("date", "%s", dateFmt).
 		Append("mark", "%s", markFmt).
