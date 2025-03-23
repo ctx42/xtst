@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 	"time"
 
@@ -60,24 +61,26 @@ const (
 // int64 types are interpreted as Unix Timestamp and the date returned is also
 // in UTC.
 func Time(want, have any, opts ...Option) error {
-	wTim, wTyp, err := getTime(want, opts...)
+	wTim, wStr, _, err := getTime(want, opts...)
 	if err != nil {
 		return notice.From(err, "want")
 	}
-	hTim, hTyp, err := getTime(have, opts...)
+	hTim, hStr, _, err := getTime(have, opts...)
 	if err != nil {
 		return notice.From(err, "have")
 	}
-	if err = timeEqual(wTim, hTim, opts...); err != nil {
-		if !errors.Is(err, ErrTimeParse) && wTyp == timeTypeStr {
-			err = notice.From(err).Want("%s", want)
-		}
-		if !errors.Is(err, ErrTimeParse) && hTyp == timeTypeStr {
-			err = notice.From(err).Have("%s", have)
-		}
-		return err
+	if wTim.Equal(hTim) {
+		return nil
 	}
-	return nil
+
+	diff := wTim.Sub(hTim)
+	ops := DefaultOptions().set(opts)
+	wantFmt, haveFmt := FormatDates(wTim, wStr, hTim, hStr)
+	return notice.New("expected equal dates").
+		Trail(ops.Trail).
+		Want("%s", wantFmt).
+		Have("%s", haveFmt).
+		Append("diff", "%s", diff.String())
 }
 
 // TimeExact checks "want" and "have" dates are equal and are in the same
@@ -90,22 +93,24 @@ func Time(want, have any, opts ...Option) error {
 // int64 types are interpreted as Unix Timestamp and the date returned is also
 // in UTC.
 func TimeExact(want, have any, opts ...Option) error {
-	wTim, wTyp, err := getTime(want, opts...)
+	wTim, wStr, _, err := getTime(want, opts...)
 	if err != nil {
 		return notice.From(err, "want")
 	}
-	hTim, hTyp, err := getTime(have, opts...)
+	hTim, hStr, _, err := getTime(have, opts...)
 	if err != nil {
 		return notice.From(err, "have")
 	}
+
 	if err = timeEqual(wTim, hTim, opts...); err != nil {
-		if !errors.Is(err, ErrTimeParse) && wTyp == timeTypeStr {
-			err = notice.From(err).Want("%s", want)
-		}
-		if !errors.Is(err, ErrTimeParse) && hTyp == timeTypeStr {
-			err = notice.From(err).Have("%s", have)
-		}
-		return err
+		diff := wTim.Sub(hTim)
+		ops := DefaultOptions().set(opts)
+		wantFmt, haveFmt := FormatDates(wTim, wStr, hTim, hStr)
+		return notice.New("expected equal dates").
+			Trail(ops.Trail).
+			Want("%s", wantFmt).
+			Have("%s", haveFmt).
+			Append("diff", "%s", diff.String())
 	}
 
 	return Zone(wTim.Location(), hTim.Location(), opts...)
@@ -124,11 +129,11 @@ func TimeExact(want, have any, opts ...Option) error {
 // The "within" might be duration representation in form of string, int, int64
 // or [time.Duration].
 func Within(want, within, have any, opts ...Option) error {
-	wTim, _, err := getTime(want, opts...)
+	wTim, wStr, _, err := getTime(want, opts...)
 	if err != nil {
 		return notice.From(err, "want")
 	}
-	hTim, _, err := getTime(have, opts...)
+	hTim, hStr, _, err := getTime(have, opts...)
 	if err != nil {
 		return notice.From(err, "have")
 	}
@@ -144,7 +149,7 @@ func Within(want, within, have any, opts ...Option) error {
 		return nil
 	}
 
-	wantFmt, haveFmt := FormatDates(wTim, hTim)
+	wantFmt, haveFmt := FormatDates(wTim, wStr, hTim, hStr)
 	ops := DefaultOptions().set(opts)
 	return notice.New("expected dates to be within").
 		Trail(ops.Trail).
@@ -163,7 +168,7 @@ func timeEqual(want, have time.Time, opts ...Option) error {
 	}
 
 	ops := DefaultOptions().set(opts)
-	wantFmt, haveFmt := FormatDates(want, have)
+	wantFmt, haveFmt := FormatDates(want, "", have, "")
 	diff := want.Sub(have)
 	return notice.New("expected equal dates").
 		Trail(ops.Trail).
@@ -233,46 +238,63 @@ func Duration(want, have any, opts ...Option) error {
 //
 // Example:
 //
-//	2000-01-02T03:04:05Z (2000-01-02T03:04:05Z)
-//	2001-01-02T03:04:05+01:00 (2001-01-02T02:04:05Z)
-func FormatDates(tim0, tim1 time.Time, opts ...Option) (string, string) {
-	ops := DefaultOptions().set(opts)
-	tim0date := tim0.Format(ops.TimeFormat)
-	tim1date := tim1.Format(ops.TimeFormat)
-	tim0inUTC := tim0.In(time.UTC).Format(ops.TimeFormat)
-	tim1inUTC := tim1.In(time.UTC).Format(ops.TimeFormat)
-	tim0len := len(tim0date)
-	tim1len := len(tim1date)
-	var tim0pad, tim1pad string
-	if tim0len < tim1len {
-		tim0pad = strings.Repeat(" ", tim1len-tim0len)
+//	2000-01-02T03:04:05Z ( 2000-01-02T03:04:05Z      )
+//	2001-01-02T02:04:05Z ( 2001-01-02T03:04:05+01:00 )
+func FormatDates(
+	wTim time.Time, wTimStr string,
+	hTim time.Time, hTimStr string,
+) (string, string) {
+
+	wTimUTC := wTim.In(time.UTC).Format(time.RFC3339Nano)
+	hTimUTC := hTim.In(time.UTC).Format(time.RFC3339Nano)
+
+	wTimStrLen := len(wTimStr)
+	hTimStrLen := len(hTimStr)
+
+	var wTimPad, hTimPad string
+	if wTimStrLen < hTimStrLen {
+		wTimPad = strings.Repeat(" ", hTimStrLen-wTimStrLen)
 	}
-	if tim1len < tim0len {
-		tim1pad = strings.Repeat(" ", tim0len-tim1len)
+	if hTimStrLen < wTimStrLen {
+		hTimPad = strings.Repeat(" ", wTimStrLen-hTimStrLen)
 	}
-	ret0 := fmt.Sprintf("%s %s(%s)", tim0date, tim0pad, tim0inUTC)
-	ret1 := fmt.Sprintf("%s %s(%s)", tim1date, tim1pad, tim1inUTC)
-	return ret0, ret1
+
+	var want, have string
+	if wTimUTC == wTimStr {
+		want = fmt.Sprintf("%s", wTimUTC)
+	} else {
+		want = fmt.Sprintf("%s ( %s %s)", wTimUTC, wTimStr, wTimPad)
+
+	}
+
+	if hTimUTC == hTimStr {
+		have = fmt.Sprintf("%s", hTimUTC)
+	} else {
+		have = fmt.Sprintf("%s ( %s %s)", hTimUTC, hTimStr, hTimPad)
+	}
+
+	return want, have
 }
 
-// getTime returns date represented by "tim". The "tim" might be date
-// representation in form of string, int, int64 or [time.Time]. For string
-// representations the [Options.TimeFormat] is used during parsing and the
-// returned date is always in UTC. The int and int64 types are interpreted as
-// Unix Timestamp and the date returned is also in UTC.
+// getTime returns date represented by "tim", its string representation and
+// type of the argument passed. The "tim" might be date representation in form
+// of string, int, int64 or [time.Time]. For string representations the
+// [Options.TimeFormat] is used during parsing and the returned date is always
+// in UTC. The int and int64 types are interpreted as Unix Timestamp and the
+// date returned is also in UTC.
 //
 // When error is returned it will always have [ErrTimeParse], [ErrTimeType] in
 // its chain.
-func getTime(tim any, opts ...Option) (time.Time, timeRep, error) {
+func getTime(tim any, opts ...Option) (time.Time, string, timeRep, error) {
 	ops := DefaultOptions().set(opts)
 	switch val := tim.(type) {
 	case time.Time:
-		return val, timeTypeTim, nil
+		return val, val.Format(time.RFC3339Nano), timeTypeTim, nil
 
 	case string:
 		have, err := time.Parse(ops.TimeFormat, val)
 		if err == nil {
-			return have.UTC(), timeTypeStr, nil
+			return have.UTC(), val, timeTypeStr, nil
 		}
 
 		var pe *time.ParseError
@@ -287,20 +309,23 @@ func getTime(tim any, opts ...Option) (time.Time, timeRep, error) {
 			}
 			err = msg
 		}
-		return time.Time{}, timeTypeStr, err
+		return time.Time{}, val, timeTypeStr, err
 
 	case int:
-		return time.Unix(int64(val), 0).UTC(), timeTypeInt, nil
+		str := strconv.Itoa(val)
+		return time.Unix(int64(val), 0).UTC(), str, timeTypeInt, nil
 
 	case int64:
-		return time.Unix(val, 0).UTC(), timeTypeInt64, nil
+		str := strconv.FormatInt(val, 10)
+		return time.Unix(val, 0).UTC(), str, timeTypeInt64, nil
 
 	default:
+		str := fmt.Sprintf("%v", val)
 		msg := notice.New("failed to parse time").
 			Trail(ops.Trail).
 			Append("cause", "%s", ErrTimeType).
 			Wrap(ErrTimeType)
-		return time.Time{}, "", msg
+		return time.Time{}, str, "", msg
 	}
 }
 
