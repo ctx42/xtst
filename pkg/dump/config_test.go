@@ -11,69 +11,69 @@ import (
 	"github.com/ctx42/xtst/internal/affirm"
 )
 
-func Test_Flat(t *testing.T) {
+func Test_WithFlat(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	Flat(cfg)
+	WithFlat(cfg)
 
 	// --- Then ---
 	affirm.True(t, cfg.Flat)
 }
 
-func Test_Compact(t *testing.T) {
+func Test_WithCompact(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	Compact(cfg)
+	WithCompact(cfg)
 
 	// --- Then ---
 	affirm.True(t, cfg.Compact)
 }
 
-func Test_PtrAddr(t *testing.T) {
+func Test_WithPtrAddr(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	PtrAddr(cfg)
+	WithPtrAddr(cfg)
 
 	// --- Then ---
 	affirm.True(t, cfg.PtrAddr)
 }
 
-func Test_TimeFormat(t *testing.T) {
+func Test_WithTimeFormat(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	opt := TimeFormat(TimeAsUnix)
+	opt := WithTimeFormat(TimeAsUnix)
 
 	// --- Then ---
 	opt(cfg)
 	affirm.Equal(t, TimeAsUnix, cfg.TimeFormat)
 }
 
-func Test_Depth(t *testing.T) {
+func Test_WithDepth(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	opt := Depth(10)
+	opt := WithDepth(10)
 
 	// --- Then ---
 	opt(cfg)
 	affirm.Equal(t, 10, cfg.Depth)
 }
 
-func Test_PrintType(t *testing.T) {
+func Test_WithPrintType(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	PrintType(cfg)
+	WithPrintType(cfg)
 
 	// --- Then ---
 	affirm.True(t, cfg.PrintType)
@@ -98,12 +98,12 @@ func Test_NewConfig(t *testing.T) {
 	// --- Then ---
 	affirm.False(t, have.Flat)
 	affirm.False(t, have.Compact)
-	affirm.Equal(t, time.RFC3339Nano, have.TimeFormat)
+	affirm.Equal(t, TimeFormat, have.TimeFormat)
 	affirm.Equal(t, "", have.DurationFormat)
 	affirm.False(t, have.PtrAddr)
 	affirm.True(t, have.UseAny)
 	affirm.True(t, len(have.Dumpers) == 3)
-	affirm.Equal(t, 6, have.Depth)
+	affirm.Equal(t, DefaultDepth, have.Depth)
 
 	val, ok := have.Dumpers[typDur]
 	affirm.True(t, ok)

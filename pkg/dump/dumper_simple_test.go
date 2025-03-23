@@ -61,7 +61,7 @@ func Test_sampleDumper(t *testing.T) {
 
 	t.Run("string with Config.Flat true", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(Flat))
+		dmp := New(NewConfig(WithFlat))
 
 		// --- When ---
 		have := simpleDumper(dmp, 0, reflect.ValueOf("str0\nstr1\n"))

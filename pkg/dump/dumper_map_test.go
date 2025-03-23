@@ -26,19 +26,19 @@ func Test_mapDumper_tabular(t *testing.T) {
 	}{
 		{
 			"flat & compact empty map",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			map[string]int{},
 			`map[string]int{}`,
 		},
 		{
 			"flat & compact nil map",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			nilMap,
 			`map[string]int(nil)`,
 		},
 		{
 			"flat & compact nil map with any values",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			nilAnyMap,
 			`map[string]any(nil)`,
 		},
@@ -50,25 +50,25 @@ func Test_mapDumper_tabular(t *testing.T) {
 		},
 		{
 			"flat & compact map[string]int",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			map[string]int{"A": 1, "B": 2},
 			`map[string]int{"A":1,"B":2}`,
 		},
 		{
 			"flat & compact map[string]string",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			map[string]string{"A": "a", "B": "b"},
 			`map[string]string{"A":"a","B":"b"}`,
 		},
 		{
 			"flat & compact map[int]int",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			map[int]int{1: 11, 2: 22},
 			"map[int]int{1:11,2:22}",
 		},
 		{
 			"flat map[int]int",
-			NewConfig(Flat),
+			NewConfig(WithFlat),
 			map[int]int{1: 11, 2: 22},
 			"map[int]int{1: 11, 2: 22}",
 		},
@@ -80,7 +80,7 @@ func Test_mapDumper_tabular(t *testing.T) {
 		},
 		{
 			"flat map[int]time.Time",
-			NewConfig(Flat, TimeFormat(TimeAsUnix)),
+			NewConfig(WithFlat, WithTimeFormat(TimeAsUnix)),
 			map[int]time.Time{
 				1: time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 				2: time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
@@ -89,19 +89,19 @@ func Test_mapDumper_tabular(t *testing.T) {
 		},
 		{
 			"default map[int]types.T1",
-			NewConfig(TimeFormat(TimeAsUnix)),
+			NewConfig(WithTimeFormat(TimeAsUnix)),
 			map[int]types.T1{0: {Int: 0}, 1: {Int: 1}},
 			tstkit.Golden(t, "testdata/map_of_structs.txt"),
 		},
 		{
 			"flat map[int]types.T1",
-			NewConfig(Flat, Compact, TimeFormat(TimeAsUnix)),
+			NewConfig(WithFlat, WithCompact, WithTimeFormat(TimeAsUnix)),
 			map[int]types.T1{0: {Int: 0}, 1: {Int: 1}},
 			tstkit.Golden(t, "testdata/map_of_structs_flat_compact.txt"),
 		},
 		{
 			"flat & compact map[string]any with integers",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			map[string]any{"A": 1, "B": 2},
 			"map[string]any{\"A\":1,\"B\":2}",
 		},

@@ -40,7 +40,7 @@ func Test_WithDump(t *testing.T) {
 	ops := Options{}
 
 	// --- When ---
-	have := WithDump(dump.Depth(100))(ops)
+	have := WithDump(dump.WithDepth(100))(ops)
 
 	// --- Then ---
 	affirm.Equal(t, 0, ops.DumpCfg.Depth)

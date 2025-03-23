@@ -20,13 +20,13 @@ func Test_sliceDumper_tabular(t *testing.T) {
 	}{
 		{
 			"nil slice",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			[]int(nil),
 			"nil",
 		},
 		{
 			"flat & compact slice of int",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			[]int{1, 2},
 			"[]int{1,2}",
 		},
@@ -56,7 +56,7 @@ func Test_sliceDumper(t *testing.T) {
 	t.Run("slice of any", func(t *testing.T) {
 		// --- Given ---
 		val := []any{"str0", 1, "str2"}
-		dmp := New(NewConfig(Flat, Compact))
+		dmp := New(NewConfig(WithFlat, WithCompact))
 
 		// --- When ---
 		have := sliceDumper(dmp, 0, reflect.ValueOf(val))

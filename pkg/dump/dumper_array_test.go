@@ -22,43 +22,43 @@ func Test_arrayDumper_tabular(t *testing.T) {
 	}{
 		{
 			"flat & compact array empty",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			[2]int{},
 			"[2]int{0,0}",
 		},
 		{
 			"flat & compact array empty any",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			[2]any{},
 			"[2]any{nil,nil}",
 		},
 		{
 			"flat & compact array of int",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			[...]int{1, 2},
 			"[2]int{1,2}",
 		},
 		{
 			"flat & compact array of float32",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			[...]float32{1.1, 2.2},
 			"[2]float32{1.1,2.2}",
 		},
 		{
 			"compact array",
-			NewConfig(Compact),
+			NewConfig(WithCompact),
 			[2]int{},
 			"[2]int{\n0,\n0,\n}",
 		},
 		{
 			"compact array of int",
-			NewConfig(Compact),
+			NewConfig(WithCompact),
 			[...]int{1, 2},
 			"[2]int{\n1,\n2,\n}",
 		},
 		{
 			"compact array of float32",
-			NewConfig(Compact),
+			NewConfig(WithCompact),
 			[...]float32{1.1, 2.2},
 			"[2]float32{\n1.1,\n2.2,\n}",
 		},
@@ -91,7 +91,7 @@ func Test_arrayDumper_tabular(t *testing.T) {
 		},
 		{
 			"array of times formated as Unix timestamps",
-			NewConfig(TimeFormat(TimeAsUnix)),
+			NewConfig(WithTimeFormat(TimeAsUnix)),
 			[...]time.Time{
 				time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 				time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
@@ -106,7 +106,7 @@ func Test_arrayDumper_tabular(t *testing.T) {
 		},
 		{
 			"array of map[string]int",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			[...]map[string]int{
 				{"A": 1},
 				{"b": 2},
@@ -115,7 +115,7 @@ func Test_arrayDumper_tabular(t *testing.T) {
 		},
 		{
 			"array of map[string]int print type",
-			NewConfig(Flat, Compact, PrintType),
+			NewConfig(WithFlat, WithCompact, WithPrintType),
 			[...]map[string]int{
 				{"A": 1},
 				{"b": 2},

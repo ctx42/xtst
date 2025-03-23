@@ -17,17 +17,18 @@ const (
 	// DefaultDumpTimeFormat is default format for parsing time strings.
 	DefaultDumpTimeFormat = time.RFC3339Nano
 
-	// DefaultDumpDepth is default depth when dumping values in log messages.
+	// DefaultDumpDepth is default depth when dumping values recursively in log
+	// messages.
 	DefaultDumpDepth = 6
 )
 
 // Package wide configuration.
 var (
-	// DumpTimeFormat is configurable format for dumping [time.Time] values.
-	DumpTimeFormat = DefaultDumpTimeFormat
-
 	// ParseTimeFormat is configurable format for parsing time strings.
 	ParseTimeFormat = DefaultParseTimeFormat
+
+	// DumpTimeFormat is configurable format for dumping [time.Time] values.
+	DumpTimeFormat = DefaultDumpTimeFormat
 
 	// DumpDepth is configurable depth when dumping values in log messages.
 	DumpDepth = DefaultDumpDepth
@@ -89,8 +90,8 @@ type Options struct {
 func DefaultOptions() Options {
 	return Options{
 		DumpCfg: dump.NewConfig(
-			dump.TimeFormat(DumpTimeFormat),
-			dump.Depth(DumpDepth),
+			dump.WithTimeFormat(DumpTimeFormat),
+			dump.WithDepth(DumpDepth),
 		),
 		TimeFormat: ParseTimeFormat,
 	}

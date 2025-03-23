@@ -44,7 +44,7 @@ func Test_dumpStruct(t *testing.T) {
 			Loc: types.WAW,
 			TAp: nil,
 		}
-		dmp := New(NewConfig(Flat, Compact))
+		dmp := New(NewConfig(WithFlat, WithCompact))
 
 		// --- When ---
 		have := structDumper(dmp, 0, reflect.ValueOf(s))
@@ -80,7 +80,7 @@ func Test_dumpStruct(t *testing.T) {
 				Int: 2,
 			},
 		}
-		dmp := New(NewConfig(Flat, Compact))
+		dmp := New(NewConfig(WithFlat, WithCompact))
 
 		// --- When ---
 		have := structDumper(dmp, 0, reflect.ValueOf(s))

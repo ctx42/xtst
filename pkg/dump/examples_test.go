@@ -43,7 +43,7 @@ func ExampleDump_DumpAny_flatCompact() {
 		"nil": nil,
 	}
 
-	cfg := dump.NewConfig(dump.Flat)
+	cfg := dump.NewConfig(dump.WithFlat)
 	have := dump.New(cfg).DumpAny(val)
 
 	fmt.Println(have)
@@ -54,7 +54,7 @@ func ExampleDump_DumpAny_flatCompact() {
 func ExampleDump_DumpAny_customTimeFormat() {
 	val := map[time.Time]int{time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC): 42}
 
-	cfg := dump.NewConfig(dump.Flat, dump.TimeFormat(time.Kitchen))
+	cfg := dump.NewConfig(dump.WithFlat, dump.WithTimeFormat(time.Kitchen))
 	have := dump.New(cfg).DumpAny(val)
 
 	fmt.Println(have)
@@ -72,8 +72,11 @@ func ExampleDump_DumpAny_customDumper() {
 			panic("unexpected kind")
 		}
 	}
-
-	cfg := dump.NewConfig(dump.Flat, dump.Compact, dump.WithDumper(i, dumper))
+	cfg := dump.NewConfig(
+		dump.WithFlat,
+		dump.WithCompact,
+		dump.WithDumper(i, dumper),
+	)
 
 	have := dump.New(cfg).DumpAny(42)
 

@@ -39,7 +39,7 @@ func Test_chanDumper_tabular(t *testing.T) {
 func Test_chanDumper(t *testing.T) {
 	t.Run("nil channel", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(PtrAddr))
+		dmp := New(NewConfig(WithPtrAddr))
 
 		var ch chan int
 		val := reflect.ValueOf(ch)
@@ -64,7 +64,7 @@ func Test_chanDumper(t *testing.T) {
 
 	t.Run("print pointer address", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(PtrAddr))
+		dmp := New(NewConfig(WithPtrAddr))
 
 		ch := make(chan int)
 		val := reflect.ValueOf(ch)

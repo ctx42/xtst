@@ -80,56 +80,56 @@ func Test_Dump_Dump_smoke_tabular(t *testing.T) {
 		want string
 	}{
 		// Simple.
-		{"bool true", NewConfig(Flat, Compact), true, "true"},
-		{"int", NewConfig(Flat, Compact), 123, "123"},
-		{"int8", NewConfig(Flat, Compact), int8(123), "123"},
-		{"int16", NewConfig(Flat, Compact), int16(123), "123"},
-		{"int32", NewConfig(Flat, Compact), int32(123), "123"},
-		{"int64", NewConfig(Flat, Compact), int64(123), "123"},
-		{"uint", NewConfig(Flat, Compact), uint(123), "123"},
-		{"uint8", NewConfig(Flat, Compact), uint8(123), "0x7b"},
-		{"byte", NewConfig(Flat, Compact), byte(123), "0x7b"},
-		{"uint16", NewConfig(Flat, Compact), uint16(123), "123"},
-		{"uint32", NewConfig(Flat, Compact), uint32(123), "123"},
-		{"uint64", NewConfig(Flat, Compact), uint64(123), "123"},
-		{"uintptr", NewConfig(Flat, Compact), uintptr(123), "<0x7b>"},
-		{"float32", NewConfig(Flat, Compact), float32(12.3), "12.3"},
-		{"float64", NewConfig(Flat, Compact), 12.3, "12.3"},
-		{"complex64", NewConfig(Flat, Compact), complex(float32(1), float32(2)), "(1+2i)"},
-		{"complex128", NewConfig(Flat, Compact), complex(3.3, 4.4), "(3.3+4.4i)"},
-		{"array", NewConfig(Flat, Compact), [2]int{}, "[2]int{0,0}"},
-		{"chan", NewConfig(Flat, Compact), make(chan int), "(chan int)(<addr>)"},
-		{"func", NewConfig(Flat, Compact), func() {}, "<func>(<addr>)"},
-		{"interface nil", NewConfig(Flat, Compact), itfNil, valNil},
-		{"any nil", NewConfig(Flat, Compact), aAnyNil, valNil},
-		{"interface val", NewConfig(Flat, Compact), itfVal, `{Val:""}`},
-		{"interface ptr", NewConfig(Flat, Compact), itfPtr, `{Val:""}`},
+		{"bool true", NewConfig(WithFlat, WithCompact), true, "true"},
+		{"int", NewConfig(WithFlat, WithCompact), 123, "123"},
+		{"int8", NewConfig(WithFlat, WithCompact), int8(123), "123"},
+		{"int16", NewConfig(WithFlat, WithCompact), int16(123), "123"},
+		{"int32", NewConfig(WithFlat, WithCompact), int32(123), "123"},
+		{"int64", NewConfig(WithFlat, WithCompact), int64(123), "123"},
+		{"uint", NewConfig(WithFlat, WithCompact), uint(123), "123"},
+		{"uint8", NewConfig(WithFlat, WithCompact), uint8(123), "0x7b"},
+		{"byte", NewConfig(WithFlat, WithCompact), byte(123), "0x7b"},
+		{"uint16", NewConfig(WithFlat, WithCompact), uint16(123), "123"},
+		{"uint32", NewConfig(WithFlat, WithCompact), uint32(123), "123"},
+		{"uint64", NewConfig(WithFlat, WithCompact), uint64(123), "123"},
+		{"uintptr", NewConfig(WithFlat, WithCompact), uintptr(123), "<0x7b>"},
+		{"float32", NewConfig(WithFlat, WithCompact), float32(12.3), "12.3"},
+		{"float64", NewConfig(WithFlat, WithCompact), 12.3, "12.3"},
+		{"complex64", NewConfig(WithFlat, WithCompact), complex(float32(1), float32(2)), "(1+2i)"},
+		{"complex128", NewConfig(WithFlat, WithCompact), complex(3.3, 4.4), "(3.3+4.4i)"},
+		{"array", NewConfig(WithFlat, WithCompact), [2]int{}, "[2]int{0,0}"},
+		{"chan", NewConfig(WithFlat, WithCompact), make(chan int), "(chan int)(<addr>)"},
+		{"func", NewConfig(WithFlat, WithCompact), func() {}, "<func>(<addr>)"},
+		{"interface nil", NewConfig(WithFlat, WithCompact), itfNil, valNil},
+		{"any nil", NewConfig(WithFlat, WithCompact), aAnyNil, valNil},
+		{"interface val", NewConfig(WithFlat, WithCompact), itfVal, `{Val:""}`},
+		{"interface ptr", NewConfig(WithFlat, WithCompact), itfPtr, `{Val:""}`},
 		{
 			"map",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			map[string]string{"A": "a", "B": "b"},
 			`map[string]string{"A":"a","B":"b"}`,
 		},
-		{"struct pointer", NewConfig(Flat, Compact), sPtr, `{Val:"a"}`},
-		{"slice", NewConfig(Flat, Compact), []int{1, 2}, "[]int{1,2}"},
-		{"string", NewConfig(Flat, Compact), "string", `"string"`},
-		{"struct", NewConfig(Flat, Compact), struct{ F0 int }{}, "{F0:0}"},
+		{"struct pointer", NewConfig(WithFlat, WithCompact), sPtr, `{Val:"a"}`},
+		{"slice", NewConfig(WithFlat, WithCompact), []int{1, 2}, "[]int{1,2}"},
+		{"string", NewConfig(WithFlat, WithCompact), "string", `"string"`},
+		{"struct", NewConfig(WithFlat, WithCompact), struct{ F0 int }{}, "{F0:0}"},
 		{
 			"registered",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 			`"2000-01-02T03:04:05Z"`,
 		},
-		{"struct nil", NewConfig(Flat, Compact), sNil, "nil"},
+		{"struct nil", NewConfig(WithFlat, WithCompact), sNil, "nil"},
 		{
 			"registered",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 			`"2000-01-02T03:04:05Z"`,
 		},
 		{
 			"unsafe pointer",
-			NewConfig(Flat, Compact),
+			NewConfig(WithFlat, WithCompact),
 			unsafe.Pointer(sPtr),
 			fmt.Sprintf("<%p>", sPtr),
 		},
@@ -171,7 +171,7 @@ func Test_Dump_Dump(t *testing.T) {
 			{"str10", 1, "str12"},
 			{"str10", 1, nil},
 		}
-		dmp := New(NewConfig(Flat, Compact))
+		dmp := New(NewConfig(WithFlat, WithCompact))
 
 		// --- When ---
 		have := dmp.Dump(1, reflect.ValueOf(val))
@@ -196,7 +196,7 @@ func Test_Dump_Dump(t *testing.T) {
 				}
 			}
 		}{}
-		dmp := New(NewConfig(Flat, Compact))
+		dmp := New(NewConfig(WithFlat, WithCompact))
 
 		// --- When ---
 		have := dmp.Dump(0, reflect.ValueOf(val))

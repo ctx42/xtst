@@ -8,38 +8,56 @@ import (
 	"time"
 )
 
+// Package wide default configuration.
+const (
+	// DefaultTimeFormat is default format for parsing time strings.
+	DefaultTimeFormat = time.RFC3339Nano
+
+	// DefaultDepth is default depth when dumping values recursively.
+	DefaultDepth = 6
+)
+
+// Package wide configuration.
+var (
+	// TimeFormat is configurable format for dumping [time.Time] values.
+	TimeFormat = DefaultTimeFormat
+
+	// Depth is configurable depth when dumping values recursively.
+	Depth = DefaultDepth
+)
+
 // Option represents [NewConfig] option.
 type Option func(*Config)
 
-// Flat is option for [NewConfig] which makes [Dump] display values in one line.
-func Flat(cfg *Config) { cfg.Flat = true }
+// WithFlat is option for [NewConfig] which makes [Dump] display values in one line.
+func WithFlat(cfg *Config) { cfg.Flat = true }
 
-// Compact is option for [NewConfig] which makes [Dump] display values without
+// WithCompact is option for [NewConfig] which makes [Dump] display values without
 // unnecessary whitespaces.
-func Compact(cfg *Config) { cfg.Compact = true }
+func WithCompact(cfg *Config) { cfg.Compact = true }
 
-// PtrAddr is option for [NewConfig] which makes [Dump] display pointer
+// WithPtrAddr is option for [NewConfig] which makes [Dump] display pointer
 // addresses.
-func PtrAddr(cfg *Config) { cfg.PtrAddr = true }
+func WithPtrAddr(cfg *Config) { cfg.PtrAddr = true }
 
-// TimeFormat is option for [NewConfig] which makes [Dump] display [time.Time]
+// WithTimeFormat is option for [NewConfig] which makes [Dump] display [time.Time]
 // using given format. The format might be standard Go time formating layout or
 // one of the custom values - see [Config.TimeFormat] for more details.
-func TimeFormat(format string) func(cfg *Config) {
+func WithTimeFormat(format string) func(cfg *Config) {
 	return func(cfg *Config) { cfg.TimeFormat = format }
 }
 
-// PrintType is option for [NewConfig] which makes [Dump] print types.
-func PrintType(cfg *Config) { cfg.PrintType = true }
+// WithPrintType is option for [NewConfig] which makes [Dump] print types.
+func WithPrintType(cfg *Config) { cfg.PrintType = true }
 
 // WithDumper adds custom [Dumper] to the config.
 func WithDumper(typ any, dumper Dumper) func(cfg *Config) {
 	return func(cfg *Config) { cfg.Dumpers[reflect.TypeOf(typ)] = dumper }
 }
 
-// Depth is option for [NewConfig] which controls maximum nesting when bumping
+// WithDepth is option for [NewConfig] which controls maximum nesting when bumping
 // recursive types.
-func Depth(maximum int) func(cfg *Config) {
+func WithDepth(maximum int) func(cfg *Config) {
 	return func(cfg *Config) { cfg.Depth = maximum }
 }
 
@@ -95,11 +113,11 @@ type Config struct {
 // NewConfig returns new instance of [Config] with default values.
 func NewConfig(opts ...Option) Config {
 	cfg := Config{
-		TimeFormat: time.RFC3339Nano,
+		TimeFormat: TimeFormat,
 		PrintType:  true,
 		UseAny:     true,
 		Dumpers:    make(map[reflect.Type]Dumper),
-		Depth:      6,
+		Depth:      Depth,
 	}
 	for _, opt := range opts {
 		opt(&cfg)

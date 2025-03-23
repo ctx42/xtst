@@ -39,7 +39,7 @@ func Test_funcDumper_tabular(t *testing.T) {
 func Test_funcDumper(t *testing.T) {
 	t.Run("nil function", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(PtrAddr))
+		dmp := New(NewConfig(WithPtrAddr))
 
 		var fn func()
 		val := reflect.ValueOf(fn)
@@ -64,7 +64,7 @@ func Test_funcDumper(t *testing.T) {
 
 	t.Run("print pointer address", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(PtrAddr))
+		dmp := New(NewConfig(WithPtrAddr))
 
 		fn := func() {}
 		val := reflect.ValueOf(fn)
