@@ -102,7 +102,7 @@ func TimeExact(want, have any, opts ...Option) error {
 		return notice.From(err, "have")
 	}
 
-	if err = timeEqual(wTim, hTim, opts...); err != nil {
+	if !wTim.Equal(hTim) {
 		diff := wTim.Sub(hTim)
 		ops := DefaultOptions().set(opts)
 		wantFmt, haveFmt := FormatDates(wTim, wStr, hTim, hStr)
@@ -157,24 +157,6 @@ func Within(want, within, have any, opts ...Option) error {
 		Have("%s", haveFmt).
 		Append("max diff", "%s", dur).
 		Append("have diff", "%s", diff.String())
-}
-
-// timeEqual checks "want" and have dates are equal. Returns nil if they are,
-// otherwise returns an error with a message indicating the expected and actual
-// values.
-func timeEqual(want, have time.Time, opts ...Option) error {
-	if want.Equal(have) {
-		return nil
-	}
-
-	ops := DefaultOptions().set(opts)
-	wantFmt, haveFmt := FormatDates(want, "", have, "")
-	diff := want.Sub(have)
-	return notice.New("expected equal dates").
-		Trail(ops.Trail).
-		Want("%s", wantFmt).
-		Have("%s", haveFmt).
-		Append("diff", "%s", diff.String())
 }
 
 // Zone checks "want" and "have" timezones are equal. Returns nil if they are,
