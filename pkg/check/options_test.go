@@ -35,6 +35,17 @@ func Test_WithTimeFormat(t *testing.T) {
 	affirm.Equal(t, time.RFC3339, have.TimeFormat)
 }
 
+func Test_WithRecent(t *testing.T) {
+	// --- Given ---
+	ops := Options{}
+
+	// --- When ---
+	have := WithRecent(time.Second)(ops)
+
+	// --- Then ---
+	affirm.Equal(t, time.Second, have.Recent)
+}
+
 func Test_WithDump(t *testing.T) {
 	// --- Given ---
 	ops := Options{}
@@ -56,8 +67,9 @@ func Test_DefaultOptions(t *testing.T) {
 	affirm.Equal(t, DefaultDumpTimeFormat, have.DumpCfg.TimeFormat)
 
 	affirm.Equal(t, DefaultParseTimeFormat, have.TimeFormat)
+	affirm.Equal(t, DefaultRecentDuration, have.Recent)
 	affirm.Equal(t, "", have.Trail)
-	affirm.Equal(t, 3, reflect.ValueOf(have).NumField())
+	affirm.Equal(t, 4, reflect.ValueOf(have).NumField())
 }
 
 func Test_Options_set(t *testing.T) {

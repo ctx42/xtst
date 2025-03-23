@@ -14,6 +14,9 @@ const (
 	// DefaultParseTimeFormat is default format for dumping [time.Time] values.
 	DefaultParseTimeFormat = time.RFC3339Nano
 
+	// DefaultRecentDuration is default duration when comparing recent dates.
+	DefaultRecentDuration = 10 * time.Second
+
 	// DefaultDumpTimeFormat is default format for parsing time strings.
 	DefaultDumpTimeFormat = time.RFC3339Nano
 
@@ -26,6 +29,9 @@ const (
 var (
 	// ParseTimeFormat is configurable format for parsing time strings.
 	ParseTimeFormat = DefaultParseTimeFormat
+
+	// RecentDuration is configurable duration when comparing recent dates.
+	RecentDuration = DefaultRecentDuration
 
 	// DumpTimeFormat is configurable format for dumping [time.Time] values.
 	DumpTimeFormat = DefaultDumpTimeFormat
@@ -64,6 +70,14 @@ func WithTimeFormat(format string) Option {
 	}
 }
 
+// WithRecent is [Check] option setting duration used to compare recent dates.
+func WithRecent(recent time.Duration) Option {
+	return func(ops Options) Options {
+		ops.Recent = recent
+		return ops
+	}
+}
+
 // WithDump is [Check] and [SingleCheck] option setting [dump.Config] options.
 func WithDump(optsD ...dump.Option) Option {
 	return func(optsC Options) Options {
@@ -82,6 +96,9 @@ type Options struct {
 	// Time format when parsing time strings (default: [time.RFC3339]).
 	TimeFormat string
 
+	// Duration when comparing recent dates.
+	Recent time.Duration
+
 	// Field/element/key breadcrumb trail being checked.
 	Trail string
 }
@@ -93,6 +110,7 @@ func DefaultOptions() Options {
 			dump.WithTimeFormat(DumpTimeFormat),
 			dump.WithDepth(DumpDepth),
 		),
+		Recent:     RecentDuration,
 		TimeFormat: ParseTimeFormat,
 	}
 }
