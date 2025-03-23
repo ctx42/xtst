@@ -121,6 +121,58 @@ func Test_TimeExact(t *testing.T) {
 	})
 }
 
+func Test_Before(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		mark := time.Date(2001, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		have := Before(tspy, date, mark)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("equal", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		have := Before(tspy, date, mark)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := Before(tspy, date, mark, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
 func Test_Within(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---

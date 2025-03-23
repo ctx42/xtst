@@ -116,6 +116,37 @@ func TimeExact(want, have any, opts ...Option) error {
 	return Zone(wTim.Location(), hTim.Location(), opts...)
 }
 
+// Before checks "date" is before "mark". Returns nil if it is, otherwise it
+// returns an error with a message indicating the expected and actual values.
+//
+// The "mark" and "date" might be date representations in form of string, int,
+// int64 or [time.Time]. For string representations the [Options.TimeFormat] is
+// used during parsing and the returned date is always in UTC. The int and
+// int64 types are interpreted as Unix Timestamp and the date returned is also
+// in UTC.
+func Before(date, mark any, opts ...Option) error {
+	mTim, mStr, _, err := getTime(mark, opts...)
+	if err != nil {
+		return notice.From(err, "want")
+	}
+	dTim, dStr, _, err := getTime(date, opts...)
+	if err != nil {
+		return notice.From(err, "have")
+	}
+	if dTim.Before(mTim) {
+		return nil
+	}
+
+	diff := dTim.Sub(mTim)
+	markFmt, dateFmt := formatDates(mTim, mStr, dTim, dStr)
+	ops := DefaultOptions().set(opts)
+	return notice.New("expected date to be before mark").
+		Trail(ops.Trail).
+		Append("date", "%s", dateFmt).
+		Append("mark", "%s", markFmt).
+		Append("diff", "%s", diff.String())
+}
+
 // Within checks "want" and "have" dates are equal "within" given duration.
 // Returns nil if they are, otherwise returns an error with a message
 // indicating the expected and actual values.
