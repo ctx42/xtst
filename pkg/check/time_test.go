@@ -299,18 +299,18 @@ func Test_Within(t *testing.T) {
 	t.Run("not within", func(t *testing.T) {
 		// --- Given ---
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
-		have := time.Date(2000, 1, 2, 3, 4, 6, int(500*time.Millisecond), time.UTC)
+		have := time.Date(2001, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := Within(want, "1s", have)
+		err := Within(want, "1000s", have)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected dates to be within:\n" +
 			"\t     want: 2000-01-02T03:04:05Z\n" +
-			"\t     have: 2000-01-02T03:04:06.5Z\n" +
-			"\t max diff: 1s\n" +
-			"\thave diff: -1.5s"
+			"\t     have: 2001-01-02T03:04:05Z\n" +
+			"\t max diff: 1000s\n" +
+			"\thave diff: -8784h0m0s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -444,13 +444,13 @@ func Test_Duration(t *testing.T) {
 
 	t.Run("error not equal", func(t *testing.T) {
 		// --- When ---
-		err := Duration(time.Second, 2*time.Second)
+		err := Duration("1000s", "2000s")
 
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected equal time durations:\n" +
-			"\twant: 1s\n" +
-			"\thave: 2s"
+			"\twant: 1000s\n" +
+			"\thave: 2000s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -471,7 +471,7 @@ func Test_Duration(t *testing.T) {
 	})
 }
 
-func Test_FormatDates(t *testing.T) {
+func Test_formatDates(t *testing.T) {
 	t.Run("same format", func(t *testing.T) {
 		// --- Given ---
 		wTim := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
@@ -480,7 +480,7 @@ func Test_FormatDates(t *testing.T) {
 		hTimStr := "2001-01-02T03:04:05+02:00"
 
 		// --- When ---
-		wHave, hHave := FormatDates(wTim, wTimStr, hTim, hTimStr)
+		wHave, hHave := formatDates(wTim, wTimStr, hTim, hTimStr)
 
 		// --- Then ---
 		affirm.Equal(t, "2000-01-02T02:04:05Z ( 2000-01-02T03:04:05+02:00 )", wHave)
@@ -495,7 +495,7 @@ func Test_FormatDates(t *testing.T) {
 		hTimStr := "2001-01-02T03:04:05Z"
 
 		// --- When ---
-		wHave, hHave := FormatDates(wTim, wTimStr, hTim, hTimStr)
+		wHave, hHave := formatDates(wTim, wTimStr, hTim, hTimStr)
 
 		// --- Then ---
 		affirm.Equal(t, "2000-01-02T03:04:05Z", wHave)
@@ -510,7 +510,7 @@ func Test_FormatDates(t *testing.T) {
 		hTimStr := "2000-01-02T03:04:05Z"
 
 		// --- When ---
-		wHave, hHave := FormatDates(wTim, wTimStr, hTim, hTimStr)
+		wHave, hHave := formatDates(wTim, wTimStr, hTim, hTimStr)
 
 		// --- Then ---
 		affirm.Equal(t, "2001-01-02T02:04:05Z ( 2001-01-02T03:04:05+01:00 )", wHave)
@@ -525,7 +525,7 @@ func Test_FormatDates(t *testing.T) {
 		hTimStr := "2001-01-02T03:04:05+01:00"
 
 		// --- When ---
-		wHave, hHave := FormatDates(wTim, wTimStr, hTim, hTimStr)
+		wHave, hHave := formatDates(wTim, wTimStr, hTim, hTimStr)
 
 		// --- Then ---
 		affirm.Equal(t, "2000-01-02T03:04:05Z", wHave)
@@ -683,10 +683,11 @@ func Test_getTime_success_tabular(t *testing.T) {
 func Test_getDur(t *testing.T) {
 	t.Run("invalid string duration", func(t *testing.T) {
 		// --- When ---
-		haveDur, haveRep, err := getDur("abc")
+		haveDur, haveStr, haveRep, err := getDur("abc")
 
 		// --- Then ---
 		affirm.Equal(t, time.Duration(0), haveDur)
+		affirm.Equal(t, "abc", haveStr)
 		affirm.Equal(t, durTypeStr, haveRep)
 		wMsg := "failed to parse duration:\n\tvalue: abc"
 		affirm.Equal(t, wMsg, err.Error())
@@ -695,10 +696,11 @@ func Test_getDur(t *testing.T) {
 
 	t.Run("error unsupported type", func(t *testing.T) {
 		// --- When ---
-		haveDur, haveRep, err := getDur(true)
+		haveDur, haveStr, haveRep, err := getDur(true)
 
 		// --- Then ---
 		affirm.Equal(t, time.Duration(0), haveDur)
+		affirm.Equal(t, "true", haveStr)
 		affirm.Equal(t, "", haveRep)
 		wMsg := "failed to parse duration:\n" +
 			"\tcause: not supported duration type"
@@ -711,10 +713,11 @@ func Test_getDur(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		haveDur, haveRep, err := getDur(true, opt)
+		haveDur, haveStr, haveRep, err := getDur(true, opt)
 
 		// --- Then ---
 		affirm.Equal(t, time.Duration(0), haveDur)
+		affirm.Equal(t, "true", haveStr)
 		affirm.Equal(t, "", haveRep)
 		wMsg := "failed to parse duration:\n" +
 			"\ttrail: type.field\n" +
@@ -729,15 +732,23 @@ func Test_getDur_success_tabular(t *testing.T) {
 		testN string
 
 		have    any
+		haveStr string
 		haveRep durRep
 		want    time.Duration
 	}{
-		{"time.Duration", time.Second, durTypeDur, time.Second},
-		{"time.Duration as string", "1s", durTypeStr, time.Second},
-		{"time.Duration as int", 12345678, durTypeInt, time.Duration(12345678)},
+		{"time.Duration", time.Second, "1s", durTypeDur, time.Second},
+		{"time.Duration as string", "1s", "1s", durTypeStr, time.Second},
+		{
+			"time.Duration as int",
+			12345678,
+			"12345678",
+			durTypeInt,
+			time.Duration(12345678),
+		},
 		{
 			"time.Duration as int",
 			int64(12345678),
+			"12345678",
 			durTypeInt64,
 			time.Duration(12345678),
 		},
@@ -746,12 +757,13 @@ func Test_getDur_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			haveDur, haveRep, err := getDur(tc.have)
+			haveDur, haveStr, haveRep, err := getDur(tc.have)
 
 			// --- Then ---
 			affirm.Nil(t, err)
-			affirm.Equal(t, tc.haveRep, haveRep)
 			affirm.Equal(t, tc.want, haveDur)
+			affirm.Equal(t, tc.haveStr, haveStr)
+			affirm.Equal(t, tc.haveRep, haveRep)
 		})
 	}
 }

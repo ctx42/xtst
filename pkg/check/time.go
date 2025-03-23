@@ -75,7 +75,7 @@ func Time(want, have any, opts ...Option) error {
 
 	diff := wTim.Sub(hTim)
 	ops := DefaultOptions().set(opts)
-	wantFmt, haveFmt := FormatDates(wTim, wStr, hTim, hStr)
+	wantFmt, haveFmt := formatDates(wTim, wStr, hTim, hStr)
 	return notice.New("expected equal dates").
 		Trail(ops.Trail).
 		Want("%s", wantFmt).
@@ -105,7 +105,7 @@ func TimeExact(want, have any, opts ...Option) error {
 	if !wTim.Equal(hTim) {
 		diff := wTim.Sub(hTim)
 		ops := DefaultOptions().set(opts)
-		wantFmt, haveFmt := FormatDates(wTim, wStr, hTim, hStr)
+		wantFmt, haveFmt := formatDates(wTim, wStr, hTim, hStr)
 		return notice.New("expected equal dates").
 			Trail(ops.Trail).
 			Want("%s", wantFmt).
@@ -137,25 +137,23 @@ func Within(want, within, have any, opts ...Option) error {
 	if err != nil {
 		return notice.From(err, "have")
 	}
-
-	diel := hTim.In(wTim.Location())
-	diff := wTim.Sub(diel)
-
-	dur, _, err := getDur(within, opts...)
+	dur, durStr, _, err := getDur(within, opts...)
 	if err != nil {
 		return err
 	}
+
+	diff := wTim.Sub(hTim.In(wTim.Location()))
 	if math.Abs(float64(diff)) <= math.Abs(float64(dur)) {
 		return nil
 	}
 
-	wantFmt, haveFmt := FormatDates(wTim, wStr, hTim, hStr)
+	wantFmt, haveFmt := formatDates(wTim, wStr, hTim, hStr)
 	ops := DefaultOptions().set(opts)
 	return notice.New("expected dates to be within").
 		Trail(ops.Trail).
 		Want("%s", wantFmt).
 		Have("%s", haveFmt).
-		Append("max diff", "%s", dur).
+		Append("max diff", "%s", durStr).
 		Append("have diff", "%s", diff.String())
 }
 
@@ -197,11 +195,11 @@ func Zone(want, have *time.Location, opts ...Option) error {
 // The "want" and "have" might be duration representation in form of string,
 // int, int64 or [time.Duration].
 func Duration(want, have any, opts ...Option) error {
-	wDur, _, err := getDur(want, opts...)
+	wDur, wStr, _, err := getDur(want, opts...)
 	if err != nil {
 		return notice.From(err, "want")
 	}
-	hDur, _, err := getDur(have, opts...)
+	hDur, hStr, _, err := getDur(have, opts...)
 	if err != nil {
 		return notice.From(err, "have")
 	}
@@ -212,17 +210,17 @@ func Duration(want, have any, opts ...Option) error {
 	ops := DefaultOptions().set(opts)
 	return notice.New("expected equal time durations").
 		Trail(ops.Trail).
-		Want("%s", wDur.String()).
-		Have("%s", hDur.String())
+		Want("%s", wStr).
+		Have("%s", hStr)
 }
 
-// FormatDates formats two dates for comparison in an error message.
+// formatDates formats two dates for comparison in an error message.
 //
 // Example:
 //
 //	2000-01-02T03:04:05Z ( 2000-01-02T03:04:05Z      )
 //	2001-01-02T02:04:05Z ( 2001-01-02T03:04:05+01:00 )
-func FormatDates(
+func formatDates(
 	wTim time.Time, wTimStr string,
 	hTim time.Time, hTimStr string,
 ) (string, string) {
@@ -311,20 +309,21 @@ func getTime(tim any, opts ...Option) (time.Time, string, timeRep, error) {
 	}
 }
 
-// getDur returns duration represented by "dur". The "dur" might be duration
-// represented by string, int, int64 or [time.Duration].
+// getDur returns duration represented by "dur", its string representation and
+// type of the argument passed. The "dur" might be duration represented by
+// string, int, int64 or [time.Duration].
 //
 // When error is returned it will always have [ErrDurParse], [ErrDurType] in
 // its chain.
-func getDur(dur any, opts ...Option) (time.Duration, durRep, error) {
+func getDur(dur any, opts ...Option) (time.Duration, string, durRep, error) {
 	switch val := dur.(type) {
 	case time.Duration:
-		return val, durTypeDur, nil
+		return val, val.String(), durTypeDur, nil
 
 	case string:
 		have, err := time.ParseDuration(val)
 		if err == nil {
-			return have, durTypeStr, nil
+			return have, val, durTypeStr, nil
 		}
 
 		ops := DefaultOptions().set(opts)
@@ -332,20 +331,23 @@ func getDur(dur any, opts ...Option) (time.Duration, durRep, error) {
 			Trail(ops.Trail).
 			Append("value", "%s", dur).
 			Wrap(ErrDurParse)
-		return 0, durTypeStr, msg
+		return 0, val, durTypeStr, msg
 
 	case int:
-		return time.Duration(val), durTypeInt, nil
+		str := strconv.Itoa(val)
+		return time.Duration(val), str, durTypeInt, nil
 
 	case int64:
-		return time.Duration(val), durTypeInt64, nil
+		str := fmt.Sprintf("%v", val)
+		return time.Duration(val), str, durTypeInt64, nil
 
 	default:
+		str := fmt.Sprintf("%v", val)
 		ops := DefaultOptions().set(opts)
 		msg := notice.New("failed to parse duration").
 			Trail(ops.Trail).
 			Append("cause", "%s", ErrDurType).
 			Wrap(ErrDurType)
-		return 0, "", msg
+		return 0, str, "", msg
 	}
 }
