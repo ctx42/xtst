@@ -224,6 +224,57 @@ func Test_After(t *testing.T) {
 	})
 }
 
+func Test_EqualOrBefore(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		date := time.Date(2000, 1, 2, 3, 4, 4, 0, time.UTC)
+		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		got := EqualOrBefore(tspy, date, mark)
+
+		// --- Then ---
+		affirm.True(t, got)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		date := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+
+		// --- When ---
+		got := EqualOrBefore(tspy, date, mark)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.Close()
+
+		date := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
+		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		got := EqualOrBefore(tspy, date, mark, opt)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+}
+
 func Test_EqualOrAfter(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
