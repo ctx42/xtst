@@ -53,9 +53,9 @@ func Test_DefaultOptions(t *testing.T) {
 
 	// --- Then ---
 	affirm.Equal(t, false, have.DumpCfg.PtrAddr)
-	affirm.Equal(t, time.RFC3339Nano, have.DumpCfg.TimeFormat)
+	affirm.Equal(t, DefaultDumpTimeFormat, have.DumpCfg.TimeFormat)
 
-	affirm.Equal(t, time.RFC3339Nano, have.TimeFormat)
+	affirm.Equal(t, DefaultParseTimeFormat, have.TimeFormat)
 	affirm.Equal(t, "", have.Trail)
 	affirm.Equal(t, 3, reflect.ValueOf(have).NumField())
 }

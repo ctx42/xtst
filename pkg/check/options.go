@@ -9,6 +9,30 @@ import (
 	"github.com/ctx42/xtst/pkg/dump"
 )
 
+// Package wide default configuration.
+const (
+	// DefaultParseTimeFormat is default format for dumping [time.Time] values.
+	DefaultParseTimeFormat = time.RFC3339Nano
+
+	// DefaultDumpTimeFormat is default format for parsing time strings.
+	DefaultDumpTimeFormat = time.RFC3339Nano
+
+	// DefaultDumpDepth is default depth when dumping values in log messages.
+	DefaultDumpDepth = 6
+)
+
+// Package wide configuration.
+var (
+	// DumpTimeFormat is configurable format for dumping [time.Time] values.
+	DumpTimeFormat = DefaultDumpTimeFormat
+
+	// ParseTimeFormat is configurable format for parsing time strings.
+	ParseTimeFormat = DefaultParseTimeFormat
+
+	// DumpDepth is configurable depth when dumping values in log messages.
+	DumpDepth = DefaultDumpDepth
+)
+
 // Check is signature for generic check function comparing two arguments
 // returning error if they are not. The returned error might be one or more
 // errors joined with [errors.Join].
@@ -64,8 +88,11 @@ type Options struct {
 // DefaultOptions returns default [Options].
 func DefaultOptions() Options {
 	return Options{
-		DumpCfg:    dump.NewConfig(),
-		TimeFormat: time.RFC3339Nano,
+		DumpCfg: dump.NewConfig(
+			dump.TimeFormat(DumpTimeFormat),
+			dump.Depth(DumpDepth),
+		),
+		TimeFormat: ParseTimeFormat,
 	}
 }
 
