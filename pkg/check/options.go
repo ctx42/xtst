@@ -101,6 +101,10 @@ type Options struct {
 
 	// Field/element/key breadcrumb trail being checked.
 	Trail string
+
+	// Function used to get current time. Used preliminary to inject clock in
+	// tests of checks and assertions using [time.Now].
+	now func() time.Time
 }
 
 // DefaultOptions returns default [Options].
@@ -112,6 +116,7 @@ func DefaultOptions() Options {
 		),
 		Recent:     RecentDuration,
 		TimeFormat: ParseTimeFormat,
+		now:        time.Now,
 	}
 }
 

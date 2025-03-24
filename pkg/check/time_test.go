@@ -565,10 +565,10 @@ func Test_Within(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected dates to be within:\n" +
-			"\t     want: 2000-01-02T03:04:05Z\n" +
-			"\t     have: 2001-01-02T03:04:05Z\n" +
-			"\t max diff: 1000s\n" +
-			"\thave diff: -8784h0m0s"
+			"\t        want: 2000-01-02T03:04:05Z\n" +
+			"\t        have: 2001-01-02T03:04:05Z\n" +
+			"\tmax diff +/-: 1000s\n" +
+			"\t   have diff: 8784h0m0s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -618,11 +618,122 @@ func Test_Within(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected dates to be within:\n" +
-			"\t    trail: type.field\n" +
-			"\t     want: 2000-01-02T03:04:05Z\n" +
-			"\t     have: 2000-01-02T03:04:06.5Z\n" +
-			"\t max diff: 1s\n" +
-			"\thave diff: -1.5s"
+			"\t       trail: type.field\n" +
+			"\t        want: 2000-01-02T03:04:05Z\n" +
+			"\t        have: 2000-01-02T03:04:06.5Z\n" +
+			"\tmax diff +/-: 1s\n" +
+			"\t   have diff: 1.5s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_Recent(t *testing.T) {
+	t.Run("recent with time now", func(t *testing.T) {
+		// --- Given ---
+		have := time.Now()
+
+		// --- When ---
+		err := Recent(have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("recent in the future", func(t *testing.T) {
+		// --- Given ---
+		now := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		opt := WithNow(func() time.Time { return now })
+		have := now.Add(9 * time.Second)
+
+		// --- When ---
+		err := Recent(have, opt)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("recent in the past", func(t *testing.T) {
+		// --- Given ---
+		now := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		opt := WithNow(func() time.Time { return now })
+		have := now.Add(-9 * time.Second)
+
+		// --- When ---
+		err := Recent(have, opt)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error not recent in the future", func(t *testing.T) {
+		// --- Given ---
+		now := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		opt := WithNow(func() time.Time { return now })
+		have := now.Add(11 * time.Second)
+
+		// --- When ---
+		err := Recent(have, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected dates to be within:\n" +
+			"\t        want: 2000-01-02T03:04:05Z\n" +
+			"\t        have: 2000-01-02T03:04:16Z\n" +
+			"\tmax diff +/-: 10s\n" +
+			"\t   have diff: 11s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error not recent in the past", func(t *testing.T) {
+		// --- Given ---
+		now := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		opt := WithNow(func() time.Time { return now })
+		have := now.Add(-11 * time.Second)
+
+		// --- When ---
+		err := Recent(have, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected dates to be within:\n" +
+			"\t        want: 2000-01-02T03:04:05Z\n" +
+			"\t        have: 2000-01-02T03:03:54Z\n" +
+			"\tmax diff +/-: 10s\n" +
+			"\t   have diff: -11s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid have date format", func(t *testing.T) {
+		// --- When ---
+		err := Recent("2022-02-18")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[have] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: 2022-02-18"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		now := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
+		have := now.Add(-11 * time.Second)
+		opts := []Option{
+			WithNow(func() time.Time { return now }),
+			WithTrail("type.field"),
+		}
+
+		// --- When ---
+		err := Recent(have, opts...)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected dates to be within:\n" +
+			"\t        want: 2000-01-02T03:04:05Z\n" +
+			"\t        have: 2000-01-02T03:03:54Z\n" +
+			"\tmax diff +/-: 10s\n" +
+			"\t   have diff: -11s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

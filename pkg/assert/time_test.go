@@ -362,7 +362,7 @@ func Test_Within(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\t    trail: type.field\n")
+		tspy.ExpectLogContain("\t       trail: type.field\n")
 		tspy.Close()
 
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)

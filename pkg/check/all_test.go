@@ -4,6 +4,10 @@ import (
 	"flag"
 	"os"
 	"testing"
+	"time"
+
+	"github.com/ctx42/xtst/internal"
+	"github.com/ctx42/xtst/internal/affirm"
 )
 
 // Flags for compiled test binary.
@@ -34,4 +38,26 @@ func TestMain(m *testing.M) {
 		os.Exit(exitCodeFlag)
 	}
 	os.Exit(m.Run())
+}
+
+// WithNow used to set custom function returning current time.
+func WithNow(fn func() time.Time) Option {
+	return func(ops Options) Options {
+		ops.now = fn
+		return ops
+	}
+}
+
+func Test_WithNow(t *testing.T) {
+	// --- Given ---
+	ops := Options{}
+	now := func() time.Time {
+		return time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+	}
+
+	// --- When ---
+	have := WithNow(now)(ops)
+
+	// --- Then ---
+	affirm.True(t, internal.Same(now, have.now))
 }

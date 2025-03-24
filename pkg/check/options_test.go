@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ctx42/xtst/internal"
 	"github.com/ctx42/xtst/internal/affirm"
 	"github.com/ctx42/xtst/pkg/dump"
 )
@@ -69,7 +70,8 @@ func Test_DefaultOptions(t *testing.T) {
 	affirm.Equal(t, DefaultParseTimeFormat, have.TimeFormat)
 	affirm.Equal(t, DefaultRecentDuration, have.Recent)
 	affirm.Equal(t, "", have.Trail)
-	affirm.Equal(t, 4, reflect.ValueOf(have).NumField())
+	affirm.True(t, internal.Same(time.Now, have.now))
+	affirm.Equal(t, 5, reflect.ValueOf(have).NumField())
 }
 
 func Test_Options_set(t *testing.T) {
