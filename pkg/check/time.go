@@ -60,6 +60,8 @@ const (
 // during parsing and the returned date is always in UTC. The int and int64
 // types are interpreted as Unix Timestamp and the date returned is also in UTC.
 func Time(want, have any, opts ...Option) error {
+	ops := DefaultOptions(opts...).logTrail() // TODO(rz): test trail log.
+
 	wTim, wStr, _, err := getTime(want, opts...)
 	if err != nil {
 		return notice.From(err, "want")
@@ -73,7 +75,6 @@ func Time(want, have any, opts ...Option) error {
 	}
 
 	diff := wTim.Sub(hTim)
-	ops := DefaultOptions().set(opts)
 	wantFmt, haveFmt := formatDates(wTim, wStr, hTim, hStr)
 	return notice.New("expected equal dates").
 		Trail(ops.Trail).
@@ -102,7 +103,7 @@ func TimeExact(want, have any, opts ...Option) error {
 
 	if !wTim.Equal(hTim) {
 		diff := wTim.Sub(hTim)
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		wantFmt, haveFmt := formatDates(wTim, wStr, hTim, hStr)
 		return notice.New("expected equal dates").
 			Trail(ops.Trail).
@@ -136,7 +137,7 @@ func Before(date, mark any, opts ...Option) error {
 
 	diff := dTim.Sub(mTim)
 	markFmt, dateFmt := formatDates(mTim, mStr, dTim, dStr)
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected date to be before mark").
 		Trail(ops.Trail).
 		Append("date", "%s", dateFmt).
@@ -166,7 +167,7 @@ func After(date, mark any, opts ...Option) error {
 
 	diff := dTim.Sub(mTim)
 	markFmt, dateFmt := formatDates(mTim, mStr, dTim, dStr)
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected date to be after mark").
 		Trail(ops.Trail).
 		Append("date", "%s", dateFmt).
@@ -197,7 +198,7 @@ func EqualOrBefore(date, mark any, opts ...Option) error {
 
 	diff := dTim.Sub(mTim)
 	markFmt, dateFmt := formatDates(mTim, mStr, dTim, dStr)
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected date to be equal or before mark").
 		Trail(ops.Trail).
 		Append("date", "%s", dateFmt).
@@ -228,7 +229,7 @@ func EqualOrAfter(date, mark any, opts ...Option) error {
 
 	diff := dTim.Sub(mTim)
 	markFmt, dateFmt := formatDates(mTim, mStr, dTim, dStr)
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected date to be equal or after mark").
 		Trail(ops.Trail).
 		Append("date", "%s", dateFmt).
@@ -267,7 +268,7 @@ func Within(want, within, have any, opts ...Option) error {
 	}
 
 	wantFmt, haveFmt := formatDates(wTim, wStr, hTim, hStr)
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 
 	return notice.New("expected dates to be within").
 		Trail(ops.Trail).
@@ -286,35 +287,41 @@ func Within(want, within, have any, opts ...Option) error {
 // and the returned date is always in UTC. The int and int64 types are
 // interpreted as Unix Timestamp and the date returned is also in UTC.
 func Recent(have any, opts ...Option) error {
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return Within(ops.now(), ops.Recent, have, opts...)
 }
 
 // Zone checks "want" and "have" timezones are equal. Returns nil if they are,
 // otherwise returns an error with a message indicating the expected and actual
 // values.
+//
+// Note nil [time.Location] is the same as [time.UTC].
 func Zone(want, have *time.Location, opts ...Option) error {
-	if want == nil {
-		ops := DefaultOptions().set(opts)
-		return notice.New("expected timezone").
-			Trail(ops.Trail).
-			Append("which", "want").
-			Want("<not-nil>").
-			Have("<nil>")
-	}
-	if have == nil {
-		ops := DefaultOptions().set(opts)
-		return notice.New("expected timezone").
-			Trail(ops.Trail).
-			Append("which", "have").
-			Want("<not-nil>").
-			Have("<nil>")
-	}
+	ops := DefaultOptions(opts...).logTrail() // TODO(rz): test trail log.
+
+	// TODO(rz): why don't we allow nils?
+
+	// if want == nil {
+	// 	ops := DefaultOptions(opts...)
+	// 	return notice.New("expected timezone").
+	// 		Trail(ops.Trail).
+	// 		Append("which", "want").
+	// 		Want("<not-nil>").
+	// 		Have("<nil>")
+	// }
+	// if have == nil {
+	// 	ops := DefaultOptions(opts...)
+	// 	return notice.New("expected timezone").
+	// 		Trail(ops.Trail).
+	// 		Append("which", "have").
+	// 		Want("<not-nil>").
+	// 		Have("<nil>")
+	// }
+
 	if want.String() == have.String() {
 		return nil
 	}
 
-	ops := DefaultOptions().set(opts)
 	return notice.New("expected same timezone").
 		Trail(ops.Trail).
 		Want("%s", want.String()).
@@ -340,7 +347,7 @@ func Duration(want, have any, opts ...Option) error {
 	if wDur == hDur {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected equal time durations").
 		Trail(ops.Trail).
 		Want("%s", wStr).
@@ -399,7 +406,7 @@ func formatDates(
 // When error is returned it will always have [ErrTimeParse], [ErrTimeType] in
 // its chain.
 func getTime(tim any, opts ...Option) (time.Time, string, timeRep, error) {
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	switch val := tim.(type) {
 	case time.Time:
 		return val, val.Format(time.RFC3339Nano), timeTypeTim, nil
@@ -459,7 +466,7 @@ func getDur(dur any, opts ...Option) (time.Duration, string, durRep, error) {
 			return have, val, durTypeStr, nil
 		}
 
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		msg := notice.New("failed to parse duration").
 			Trail(ops.Trail).
 			Append("value", "%s", dur).
@@ -476,7 +483,7 @@ func getDur(dur any, opts ...Option) (time.Duration, string, durRep, error) {
 
 	default:
 		str := fmt.Sprintf("%v", val)
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		msg := notice.New("failed to parse duration").
 			Trail(ops.Trail).
 			Append("cause", "%s", ErrDurType).

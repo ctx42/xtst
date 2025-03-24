@@ -16,7 +16,7 @@ func Nil(have any, opts ...Option) error {
 	if isNil(have) {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	const mHeader = "expected value to be nil"
 	return notice.New(mHeader).Want("<nil>").
 		Trail(ops.Trail).
@@ -45,7 +45,7 @@ func NotNil(have any, opts ...Option) error {
 	if !isNil(have) {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	const mHeader = "expected non-nil value"
 	return notice.New(mHeader).Trail(ops.Trail)
 }

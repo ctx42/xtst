@@ -27,7 +27,7 @@ func Empty(have any, opts ...Option) error {
 	if isEmpty(have) {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected argument to be empty").
 		Trail(ops.Trail).
 		Want("<empty>").
@@ -68,6 +68,6 @@ func NotEmpty(have any, opts ...Option) error {
 	if !isEmpty(have) {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected non-empty value").Trail(ops.Trail)
 }

@@ -31,7 +31,7 @@ func ChannelWillClose[C any](within any, c <-chan C, opts ...Option) error {
 	for {
 		select {
 		case <-tim.C:
-			ops := DefaultOptions().set(opts)
+			ops := DefaultOptions(opts...)
 			return notice.New("timeout waiting for channel to close").
 				Trail(ops.Trail).
 				Append("within", "%s", durStr)

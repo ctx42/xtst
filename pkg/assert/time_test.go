@@ -479,7 +479,7 @@ func Test_Zone(t *testing.T) {
 		tspy.Close()
 
 		// --- When ---
-		have := Zone(tspy, nil, time.UTC)
+		have := Zone(tspy, nil, types.WAW)
 
 		// --- Then ---
 		affirm.False(t, have)
@@ -495,7 +495,7 @@ func Test_Zone(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		have := Zone(tspy, nil, time.UTC, opt)
+		have := Zone(tspy, nil, types.WAW, opt)
 
 		// --- Then ---
 		affirm.False(t, have)

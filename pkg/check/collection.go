@@ -17,7 +17,7 @@ func Len(want int, have any, opts ...Option) error {
 		return notice.New("cannot execute len(%T)", have)
 	}
 	if want != cnt {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		msg := notice.New("expected %T length", have).
 			Trail(ops.Trail).
 			Want("%d", want).
@@ -35,7 +35,7 @@ func Has[T comparable](want T, bag []T, opts ...Option) error {
 			return nil
 		}
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	dmp := dump.New(ops.DumpCfg)
 	return notice.New("expected slice to have a value").
 		Trail(ops.Trail).
@@ -49,7 +49,7 @@ func Has[T comparable](want T, bag []T, opts ...Option) error {
 func HasNo[T comparable](want T, set []T, opts ...Option) error {
 	for i, got := range set {
 		if want == got {
-			ops := DefaultOptions().set(opts)
+			ops := DefaultOptions(opts...)
 			dmp := dump.New(ops.DumpCfg)
 			return notice.New("expected slice not to have value").
 				Trail(ops.Trail).
@@ -69,7 +69,7 @@ func HasKey[K comparable, V any](key K, set map[K]V, opts ...Option) (V, error) 
 	if ok {
 		return val, nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	dmp := dump.New(ops.DumpCfg)
 	return val, notice.New("expected map to have a key").
 		Trail(ops.Trail).
@@ -84,7 +84,7 @@ func HasNoKey[K comparable, V any](key K, set map[K]V, opts ...Option) error {
 	if !ok {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	dmp := dump.New(ops.DumpCfg)
 	return notice.New("expected map not to have a key").
 		Trail(ops.Trail).
@@ -104,7 +104,7 @@ func HasKeyValue[K, V comparable](key K, want V, set map[K]V, opts ...Option) er
 	if want == have {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected map to have a key with a value").
 		Trail(ops.Trail).
 		Append("key", "%#v", key).
@@ -133,7 +133,7 @@ func SliceSubset[V comparable](want, have []V, opts ...Option) error {
 		return nil
 	}
 
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	dmp := dump.New(ops.DumpCfg)
 	const hHeader = "expected \"want\" slice to be a subset of \"have\" slice"
 	return notice.New(hHeader).

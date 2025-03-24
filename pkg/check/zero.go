@@ -9,7 +9,7 @@ import (
 	"github.com/ctx42/xtst/pkg/notice"
 )
 
-// Zero checks "have is the zero value for its type. Returns nil if it is,
+// Zero checks "have" is the zero value for its type. Returns nil if it is,
 // otherwise, it returns an error with a message indicating the expected
 // and actual values.
 func Zero(have any, opts ...Option) error {
@@ -32,7 +32,7 @@ func Zero(have any, opts ...Option) error {
 
 // zeroError returns error for non-zero value of have.
 func zeroError(have any, opts ...Option) error {
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected argument to be zero value").
 		Trail(ops.Trail).
 		Want("<zero>").
@@ -46,7 +46,7 @@ func NotZero(have any, opts ...Option) error {
 	if Zero(have) != nil {
 		return nil // nolint: nilerr
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected argument not to be zero value").
 		Trail(ops.Trail).
 		Want("<non-zero>").

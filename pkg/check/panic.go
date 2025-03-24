@@ -18,7 +18,7 @@ type TestFunc func()
 // error with a message with value passed to panic and stack trace.
 func Panic(fn TestFunc, opts ...Option) error {
 	if panicked, _, _ := internal.DidPanic(fn); !panicked {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return notice.New("func should panic").Trail(ops.Trail)
 	}
 	return nil
@@ -28,7 +28,7 @@ func Panic(fn TestFunc, opts ...Option) error {
 // returns an error with a message with value passed to panic and stack trace.
 func NoPanic(fn TestFunc, opts ...Option) error {
 	if panicked, val, stack := internal.DidPanic(fn); panicked {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return notice.New("func should not panic").
 			Trail(ops.Trail).
 			Append("panic value", "%v", val).
@@ -56,7 +56,7 @@ func PanicContain(want string, fn TestFunc, opts ...Option) error {
 		msg = fmt.Sprint(v)
 	}
 	if !strings.Contains(msg, want) {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return notice.New("func should panic with string containing").
 			Trail(ops.Trail).
 			Append("substring", "%q", want).
@@ -72,7 +72,7 @@ func PanicContain(want string, fn TestFunc, opts ...Option) error {
 func PanicMsg(fn TestFunc, opts ...Option) (*string, error) {
 	panicked, val, _ := internal.DidPanic(fn)
 	if !panicked {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return nil, notice.New("func should panic").Trail(ops.Trail)
 	}
 	var msg string

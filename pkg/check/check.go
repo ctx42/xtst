@@ -20,7 +20,7 @@ func Count(count int, what, where any, opts ...Option) error {
 		var subT string
 		if subT, ok = what.(string); !ok {
 			const mHeader = "expected argument \"what\" to be string got %T"
-			ops := DefaultOptions().set(opts)
+			ops := DefaultOptions(opts...)
 			return notice.New(mHeader, what).
 				Trail(ops.Trail)
 		}
@@ -29,7 +29,7 @@ func Count(count int, what, where any, opts ...Option) error {
 			return nil
 		}
 
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return notice.New("expected string to contain substrings").
 			Trail(ops.Trail).
 			Append("want count", "%d", count).
@@ -38,7 +38,7 @@ func Count(count int, what, where any, opts ...Option) error {
 			Append("where", "%q", where)
 	}
 
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("unsupported \"where\" type: %T", where).
 		Trail(ops.Trail)
 }
@@ -52,7 +52,7 @@ func SameType(want, have any, opts ...Option) error {
 	if wTyp == hTyp {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected same types").
 		Trail(ops.Trail).
 		Want("%T", want).
