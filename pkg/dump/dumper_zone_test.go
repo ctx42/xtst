@@ -11,7 +11,7 @@ import (
 	"github.com/ctx42/xtst/internal/types"
 )
 
-func Test_locationDumper_tabular(t *testing.T) {
+func Test_zoneDumper_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -33,7 +33,7 @@ func Test_locationDumper_tabular(t *testing.T) {
 			dmp := New(tc.cfg)
 
 			// --- When ---
-			have := locationDumper(dmp, 0, reflect.ValueOf(tc.val))
+			have := zoneDumper(dmp, 0, reflect.ValueOf(tc.val))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, have)

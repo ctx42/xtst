@@ -128,7 +128,7 @@ func NewConfig(opts ...Option) Config {
 	}
 
 	if _, ok := cfg.Dumpers[typLocation]; !ok {
-		cfg.Dumpers[typLocation] = locationDumper
+		cfg.Dumpers[typLocation] = zoneDumper
 	}
 
 	if _, ok := cfg.Dumpers[typDur]; !ok {

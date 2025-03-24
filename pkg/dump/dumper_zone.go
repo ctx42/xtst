@@ -8,12 +8,10 @@ import (
 	"time"
 )
 
-// TODO(rz): rename to zoneDumper
-
-// locationDumper requires val to be dereferenced representation of
+// zoneDumper requires val to be dereferenced representation of
 // [reflect.Struct] which can be cast to [time.Location] and returns its
 // string representation in format defined by [Dump] configuration.
-func locationDumper(dmp Dump, lvl int, val reflect.Value) string {
+func zoneDumper(dmp Dump, lvl int, val reflect.Value) string {
 	loc := val.Interface().(time.Location) // nolint: forcetypeassert
 	val = reflect.ValueOf((&loc).String())
 	return simpleDumper(dmp, lvl, val)
