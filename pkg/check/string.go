@@ -16,7 +16,7 @@ func Contain(want, have string, opts ...Option) error {
 	if strings.Contains(have, want) {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected string to contain substring").
 		Trail(ops.Trail).
 		Append("string", "%q", have).
@@ -28,7 +28,7 @@ func Contain(want, have string, opts ...Option) error {
 // values.
 func NotContain(want, have string, opts ...Option) error {
 	if strings.Contains(have, want) {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return notice.New("expected string not to contain substring").
 			Trail(ops.Trail).
 			Append("string", "%q", have).

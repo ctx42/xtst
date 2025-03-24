@@ -25,7 +25,7 @@ func Regexp(want, have any, opts ...Option) error {
 	if match {
 		return nil
 	}
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected regexp to match").
 		Trail(ops.Trail).
 		Append("regexp", "%s", want).

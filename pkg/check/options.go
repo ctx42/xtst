@@ -4,6 +4,7 @@
 package check
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/ctx42/xtst/pkg/dump"
@@ -62,6 +63,15 @@ func WithTrail(pth string) Option {
 	}
 }
 
+// WithTrailLog is [Check] option turning on collection of checked paths. The
+// paths are added to the provided slice.
+func WithTrailLog(list *[]string) Option {
+	return func(ops Options) Options {
+		ops.TrailLog = list
+		return ops
+	}
+}
+
 // WithTimeFormat is [Check] option setting time format when parsing dates.
 func WithTimeFormat(format string) Option {
 	return func(ops Options) Options {
@@ -88,6 +98,20 @@ func WithDump(optsD ...dump.Option) Option {
 	}
 }
 
+// WithOptions is [Check] option which passes all options.
+func WithOptions(src Options) Option {
+	return func(ops Options) Options {
+		ops.DumpCfg = src.DumpCfg
+		ops.TimeFormat = src.TimeFormat
+		ops.Recent = src.Recent
+		ops.Trail = src.Trail
+		ops.TrailLog = src.TrailLog
+		ops.now = src.now
+		ops.skipType = src.skipType
+		return ops
+	}
+}
+
 // Options represents options used by [Check] and [SingleCheck] functions.
 type Options struct {
 	// Dump configuration.
@@ -102,14 +126,21 @@ type Options struct {
 	// Field/element/key breadcrumb trail being checked.
 	Trail string
 
+	// List of non-skipped trails.
+	TrailLog *[]string
+
 	// Function used to get current time. Used preliminary to inject clock in
 	// tests of checks and assertions using [time.Now].
 	now func() time.Time
+
+	// In cases of nested structs you do not want to add field type to the
+	// trail. When it's true the type argument in structTrail is ignored.
+	skipType bool
 }
 
 // DefaultOptions returns default [Options].
-func DefaultOptions() Options {
-	return Options{
+func DefaultOptions(opts ...Option) Options {
+	ops := Options{
 		DumpCfg: dump.NewConfig(
 			dump.WithTimeFormat(DumpTimeFormat),
 			dump.WithMaxDepth(DumpDepth),
@@ -118,6 +149,7 @@ func DefaultOptions() Options {
 		TimeFormat: ParseTimeFormat,
 		now:        time.Now,
 	}
+	return ops.set(opts)
 }
 
 // set sets [Options] from slice of [Option] functions.
@@ -127,4 +159,78 @@ func (ops Options) set(opts []Option) Options {
 		dst = opt(dst)
 	}
 	return dst
+}
+
+// logTrail logs non-empty [Options.Trail] to [Options.TrailLog].
+func (ops Options) logTrail() Options {
+	if ops.TrailLog != nil && ops.Trail != "" {
+		*ops.TrailLog = append(*ops.TrailLog, ops.Trail)
+	}
+	return ops
+}
+
+// structTrail updates [Options.Trail] with struct type and/or field name
+// considering already existing trail.
+//
+// Example trails:
+//
+//	Type.Field
+//	Type.Field.Field
+//	Type.Field[1].Field
+//	Type.Field["A"].Field
+func (ops Options) structTrail(typeName, fldName string) Options {
+	if ops.skipType {
+		typeName = ""
+	}
+	ops.skipType = false
+	next := typeName
+	if typeName == "" {
+		next = fldName
+	}
+	if next == "" {
+		next = typeName
+	}
+	if ops.Trail == "" {
+		ops.Trail = next
+		return ops
+	}
+	if typeName != "" && ops.Trail[len(ops.Trail)-1] == ']' {
+		next = fldName
+	}
+	if next != "" {
+		ops.Trail += "." + next
+		return ops
+	}
+	return ops
+}
+
+// mapTrail updates [Options.Trail] with map value path considering already
+// existing trail.
+//
+// Example trails:
+//
+//	map[1]
+//	["A"]map[1]
+//	[1]map["A"]
+//	field["A"]
+func (ops Options) mapTrail(key string) Options {
+	if ops.Trail == "" {
+		ops.Trail = "map"
+	}
+	if ops.Trail[len(ops.Trail)-1] == ']' {
+		ops.Trail += "map"
+	}
+	ops.Trail += "[" + key + "]"
+	return ops
+}
+
+// arrTrail updates [Options.Trail] with slice or array index considering
+// already existing trail.
+//
+// Example trails:
+//
+//	arr[1]
+func (ops Options) arrTrail(idx int) Options {
+	ops.Trail += "[" + strconv.Itoa(idx) + "]"
+	return ops
 }

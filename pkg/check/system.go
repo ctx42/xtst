@@ -25,7 +25,7 @@ func ExitCode(want int, err error, opts ...Option) error {
 	if errors.As(err, &ee) {
 		have := ee.ExitCode()
 		if want != have {
-			ops := DefaultOptions().set(opts)
+			ops := DefaultOptions(opts...)
 			return notice.New("expected exit code").
 				Trail(ops.Trail).
 				Want("%d", want).
@@ -34,7 +34,7 @@ func ExitCode(want int, err error, opts ...Option) error {
 		return nil
 	}
 
-	ops := DefaultOptions().set(opts)
+	ops := DefaultOptions(opts...)
 	return notice.New("expected err to have \"%T\" in its chain", ee).
 		Trail(ops.Trail)
 }

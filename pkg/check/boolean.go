@@ -11,7 +11,7 @@ import (
 // error with a message indicating the expected and actual values.
 func True(have bool, opts ...Option) error {
 	if !have {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return notice.New("expected value to be true").
 			Trail(ops.Trail)
 	}
@@ -22,7 +22,7 @@ func True(have bool, opts ...Option) error {
 // error with a message indicating the expected and actual values.
 func False(have bool, opts ...Option) error {
 	if have {
-		ops := DefaultOptions().set(opts)
+		ops := DefaultOptions(opts...)
 		return notice.New("expected value to be false").
 			Trail(ops.Trail)
 	}
