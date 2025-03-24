@@ -124,11 +124,11 @@ func TimeExact(want, have any, opts ...Option) error {
 func Before(date, mark any, opts ...Option) error {
 	dTim, dStr, _, err := getTime(date, opts...)
 	if err != nil {
-		return notice.From(err, "have")
+		return notice.From(err, "date")
 	}
 	mTim, mStr, _, err := getTime(mark, opts...)
 	if err != nil {
-		return notice.From(err, "want")
+		return notice.From(err, "mark")
 	}
 	if dTim.Before(mTim) {
 		return nil
@@ -154,11 +154,11 @@ func Before(date, mark any, opts ...Option) error {
 func After(date, mark any, opts ...Option) error {
 	dTim, dStr, _, err := getTime(date, opts...)
 	if err != nil {
-		return notice.From(err, "have")
+		return notice.From(err, "date")
 	}
 	mTim, mStr, _, err := getTime(mark, opts...)
 	if err != nil {
-		return notice.From(err, "want")
+		return notice.From(err, "mark")
 	}
 	if dTim.After(mTim) {
 		return nil
@@ -185,11 +185,11 @@ func After(date, mark any, opts ...Option) error {
 func EqualOrBefore(date, mark any, opts ...Option) error {
 	dTim, dStr, _, err := getTime(date, opts...)
 	if err != nil {
-		return notice.From(err, "have")
+		return notice.From(err, "date")
 	}
 	mTim, mStr, _, err := getTime(mark, opts...)
 	if err != nil {
-		return notice.From(err, "want")
+		return notice.From(err, "mark")
 	}
 	if dTim.Equal(mTim) || dTim.Before(mTim) {
 		return nil
@@ -216,11 +216,11 @@ func EqualOrBefore(date, mark any, opts ...Option) error {
 func EqualOrAfter(date, mark any, opts ...Option) error {
 	dTim, dStr, _, err := getTime(date, opts...)
 	if err != nil {
-		return notice.From(err, "have")
+		return notice.From(err, "date")
 	}
 	mTim, mStr, _, err := getTime(mark, opts...)
 	if err != nil {
-		return notice.From(err, "want")
+		return notice.From(err, "mark")
 	}
 	if dTim.Equal(mTim) || dTim.After(mTim) {
 		return nil
@@ -258,7 +258,7 @@ func Within(want, within, have any, opts ...Option) error {
 	}
 	dur, durStr, _, err := getDur(within, opts...)
 	if err != nil {
-		return err
+		return notice.From(err, "within")
 	}
 
 	diff := hTim.Sub(wTim.In(wTim.Location()))

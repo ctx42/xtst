@@ -318,6 +318,30 @@ func Test_Before(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
+	t.Run("invalid date", func(t *testing.T) {
+		// --- When ---
+		err := Before("abc", time.Now())
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[date] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid mark", func(t *testing.T) {
+		// --- When ---
+		err := Before(time.Now(), "abc")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[mark] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
 	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		date := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
@@ -385,6 +409,30 @@ func Test_After(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
+	t.Run("invalid date", func(t *testing.T) {
+		// --- When ---
+		err := After("abc", time.Now())
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[date] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid mark", func(t *testing.T) {
+		// --- When ---
+		err := After(time.Now(), "abc")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[mark] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
 	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -447,6 +495,30 @@ func Test_EqualOrBefore(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
+	t.Run("invalid date", func(t *testing.T) {
+		// --- When ---
+		err := EqualOrBefore("abc", time.Now())
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[date] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid mark", func(t *testing.T) {
+		// --- When ---
+		err := EqualOrBefore(time.Now(), "abc")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[mark] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
 	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		date := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
@@ -506,6 +578,30 @@ func Test_EqualOrAfter(t *testing.T) {
 			"\tdate: 2000-01-02T03:04:04Z\n" +
 			"\tmark: 2000-01-02T03:04:05Z\n" +
 			"\tdiff: -1s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid date", func(t *testing.T) {
+		// --- When ---
+		err := EqualOrAfter("abc", time.Now())
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[date] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid mark", func(t *testing.T) {
+		// --- When ---
+		err := EqualOrAfter(time.Now(), "abc")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[mark] failed to parse time:\n" +
+			"\tformat: 2006-01-02T15:04:05.999999999Z07:00\n" +
+			"\t value: abc"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -590,7 +686,7 @@ func Test_Within(t *testing.T) {
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "failed to parse duration:\n\tvalue: abc"
+		wMsg := "[within] failed to parse duration:\n\tvalue: abc"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -821,6 +917,26 @@ func Test_Duration(t *testing.T) {
 		wMsg := "expected equal time durations:\n" +
 			"\twant: 1000s\n" +
 			"\thave: 2000s"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid want", func(t *testing.T) {
+		// --- When ---
+		err := Duration("abc", "2000s")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[want] failed to parse duration:\n\tvalue: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("invalid have", func(t *testing.T) {
+		// --- When ---
+		err := Duration("2000s", "abc")
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "[have] failed to parse duration:\n\tvalue: abc"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
