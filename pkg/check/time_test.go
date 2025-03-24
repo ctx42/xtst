@@ -730,6 +730,7 @@ func Test_Recent(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected dates to be within:\n" +
+			"\t       trail: type.field\n" +
 			"\t        want: 2000-01-02T03:04:05Z\n" +
 			"\t        have: 2000-01-02T03:03:54Z\n" +
 			"\tmax diff +/-: 10s\n" +

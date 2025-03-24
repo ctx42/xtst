@@ -278,7 +278,7 @@ func Within(want, within, have any, opts ...Option) error {
 }
 
 // Recent checks "have" is within [Options.Recent] from [time.Now]. Returns nil
-// if ir is, otherwise returns an error with a message indicating the expected
+// if it is, otherwise returns an error with a message indicating the expected
 // and actual values.
 //
 // The "have" may represent date in form of a string, int, int64 or [time.Time].
@@ -287,7 +287,7 @@ func Within(want, within, have any, opts ...Option) error {
 // interpreted as Unix Timestamp and the date returned is also in UTC.
 func Recent(have any, opts ...Option) error {
 	ops := DefaultOptions().set(opts)
-	return Within(ops.now(), ops.Recent, have)
+	return Within(ops.now(), ops.Recent, have, opts...)
 }
 
 // Zone checks "want" and "have" timezones are equal. Returns nil if they are,

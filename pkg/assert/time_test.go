@@ -411,6 +411,54 @@ func Test_Within(t *testing.T) {
 	})
 }
 
+func Test_Recent(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t).Close()
+
+		have := time.Now().Add(-4 * time.Second)
+
+		// --- When ---
+		got := Recent(tspy, have)
+
+		// --- Then ---
+		affirm.True(t, got)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		have := time.Now().Add(-10 * time.Second)
+
+		// --- When ---
+		got := Recent(tspy, have)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectFail()
+		tspy.ExpectLogContain("\t       trail: type.field\n")
+		tspy.Close()
+
+		have := time.Now().Add(-10 * time.Second)
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		got := Recent(tspy, have, opt)
+
+		// --- Then ---
+		affirm.False(t, got)
+	})
+}
+
 func Test_Zone(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
