@@ -246,7 +246,10 @@ func equalError(want, have any, ops Options) error {
 	if b, ok := have.(byte); ok && isPrintableChar(b) {
 		_ = msg.Have("%#v ('%s')", have, string(b))
 	} else {
-		_ = msg.Have("%s", "\n"+dump.New(ops.DumpCfg).Any(have))
+		// TODO(rz):
+		// ops.DumpCfg.Indent = 3
+		// _ = msg.Have("%s", "\n"+dump.New(ops.DumpCfg).Any(have))
+		_ = msg.Have("%s", "")
 	}
 
 	if wTyp != "" {
