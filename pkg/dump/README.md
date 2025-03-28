@@ -72,7 +72,7 @@ val := map[string]any{
     "nil": nil,
 }
 
-cfg := dump.NewConfig(dump.Flat)
+cfg := dump.NewConfig(dump.WithFlat)
 have := dump.New(cfg).Any(val)
 
 fmt.Println(have)
@@ -85,12 +85,12 @@ For maps, keys are sorted (when possible) to maintain consistency.
 ### Custom Time Formats
 
 You can customize how `time.Time` values are displayed using the 
-`dump.TimeFormat` option:
+`dump.WithTimeFormat` option:
 
 ```go
 val := map[time.Time]int{time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC): 42}
 
-cfg := dump.NewConfig(dump.Flat, dump.TimeFormat(time.Kitchen))
+cfg := dump.NewConfig(dump.WithFlat, dump.WithTimeFormat(time.Kitchen))
 have := dump.New(cfg).Any(val)
 
 fmt.Println(have)
@@ -101,7 +101,7 @@ fmt.Println(have)
 ### Pointer Addresses
 
 By default, pointer addresses are hidden, but you can enable them with 
-`dump.PtrAddr` option:
+`dump.WithPtrAddr` option:
 
 ```go
 val := map[string]any{
@@ -109,7 +109,7 @@ val := map[string]any{
     "fn1": func() {},
 }
 
-cfg := NewConfig(PtrAddr)
+cfg := dump.NewConfig(dump.WithPtrAddr)
 have := New(cfg).Any(val)
 
 fmt.Println(have)
@@ -123,7 +123,7 @@ fmt.Println(have)
 ### Custom Dumpers
 
 For ultimate flexibility, you can define custom dumpers for specific types.
-Dumpers for types are regular functions matching `Dumper` signature declared in 
+Dumpers for types are regular functions matching `dump.Dumper` signature declared in 
 the package.
 
 ```go
@@ -143,8 +143,8 @@ customIntDumper := func(dmp Dump, lvl int, val reflect.Value) string {
 	}
 }
 
-cfg := NewConfig(Flat, Compact, WithDumper(i, customIntDumper))
-have := New(cfg).Any(42)
+cfg := dump.NewConfig(dump.WithFlat, dump.WithCompact, dump.WithDumper(i, customIntDumper))
+have := dump.New(cfg).Any(42)
 
 fmt.Println(have)
 // Output:
