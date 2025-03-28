@@ -19,19 +19,28 @@ func Test_hexPtrDumper_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		val  any
-		want string
+		val    any
+		indent int
+		level  int
+		want   string
 	}{
-		{"uintptr", uintptr(1234), "<0x4d2>"},
-		{"byte", byte(123), "0x7b"},
-		{"usage error", 1234, valErrUsage},
-		{"unsafe pointer", unsafe.Pointer(sPtr), fmt.Sprintf("<%p>", sPtr)},
+		{"uintptr", uintptr(1234), 0, 0, "<0x4d2>"},
+		{"byte", byte(123), 0, 0, "0x7b"},
+		{"usage error", 1234, 0, 0, valErrUsage},
+		{"unsafe pointer", unsafe.Pointer(sPtr), 0, 0, fmt.Sprintf("<%p>", sPtr)},
+
+		{"uses indent", 1234, 2, 0, "\t\t" + valErrUsage},
+		{"uses level", 1234, 0, 1, "\t" + valErrUsage},
+		{"uses indent and level", 1234, 2, 1, "\t\t\t" + valErrUsage},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			dmp := New(NewConfig(WithIndent(tc.indent)))
+
 			// --- When ---
-			have := hexPtrDumper(Dump{}, 0, reflect.ValueOf(tc.val))
+			have := hexPtrDumper(dmp, tc.level, reflect.ValueOf(tc.val))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, have)

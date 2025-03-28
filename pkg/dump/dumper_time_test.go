@@ -67,38 +67,55 @@ func Test_GetTimeDumper_tabular(t *testing.T) {
 func Test_TimeDumperFmt(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		tim := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
 		val := reflect.ValueOf(tim)
+		dumper := TimeDumperFmt(time.DateOnly)
 
 		// --- When ---
-		dmp := TimeDumperFmt(time.DateOnly)
+		have := dumper(dmp, 0, val)
 
 		// --- Then ---
-		have := dmp(Dump{}, 0, val)
 		affirm.Equal(t, `"2000-01-02"`, have)
 	})
 
 	t.Run("zero value", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		val := reflect.ValueOf(time.Time{})
+		dumper := TimeDumperFmt(time.DateOnly)
 
 		// --- When ---
-		dmp := TimeDumperFmt(time.DateOnly)
+		have := dumper(dmp, 0, val)
 
 		// --- Then ---
-		have := dmp(Dump{}, 0, val)
 		affirm.Equal(t, `"0001-01-01"`, have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig(WithIndent(2)))
+		tim := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
+		val := reflect.ValueOf(tim)
+		dumper := TimeDumperFmt(time.DateOnly)
+
+		// --- When ---
+		have := dumper(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "\t\t\t\"2000-01-02\"", have)
 	})
 }
 
 func Test_TimeDumperUnix(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		tim := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
 		val := reflect.ValueOf(tim)
 
 		// --- When ---
-		have := TimeDumperUnix(Dump{}, 0, val)
+		have := TimeDumperUnix(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, "946778645", have)
@@ -106,11 +123,12 @@ func Test_TimeDumperUnix(t *testing.T) {
 
 	t.Run("start of Unix epoch", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		tim := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
 		val := reflect.ValueOf(tim)
 
 		// --- When ---
-		have := TimeDumperUnix(Dump{}, 0, val)
+		have := TimeDumperUnix(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, "0", have)
@@ -118,24 +136,39 @@ func Test_TimeDumperUnix(t *testing.T) {
 
 	t.Run("zero value", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		val := reflect.ValueOf(time.Time{})
 
 		// --- When ---
-		have := TimeDumperUnix(Dump{}, 0, val)
+		have := TimeDumperUnix(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, "-62135596800", have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig(WithIndent(2)))
+		tim := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
+		val := reflect.ValueOf(tim)
+
+		// --- When ---
+		have := TimeDumperUnix(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "\t\t\t946778645", have)
 	})
 }
 
 func Test_TimeDumperDate(t *testing.T) {
 	t.Run("success UTC", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		tim := time.Date(2000, 1, 2, 3, 4, 5, 6, time.UTC)
 		val := reflect.ValueOf(tim)
 
 		// --- When ---
-		have := TimeDumperDate(Dump{}, 0, val)
+		have := TimeDumperDate(dmp, 0, val)
 
 		// --- Then ---
 		want := "time.Date(2000, time.January, 2, 3, 4, 5, 6, time.UTC)"
@@ -144,11 +177,12 @@ func Test_TimeDumperDate(t *testing.T) {
 
 	t.Run("success non UTC timezone", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		tim := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
 		val := reflect.ValueOf(tim)
 
 		// --- When ---
-		have := TimeDumperDate(Dump{}, 0, val)
+		have := TimeDumperDate(dmp, 0, val)
 
 		// --- Then ---
 		want := "time.Date(2000, time.January, 2, 3, 4, 5, 0, " +
@@ -158,11 +192,12 @@ func Test_TimeDumperDate(t *testing.T) {
 
 	t.Run("success compact", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig(WithCompact))
 		tim := time.Date(2000, 1, 2, 3, 4, 5, 6, time.UTC)
 		val := reflect.ValueOf(tim)
 
 		// --- When ---
-		have := TimeDumperDate(Dump{cfg: Config{Compact: true}}, 0, val)
+		have := TimeDumperDate(dmp, 0, val)
 
 		// --- Then ---
 		want := "time.Date(2000,time.January,2,3,4,5,6,time.UTC)"
@@ -171,11 +206,12 @@ func Test_TimeDumperDate(t *testing.T) {
 
 	t.Run("start of Unix epoch", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		tim := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
 		val := reflect.ValueOf(tim)
 
 		// --- When ---
-		have := TimeDumperDate(Dump{}, 0, val)
+		have := TimeDumperDate(dmp, 0, val)
 
 		// --- Then ---
 		want := "time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)"
@@ -184,13 +220,28 @@ func Test_TimeDumperDate(t *testing.T) {
 
 	t.Run("zero value", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		val := reflect.ValueOf(time.Time{})
 
 		// --- When ---
-		have := TimeDumperDate(Dump{}, 0, val)
+		have := TimeDumperDate(dmp, 0, val)
 
 		// --- Then ---
 		want := "time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)"
+		affirm.Equal(t, want, have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig(WithIndent(2)))
+		tim := time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC)
+		val := reflect.ValueOf(tim)
+
+		// --- When ---
+		have := TimeDumperDate(dmp, 1, val)
+
+		// --- Then ---
+		want := "\t\t\ttime.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)"
 		affirm.Equal(t, want, have)
 	})
 }

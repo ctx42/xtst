@@ -54,11 +54,12 @@ func TimeDumperUnix(dmp Dump, lvl int, val reflect.Value) string {
 // TimeDumperDate requires val to be dereferenced representation of
 // [reflect.Struct] which can be cast to [time.Time] and returns its
 // representation using [time.Time.GoString] method.
-func TimeDumperDate(dmp Dump, _ int, val reflect.Value) string {
+func TimeDumperDate(dmp Dump, lvl int, val reflect.Value) string {
 	ts := val.Interface().(time.Time) // nolint: forcetypeassert
 	str := ts.GoString()
 	if dmp.cfg.Compact {
 		str = strings.ReplaceAll(str, " ", "")
 	}
-	return str
+	prn := newPrinter(dmp.cfg)
+	return prn.tab(dmp.cfg.Indent + lvl).write(str).String()
 }

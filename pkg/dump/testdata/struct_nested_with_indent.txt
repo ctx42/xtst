@@ -1,0 +1,20 @@
+Struct containing nested slices indented twice.
+---
+		{
+			Value: 1,
+			Children: []*dump.Node{
+				{
+					Value: 2,
+					Children: nil,
+				},
+				{
+					Value: 3,
+					Children: []*dump.Node{
+						{
+							Value: 4,
+							Children: nil,
+						},
+					},
+				},
+			},
+		}

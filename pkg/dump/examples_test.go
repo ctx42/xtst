@@ -12,7 +12,7 @@ import (
 	"github.com/ctx42/xtst/pkg/dump"
 )
 
-func ExampleDump_DumpAny() {
+func ExampleDump_Any() {
 	val := types.TA{
 		Dur: 3,
 		Int: 42,
@@ -22,7 +22,7 @@ func ExampleDump_DumpAny() {
 		TAp: nil,
 	}
 
-	have := dump.DefaultDump().DumpAny(val)
+	have := dump.Default().Any(val)
 
 	fmt.Println(have)
 	// Output:
@@ -36,7 +36,7 @@ func ExampleDump_DumpAny() {
 	// }
 }
 
-func ExampleDump_DumpAny_flatCompact() {
+func ExampleDump_Any_flatCompact() {
 	val := map[string]any{
 		"int": 42,
 		"loc": types.WAW,
@@ -44,25 +44,25 @@ func ExampleDump_DumpAny_flatCompact() {
 	}
 
 	cfg := dump.NewConfig(dump.WithFlat)
-	have := dump.New(cfg).DumpAny(val)
+	have := dump.New(cfg).Any(val)
 
 	fmt.Println(have)
 	// Output:
 	// map[string]any{"int": 42, "loc": "Europe/Warsaw", "nil": nil}
 }
 
-func ExampleDump_DumpAny_customTimeFormat() {
+func ExampleDump_Any_customTimeFormat() {
 	val := map[time.Time]int{time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC): 42}
 
 	cfg := dump.NewConfig(dump.WithFlat, dump.WithTimeFormat(time.Kitchen))
-	have := dump.New(cfg).DumpAny(val)
+	have := dump.New(cfg).Any(val)
 
 	fmt.Println(have)
 	// Output:
 	// map[time.Time]int{"3:04AM": 42}
 }
 
-func ExampleDump_DumpAny_customDumper() {
+func ExampleDump_Any_customDumper() {
 	var i int
 	dumper := func(dmp dump.Dump, lvl int, val reflect.Value) string {
 		switch val.Kind() {
@@ -78,14 +78,14 @@ func ExampleDump_DumpAny_customDumper() {
 		dump.WithDumper(i, dumper),
 	)
 
-	have := dump.New(cfg).DumpAny(42)
+	have := dump.New(cfg).Any(42)
 
 	fmt.Println(have)
 	// Output:
 	// 2A
 }
 
-func ExampleDump_DumpAny_recursive() {
+func ExampleDump_Any_recursive() {
 	type Node struct {
 		Value    int
 		Children []*Node
@@ -110,7 +110,7 @@ func ExampleDump_DumpAny_recursive() {
 		},
 	}
 
-	have := dump.DefaultDump().DumpAny(val)
+	have := dump.Default().Any(val)
 	fmt.Println(have)
 	// Output:
 	// {

@@ -15,6 +15,9 @@ const (
 
 	// DefaultDepth is default depth when dumping values recursively.
 	DefaultDepth = 6
+
+	// DefaultIndent is default additional indent when dumping values.
+	DefaultIndent = 0
 )
 
 // Package wide configuration.
@@ -24,6 +27,9 @@ var (
 
 	// Depth is configurable depth when dumping values recursively.
 	Depth = DefaultDepth
+
+	// Indent is configurable additional indent when dumping values.
+	Indent = DefaultIndent
 )
 
 // Option represents [NewConfig] option.
@@ -47,18 +53,21 @@ func WithTimeFormat(format string) func(cfg *Config) {
 	return func(cfg *Config) { cfg.TimeFormat = format }
 }
 
-// WithPrintType is option for [NewConfig] which makes [Dump] print types.
-func WithPrintType(cfg *Config) { cfg.PrintType = true }
-
 // WithDumper adds custom [Dumper] to the config.
 func WithDumper(typ any, dumper Dumper) func(cfg *Config) {
 	return func(cfg *Config) { cfg.Dumpers[reflect.TypeOf(typ)] = dumper }
 }
 
-// WithDepth is option for [NewConfig] which controls maximum nesting when bumping
-// recursive types.
-func WithDepth(maximum int) func(cfg *Config) {
-	return func(cfg *Config) { cfg.Depth = maximum }
+// WithMaxDepth is option for [NewConfig] which controls maximum nesting when
+// bumping recursive types.
+func WithMaxDepth(maximum int) func(cfg *Config) {
+	return func(cfg *Config) { cfg.MaxDepth = maximum }
+}
+
+// WithIndent is option for [NewConfig] which how much additional indentation
+// to apply to dumped values.
+func WithIndent(n int) func(cfg *Config) {
+	return func(cfg *Config) { cfg.Indent = n }
 }
 
 // Config represents [Dump] configuration.
@@ -107,7 +116,11 @@ type Config struct {
 	Dumpers map[reflect.Type]Dumper
 
 	// Controls maximum nesting when dumping recursive types.
-	Depth int
+	// The depth is also used to properly indent values being dumped.
+	MaxDepth int
+
+	// How much additional indentation to apply to values being dumped.
+	Indent int
 }
 
 // NewConfig returns new instance of [Config] with default values.
@@ -117,7 +130,8 @@ func NewConfig(opts ...Option) Config {
 		PrintType:  true,
 		UseAny:     true,
 		Dumpers:    make(map[reflect.Type]Dumper),
-		Depth:      Depth,
+		MaxDepth:   Depth,
+		Indent:     Indent,
 	}
 	for _, opt := range opts {
 		opt(&cfg)

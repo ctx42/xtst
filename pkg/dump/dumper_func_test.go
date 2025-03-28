@@ -53,10 +53,11 @@ func Test_funcDumper(t *testing.T) {
 
 	t.Run("usage error", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		val := reflect.ValueOf(1234)
 
 		// --- When ---
-		have := funcDumper(Dump{}, 0, val)
+		have := funcDumper(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, valErrUsage, have)
@@ -65,7 +66,6 @@ func Test_funcDumper(t *testing.T) {
 	t.Run("print pointer address", func(t *testing.T) {
 		// --- Given ---
 		dmp := New(NewConfig(WithPtrAddr))
-
 		fn := func() {}
 		val := reflect.ValueOf(fn)
 		want := fmt.Sprintf("<func>(<0x%x>)", val.Pointer())
@@ -75,5 +75,17 @@ func Test_funcDumper(t *testing.T) {
 
 		// --- Then ---
 		affirm.Equal(t, want, have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig(WithIndent(2)))
+		val := reflect.ValueOf(1234)
+
+		// --- When ---
+		have := funcDumper(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "\t\t\t"+valErrUsage, have)
 	})
 }

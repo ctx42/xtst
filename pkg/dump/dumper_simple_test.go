@@ -14,32 +14,40 @@ func Test_sampleDumper_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		val  any
-		want string
+		val    any
+		indent int
+		level  int
+		want   string
 	}{
-		{"bool true", true, "true"},
-		{"bool false", false, "false"},
-		{"int", 123, "123"},
-		{"int8", int8(123), "123"},
-		{"int16", int16(123), "123"},
-		{"int32", int32(123), "123"},
-		{"int64", int64(123), "123"},
-		{"uint", uint(123), "123"},
-		{"uint16", uint16(123), "123"},
-		{"uint32", uint32(123), "123"},
-		{"uint64", uint64(123), "123"},
-		{"uintptr", uintptr(123), "123"},
-		{"float32", float32(12.3), "12.3"},
-		{"float32 very small", float32(0.00000000000003), "0.00000000000003"},
-		{"float64", 12.3, "12.3"},
-		{"float64 very small", 0.00000000000003, "0.00000000000003"},
-		{"string", "string", `"string"`},
+		{"bool true", true, 0, 0, "true"},
+		{"bool false", false, 0, 0, "false"},
+		{"int", 123, 0, 0, "123"},
+		{"int8", int8(123), 0, 0, "123"},
+		{"int16", int16(123), 0, 0, "123"},
+		{"int32", int32(123), 0, 0, "123"},
+		{"int64", int64(123), 0, 0, "123"},
+		{"uint", uint(123), 0, 0, "123"},
+		{"uint16", uint16(123), 0, 0, "123"},
+		{"uint32", uint32(123), 0, 0, "123"},
+		{"uint64", uint64(123), 0, 0, "123"},
+		{"uintptr", uintptr(123), 0, 0, "123"},
+		{"float32", float32(12.3), 0, 0, "12.3"},
+		{"float64", 12.3, 0, 0, "12.3"},
+		{"float64 very small", 0.00000000000003, 0, 0, "0.00000000000003"},
+		{"string", "string", 0, 0, `"string"`},
+
+		{"with indent", 123, 2, 0, "\t\t123"},
+		{"with level", 123, 0, 1, "\t123"},
+		{"with indent and level", 123, 2, 1, "\t\t\t123"},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			dmp := New(NewConfig(WithIndent(tc.indent)))
+
 			// --- When ---
-			have := simpleDumper(Dump{}, 0, reflect.ValueOf(tc.val))
+			have := simpleDumper(dmp, tc.level, reflect.ValueOf(tc.val))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, have)

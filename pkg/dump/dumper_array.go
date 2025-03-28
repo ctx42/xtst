@@ -13,6 +13,7 @@ import (
 // by [Dump] configuration.
 func arrayDumper(dmp Dump, lvl int, val reflect.Value) string {
 	prn := newPrinter(dmp.cfg)
+	prn.tab(dmp.cfg.Indent + lvl)
 
 	if dmp.cfg.PrintType {
 		valTypStr := val.Type().String()
@@ -29,18 +30,16 @@ func arrayDumper(dmp Dump, lvl int, val reflect.Value) string {
 
 	num := val.Len()
 	prn.write("{").nli(num)
+
 	dmp.cfg.PrintType = false // Don't print types for array elements.
 	for i := 0; i < num; i++ {
 		last := i == num-1
 
-		sub := dmp.Dump(lvl, val.Index(i))
-		if strings.HasPrefix(sub, "{") {
-			prn.tab(lvl)
-		}
+		sub := dmp.value(lvl+1, val.Index(i))
 		prn.write(sub)
 		prn.comma(last).sep(last).nl()
 	}
-	prn.tab(lvl - 1).write("}")
+	prn.tab(dmp.cfg.Indent + lvl).write("}")
 
 	return prn.String()
 }

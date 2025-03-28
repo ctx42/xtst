@@ -6,13 +6,14 @@ package dump
 import (
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/ctx42/xtst/internal/affirm"
 	"github.com/ctx42/xtst/internal/types"
 )
 
 func Test_arrayDumper_tabular(t *testing.T) {
+	var nilArr [2]int
+
 	tt := []struct {
 		testN string
 
@@ -21,106 +22,79 @@ func Test_arrayDumper_tabular(t *testing.T) {
 		want string
 	}{
 		{
-			"flat & compact array empty",
-			NewConfig(WithFlat, WithCompact),
-			[2]int{},
-			"[2]int{0,0}",
+			"default",
+			NewConfig(),
+			[2]int{0, 1},
+			"[2]int{\n\t0,\n\t1,\n}",
 		},
 		{
-			"flat & compact array empty any",
+			"nil array",
+			NewConfig(),
+			nilArr,
+			"[2]int{\n\t0,\n\t0,\n}",
+		},
+		{
+			"default with indent",
+			NewConfig(WithIndent(2)),
+			[2]int{0, 1},
+			"\t\t[2]int{\n\t\t\t0,\n\t\t\t1,\n\t\t}",
+		},
+		{
+			"flat array",
+			NewConfig(WithFlat),
+			[2]int{0, 1},
+			"[2]int{0, 1}",
+		},
+		{
+			"flat and compact array",
 			NewConfig(WithFlat, WithCompact),
+			[2]int{0, 1},
+			"[2]int{0,1}",
+		},
+		{
+			"flat array empty int",
+			NewConfig(WithFlat),
+			[2]int{},
+			"[2]int{0, 0}",
+		},
+		{
+			"flat slice empty",
+			NewConfig(WithFlat),
+			[]int{},
+			"[]int{}",
+		},
+		{
+			"flat array empty any",
+			NewConfig(WithFlat),
 			[2]any{},
-			"[2]any{nil,nil}",
+			"[2]any{nil, nil}",
 		},
 		{
-			"flat & compact array of int",
-			NewConfig(WithFlat, WithCompact),
-			[...]int{1, 2},
-			"[2]int{1,2}",
-		},
-		{
-			"flat & compact array of float32",
-			NewConfig(WithFlat, WithCompact),
-			[...]float32{1.1, 2.2},
-			"[2]float32{1.1,2.2}",
-		},
-		{
-			"compact array",
-			NewConfig(WithCompact),
-			[2]int{},
-			"[2]int{\n0,\n0,\n}",
-		},
-		{
-			"compact array of int",
-			NewConfig(WithCompact),
-			[...]int{1, 2},
-			"[2]int{\n1,\n2,\n}",
-		},
-		{
-			"compact array of float32",
-			NewConfig(WithCompact),
-			[...]float32{1.1, 2.2},
-			"[2]float32{\n1.1,\n2.2,\n}",
-		},
-		{
-			"default array",
-			NewConfig(),
-			[2]int{},
-			"[2]int{\n0,\n0,\n}",
-		},
-		{
-			"default array of int",
-			NewConfig(),
-			[...]int{1, 2},
-			"[2]int{\n1,\n2,\n}",
-		},
-		{
-			"default array of float32",
-			NewConfig(),
-			[...]float32{1.1, 2.2},
-			"[2]float32{\n1.1,\n2.2,\n}",
-		},
-		{
-			"array of times",
-			NewConfig(),
-			[...]time.Time{
-				time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
-				time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
-			},
-			"[2]time.Time{\n\"2000-01-02T03:04:05Z\",\n\"2000-01-02T03:04:05+01:00\",\n}",
-		},
-		{
-			"array of times formated as Unix timestamps",
-			NewConfig(WithTimeFormat(TimeAsUnix)),
-			[...]time.Time{
-				time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
-				time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
-			},
-			"[2]time.Time{\n946782245,\n946778645,\n}",
-		},
-		{
-			"array of integer type constants",
-			NewConfig(),
-			[...]types.IntType{0, 1},
-			"[2]types.IntType{\n0,\n1,\n}",
-		},
-		{
-			"array of map[string]int",
-			NewConfig(WithFlat, WithCompact),
+			"flat array of map[string]int",
+			NewConfig(WithFlat),
 			[...]map[string]int{
 				{"A": 1},
 				{"b": 2},
 			},
-			`[2]map[string]int{{"A":1},{"b":2}}`,
+			`[2]map[string]int{{"A": 1}, {"b": 2}}`,
 		},
 		{
-			"array of map[string]int print type",
-			NewConfig(WithFlat, WithCompact, WithPrintType),
-			[...]map[string]int{
-				{"A": 1},
-				{"b": 2},
+			"array of map[int]int",
+			NewConfig(),
+			[...]map[int]int{
+				{1: 10},
+				{2: 20},
 			},
-			`[2]map[string]int{{"A":1},{"b":2}}`,
+			"[2]map[int]int{\n\t{\n\t\t1: 10,\n\t},\n\t{\n\t\t2: 20,\n\t},\n}",
+		},
+		{
+			"array of structs",
+			NewConfig(),
+			[]types.T1{{Int: 1}, {Int: 2}},
+			"[]types.T1{\n" +
+				"\t{\n\t\tInt: 1,\n\t\tT1: nil,\n\t},\n" +
+				"\t{\n\t\tInt: 2,\n\t\tT1: nil,\n\t},\n" +
+				"}",
 		},
 	}
 

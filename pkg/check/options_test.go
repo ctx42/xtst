@@ -52,11 +52,11 @@ func Test_WithDump(t *testing.T) {
 	ops := Options{}
 
 	// --- When ---
-	have := WithDump(dump.WithDepth(100))(ops)
+	have := WithDump(dump.WithMaxDepth(100))(ops)
 
 	// --- Then ---
-	affirm.Equal(t, 0, ops.DumpCfg.Depth)
-	affirm.Equal(t, 100, have.DumpCfg.Depth)
+	affirm.Equal(t, 0, ops.DumpCfg.MaxDepth)
+	affirm.Equal(t, 100, have.DumpCfg.MaxDepth)
 }
 
 func Test_DefaultOptions(t *testing.T) {

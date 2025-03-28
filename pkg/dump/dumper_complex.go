@@ -17,11 +17,15 @@ import (
 // Returns [valErrUsage] ("<dump-usage-error>") string if kind cannot be
 // matched. It requires val to be dereferenced value and returns its string
 // representation in format defined by [Dump] configuration.
-func complexDumper(_ Dump, _ int, val reflect.Value) string {
+func complexDumper(dmp Dump, lvl int, val reflect.Value) string {
+	var str string
 	switch val.Kind() {
 	case reflect.Complex64, reflect.Complex128:
-		return fmt.Sprintf("%v", val.Interface())
+		str = fmt.Sprintf("%v", val.Interface())
 	default:
-		return valErrUsage
+		str = valErrUsage
 	}
+
+	prn := newPrinter(dmp.cfg)
+	return prn.tab(dmp.cfg.Indent + lvl).write(str).String()
 }

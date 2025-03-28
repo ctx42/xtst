@@ -27,11 +27,14 @@ func Test_GetDurDumper_tabular(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
+			// --- Given ---
+			dmp := New(NewConfig())
+
 			// --- When ---
-			dmp := GetDurDumper(tc.format)
+			dumper := GetDurDumper(tc.format)
+			have := dumper(dmp, 0, reflect.ValueOf(tc.val))
 
 			// --- Then ---
-			have := dmp(Dump{}, 0, reflect.ValueOf(tc.val))
 			affirm.Equal(t, tc.want, have)
 		})
 	}
@@ -40,11 +43,12 @@ func Test_GetDurDumper_tabular(t *testing.T) {
 func Test_DurDumperString(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		dur := 1500 * time.Millisecond
 		val := reflect.ValueOf(dur)
 
 		// --- When ---
-		have := DurDumperString(Dump{}, 0, val)
+		have := DurDumperString(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, `"1.5s"`, have)
@@ -52,25 +56,53 @@ func Test_DurDumperString(t *testing.T) {
 
 	t.Run("zero value", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		dur := 0 * time.Second
 		val := reflect.ValueOf(dur)
 
 		// --- When ---
-		have := DurDumperString(Dump{}, 0, val)
+		have := DurDumperString(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, `"0s"`, have)
+	})
+
+	t.Run("uses level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig())
+		dur := time.Second
+		val := reflect.ValueOf(dur)
+
+		// --- When ---
+		have := DurDumperString(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "\t\"1s\"", have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig(WithIndent(2)))
+		dur := time.Second
+		val := reflect.ValueOf(dur)
+
+		// --- When ---
+		have := DurDumperString(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "\t\t\t\"1s\"", have)
 	})
 }
 
 func Test_DurDumperSeconds(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		dur := 1500 * time.Millisecond
 		val := reflect.ValueOf(dur)
 
 		// --- When ---
-		have := DurDumperSeconds(Dump{}, 0, val)
+		have := DurDumperSeconds(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, "1.5", have)
@@ -78,13 +110,40 @@ func Test_DurDumperSeconds(t *testing.T) {
 
 	t.Run("zero value", func(t *testing.T) {
 		// --- Given ---
+		dmp := New(NewConfig())
 		dur := 0 * time.Second
 		val := reflect.ValueOf(dur)
 
 		// --- When ---
-		have := DurDumperSeconds(Dump{}, 0, val)
+		have := DurDumperSeconds(dmp, 0, val)
 
 		// --- Then ---
 		affirm.Equal(t, "0", have)
+	})
+
+	t.Run("uses level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig())
+		dur := time.Second
+		val := reflect.ValueOf(dur)
+
+		// --- When ---
+		have := DurDumperSeconds(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "\t1", have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig(WithIndent(2)))
+		dur := time.Second
+		val := reflect.ValueOf(dur)
+
+		// --- When ---
+		have := DurDumperSeconds(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "\t\t\t1", have)
 	})
 }

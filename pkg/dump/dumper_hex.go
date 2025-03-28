@@ -18,15 +18,19 @@ import (
 // Returns [valErrUsage] ("<dump-usage-error>") string if kind cannot be
 // matched. It requires val to be dereferenced value and returns its string
 // representation in format defined by [Dump] configuration.
-func hexPtrDumper(_ Dump, _ int, val reflect.Value) string {
+func hexPtrDumper(dmp Dump, lvl int, val reflect.Value) string {
+	var str string
 	switch val.Kind() {
 	case reflect.Uint8:
-		return fmt.Sprintf("0x%x", val.Interface())
+		str = fmt.Sprintf("0x%x", val.Interface())
 	case reflect.Uintptr:
-		return fmt.Sprintf("<0x%x>", val.Uint())
+		str = fmt.Sprintf("<0x%x>", val.Uint())
 	case reflect.UnsafePointer:
-		return fmt.Sprintf("<0x%x>", val.Pointer())
+		str = fmt.Sprintf("<0x%x>", val.Pointer())
 	default:
-		return valErrUsage
+		str = valErrUsage
 	}
+
+	prn := newPrinter(dmp.cfg)
+	return prn.tab(dmp.cfg.Indent + lvl).write(str).String()
 }

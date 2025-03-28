@@ -17,13 +17,19 @@ import (
 // matched. It requires val to be dereferenced value and returns its string
 // representation in format defined by [Dump] configuration.
 func chanDumper(dmp Dump, lvl int, val reflect.Value) string {
-	if val.Kind() == reflect.Chan {
+	var str string
+	switch val.Kind() {
+	case reflect.Chan:
 		ptrAddr := valAddr
 		if dmp.cfg.PtrAddr {
 			ptr := reflect.ValueOf(val.Pointer())
 			ptrAddr = hexPtrDumper(dmp, lvl, ptr)
 		}
-		return fmt.Sprintf("(%s)(%s)", val.Type(), ptrAddr)
+		str = fmt.Sprintf("(%s)(%s)", val.Type(), ptrAddr)
+	default:
+		str = valErrUsage
 	}
-	return valErrUsage
+
+	prn := newPrinter(dmp.cfg)
+	return prn.tab(dmp.cfg.Indent + lvl).write(str).String()
 }

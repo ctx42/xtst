@@ -41,8 +41,8 @@ func Test_Name(t *testing.T) {
 		},
 	}
 
-	wantD := dump.DefaultDump().DumpAny(want)
-	haveD := dump.DefaultDump().DumpAny(have)
+	wantD := dump.Default().Any(want)
+	haveD := dump.Default().Any(have)
 
 	// --- When ---
 	edits := diff.Strings(wantD, haveD)

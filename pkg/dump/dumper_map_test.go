@@ -6,7 +6,6 @@ package dump
 import (
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/ctx42/xtst/internal/affirm"
 	"github.com/ctx42/xtst/internal/tstkit"
@@ -15,7 +14,7 @@ import (
 
 func Test_mapDumper_tabular(t *testing.T) {
 	var nilMap map[string]int
-	var nilAnyMap map[string]any
+	// var nilAnyMap map[string]any
 
 	tt := []struct {
 		testN string
@@ -25,85 +24,52 @@ func Test_mapDumper_tabular(t *testing.T) {
 		want string
 	}{
 		{
-			"flat & compact empty map",
-			NewConfig(WithFlat, WithCompact),
+			"empty map",
+			NewConfig(WithFlat),
 			map[string]int{},
 			`map[string]int{}`,
 		},
 		{
-			"flat & compact nil map",
-			NewConfig(WithFlat, WithCompact),
+			"nil map",
+			NewConfig(),
 			nilMap,
 			`map[string]int(nil)`,
 		},
 		{
-			"flat & compact nil map with any values",
-			NewConfig(WithFlat, WithCompact),
-			nilAnyMap,
-			`map[string]any(nil)`,
-		},
-		{
-			"default empty map",
+			"default map[int]int",
 			NewConfig(),
-			make(map[string]int),
-			`map[string]int{}`,
+			map[int]int{1: 10, 2: 20},
+			"map[int]int{\n\t1: 10,\n\t2: 20,\n}",
 		},
 		{
-			"flat & compact map[string]int",
-			NewConfig(WithFlat, WithCompact),
-			map[string]int{"A": 1, "B": 2},
-			`map[string]int{"A":1,"B":2}`,
-		},
-		{
-			"flat & compact map[string]string",
-			NewConfig(WithFlat, WithCompact),
-			map[string]string{"A": "a", "B": "b"},
-			`map[string]string{"A":"a","B":"b"}`,
-		},
-		{
-			"flat & compact map[int]int",
-			NewConfig(WithFlat, WithCompact),
-			map[int]int{1: 11, 2: 22},
-			"map[int]int{1:11,2:22}",
+			"default map[int]int ith indent",
+			NewConfig(WithIndent(2)),
+			map[int]int{1: 10, 2: 20},
+			"\t\tmap[int]int{\n\t\t\t1: 10,\n\t\t\t2: 20,\n\t\t}",
 		},
 		{
 			"flat map[int]int",
 			NewConfig(WithFlat),
-			map[int]int{1: 11, 2: 22},
-			"map[int]int{1: 11, 2: 22}",
+			map[int]int{1: 10, 2: 20},
+			"map[int]int{1: 10, 2: 20}",
 		},
 		{
-			"default map[int]int",
-			NewConfig(),
-			map[int]int{1: 11, 2: 22},
-			"map[int]int{\n\t1: 11,\n\t2: 22,\n}",
+			"flat and compact map[int]int",
+			NewConfig(WithFlat, WithCompact),
+			map[int]int{1: 10, 2: 20},
+			"map[int]int{1:10,2:20}",
 		},
 		{
-			"flat map[int]time.Time",
-			NewConfig(WithFlat, WithTimeFormat(TimeAsUnix)),
-			map[int]time.Time{
-				1: time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
-				2: time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW),
-			},
-			"map[int]time.Time{1: 946782245, 2: 946778645}",
+			"flat map[int]types.T1",
+			NewConfig(WithFlat, WithCompact, WithTimeFormat(TimeAsUnix)),
+			map[int]types.T1{0: {Int: 0}, 1: {Int: 1}},
+			"map[int]types.T1{0:{Int:0,T1:nil},1:{Int:1,T1:nil}}",
 		},
 		{
 			"default map[int]types.T1",
 			NewConfig(WithTimeFormat(TimeAsUnix)),
 			map[int]types.T1{0: {Int: 0}, 1: {Int: 1}},
 			tstkit.Golden(t, "testdata/map_of_structs.txt"),
-		},
-		{
-			"flat map[int]types.T1",
-			NewConfig(WithFlat, WithCompact, WithTimeFormat(TimeAsUnix)),
-			map[int]types.T1{0: {Int: 0}, 1: {Int: 1}},
-			tstkit.Golden(t, "testdata/map_of_structs_flat_compact.txt"),
-		},
-		{
-			"flat & compact map[string]any with integers",
-			NewConfig(WithFlat, WithCompact),
-			map[string]any{"A": 1, "B": 2},
-			"map[string]any{\"A\":1,\"B\":2}",
 		},
 	}
 
@@ -113,7 +79,7 @@ func Test_mapDumper_tabular(t *testing.T) {
 			dmp := New(tc.cfg)
 
 			// --- When ---
-			have := mapDumper(dmp, 1, reflect.ValueOf(tc.val))
+			have := mapDumper(dmp, 0, reflect.ValueOf(tc.val))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, have)

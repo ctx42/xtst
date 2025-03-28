@@ -42,20 +42,25 @@ type Dump struct {
 // New returns new instance of [Dump].
 func New(cfg Config) Dump { return Dump{cfg: cfg} }
 
-// DefaultDump is convenience method returning [Dump] instance with default
+// Default is convenience method returning [Dump] instance with default
 // configuration.
-func DefaultDump() Dump { return New(NewConfig()) }
+func Default() Dump { return New(NewConfig()) }
 
-// DumpAny is a convenience method dumping given argument as a string.
-func (dmp Dump) DumpAny(val any) string {
-	return dmp.Dump(0, reflect.ValueOf(val))
+// Any dumps any value to its string representation.
+func (dmp Dump) Any(val any) string {
+	return dmp.value(0, reflect.ValueOf(val))
 }
 
-// Dump dumps given value as a string.
+// Value dumps a [reflect.Value] representation of a value as a string.
+func (dmp Dump) Value(val reflect.Value) string {
+	return dmp.value(0, val)
+}
+
+// value dumps given a value as a string.
 //
 // nolint: cyclop
-func (dmp Dump) Dump(lvl int, val reflect.Value) string {
-	if lvl > dmp.cfg.Depth {
+func (dmp Dump) value(lvl int, val reflect.Value) string {
+	if lvl > dmp.cfg.MaxDepth {
 		return valMaxNesting
 	}
 
@@ -109,26 +114,26 @@ func (dmp Dump) Dump(lvl int, val reflect.Value) string {
 		str = funcDumper(dmp, lvl, val)
 
 	case reflect.Interface:
-		str = dmp.Dump(lvl, val.Elem())
+		str = dmp.value(lvl, val.Elem())
 
 	case reflect.Map:
-		str = mapDumper(dmp, lvl+1, val)
+		str = mapDumper(dmp, lvl, val)
 
 	case reflect.Pointer:
 		if val.IsNil() {
 			str = valNil
 		} else {
-			str = dmp.Dump(lvl, val.Elem())
+			str = dmp.value(lvl, val.Elem())
 		}
 
 	case reflect.Slice:
-		str = sliceDumper(dmp, lvl+1, val)
+		str = sliceDumper(dmp, lvl, val)
 
 	case reflect.String:
 		str = simpleDumper(dmp, lvl, val)
 
 	case reflect.Struct:
-		str = structDumper(dmp, lvl+1, val)
+		str = structDumper(dmp, lvl, val)
 
 	case reflect.UnsafePointer:
 		str = hexPtrDumper(dmp, lvl, val)

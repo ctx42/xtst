@@ -117,7 +117,7 @@ func Test_Has(t *testing.T) {
 		affirm.NotNil(t, err)
 		wMsg := "expected slice to have a value:\n" +
 			"\t want: 42\n" +
-			"\tslice: []int{\n1,\n2,\n3,\n}"
+			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -134,7 +134,7 @@ func Test_Has(t *testing.T) {
 		wMsg := "expected slice to have a value:\n" +
 			"\ttrail: type.field\n" +
 			"\t want: 42\n" +
-			"\tslice: []int{\n1,\n2,\n3,\n}"
+			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -163,7 +163,7 @@ func Test_HasNo(t *testing.T) {
 		wMsg := "expected slice not to have value:\n" +
 			"\t want: 2\n" +
 			"\tindex: 1\n" +
-			"\tslice: []int{\n1,\n2,\n3,\n}"
+			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -181,7 +181,7 @@ func Test_HasNo(t *testing.T) {
 			"\ttrail: type.field\n" +
 			"\t want: 2\n" +
 			"\tindex: 1\n" +
-			"\tslice: []int{\n1,\n2,\n3,\n}"
+			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -392,7 +392,7 @@ func Test_SliceSubset(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected \"want\" slice to be a subset of \"have\" slice:\n" +
-			"\tmissing values: []string{\n\"X\",\n\"Y\",\n}"
+			"\tmissing values: []string{\n\t\"X\",\n\t\"Y\",\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -409,7 +409,7 @@ func Test_SliceSubset(t *testing.T) {
 		affirm.NotNil(t, err)
 		wMsg := "expected \"want\" slice to be a subset of \"have\" slice:\n" +
 			"\t         trail: type.field\n" +
-			"\tmissing values: []string{\n\"X\",\n\"Y\",\n}"
+			"\tmissing values: []string{\n\t\"X\",\n\t\"Y\",\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

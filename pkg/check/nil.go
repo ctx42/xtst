@@ -20,7 +20,7 @@ func Nil(have any, opts ...Option) error {
 	const mHeader = "expected value to be nil"
 	return notice.New(mHeader).Want("<nil>").
 		Trail(ops.Trail).
-		Have("%s", dump.New(ops.DumpCfg).DumpAny(have))
+		Have("%s", dump.New(ops.DumpCfg).Any(have))
 }
 
 // isNil returns true if "have" is nil.

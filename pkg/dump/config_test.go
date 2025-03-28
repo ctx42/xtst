@@ -56,27 +56,28 @@ func Test_WithTimeFormat(t *testing.T) {
 	affirm.Equal(t, TimeAsUnix, cfg.TimeFormat)
 }
 
-func Test_WithDepth(t *testing.T) {
+func Test_WithMaxDepth(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	opt := WithDepth(10)
+	opt := WithMaxDepth(10)
 
 	// --- Then ---
 	opt(cfg)
-	affirm.Equal(t, 10, cfg.Depth)
+	affirm.Equal(t, 10, cfg.MaxDepth)
 }
 
-func Test_WithPrintType(t *testing.T) {
+func Test_WithIndent(t *testing.T) {
 	// --- Given ---
 	cfg := &Config{}
 
 	// --- When ---
-	WithPrintType(cfg)
+	opt := WithIndent(10)
 
 	// --- Then ---
-	affirm.True(t, cfg.PrintType)
+	opt(cfg)
+	affirm.Equal(t, 10, cfg.Indent)
 }
 
 func Test_WithDumper(t *testing.T) {
@@ -87,7 +88,7 @@ func Test_WithDumper(t *testing.T) {
 	WithDumper(time.Time{}, GetTimeDumper(time.Kitchen))(&cfg)
 
 	// --- Then ---
-	dmp := New(cfg).DumpAny(time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC))
+	dmp := New(cfg).Any(time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC))
 	affirm.Equal(t, `"3:04AM"`, dmp)
 }
 
@@ -103,7 +104,8 @@ func Test_NewConfig(t *testing.T) {
 	affirm.False(t, have.PtrAddr)
 	affirm.True(t, have.UseAny)
 	affirm.True(t, len(have.Dumpers) == 3)
-	affirm.Equal(t, DefaultDepth, have.Depth)
+	affirm.Equal(t, DefaultDepth, have.MaxDepth)
+	affirm.Equal(t, DefaultIndent, have.Indent)
 
 	val, ok := have.Dumpers[typDur]
 	affirm.True(t, ok)

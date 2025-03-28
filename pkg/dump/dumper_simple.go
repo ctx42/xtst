@@ -30,7 +30,7 @@ import (
 //
 // It requires val to be dereferenced value and returns its string
 // representation in format defined by [Dump] configuration.
-func simpleDumper(dmp Dump, _ int, val reflect.Value) string {
+func simpleDumper(dmp Dump, lvl int, val reflect.Value) string {
 	v := val.Interface()
 
 	var format string
@@ -42,12 +42,14 @@ func simpleDumper(dmp Dump, _ int, val reflect.Value) string {
 		}
 
 	case reflect.Float32:
-		// nolint: forcetypeassert
-		return strconv.FormatFloat(float64(v.(float32)), 'f', -1, 32)
+		format = `%s`
+		f := float64(v.(float32)) // nolint: forcetypeassert
+		v = strconv.FormatFloat(f, 'f', -1, 32)
 
 	case reflect.Float64:
-		// nolint: forcetypeassert
-		return strconv.FormatFloat(v.(float64), 'f', -1, 64)
+		format = `%s`
+		f := v.(float64) // nolint: forcetypeassert
+		v = strconv.FormatFloat(f, 'f', -1, 64)
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		format = `%d`
@@ -60,5 +62,6 @@ func simpleDumper(dmp Dump, _ int, val reflect.Value) string {
 		format = `%v`
 	}
 
-	return fmt.Sprintf(format, v)
+	prn := newPrinter(dmp.cfg)
+	return prn.tab(dmp.cfg.Indent + lvl).write(fmt.Sprintf(format, v)).String()
 }

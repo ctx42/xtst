@@ -112,7 +112,7 @@ func DefaultOptions() Options {
 	return Options{
 		DumpCfg: dump.NewConfig(
 			dump.WithTimeFormat(DumpTimeFormat),
-			dump.WithDepth(DumpDepth),
+			dump.WithMaxDepth(DumpDepth),
 		),
 		Recent:     RecentDuration,
 		TimeFormat: ParseTimeFormat,

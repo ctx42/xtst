@@ -34,10 +34,10 @@ func Test_New(t *testing.T) {
 	})
 }
 
-func Test_DefaultDump(t *testing.T) {
+func Test_Default(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- When ---
-		dmp := DefaultDump()
+		dmp := Default()
 
 		// --- Then ---
 		affirm.False(t, dmp.cfg.Flat)
@@ -47,7 +47,7 @@ func Test_DefaultDump(t *testing.T) {
 		affirm.False(t, dmp.cfg.PtrAddr)
 		affirm.True(t, dmp.cfg.UseAny)
 		affirm.True(t, len(dmp.cfg.Dumpers) == 3)
-		affirm.Equal(t, 6, dmp.cfg.Depth)
+		affirm.Equal(t, 6, dmp.cfg.MaxDepth)
 
 		val, ok := dmp.cfg.Dumpers[typDur]
 		affirm.True(t, ok)
@@ -63,7 +63,7 @@ func Test_DefaultDump(t *testing.T) {
 	})
 }
 
-func Test_Dump_Dump_smoke_tabular(t *testing.T) {
+func Test_Dump_Any_Value_smoke_tabular(t *testing.T) {
 	var itfNil types.TItf
 	var itfVal, itfPtr types.TItf
 	var sNil *types.TA
@@ -141,8 +141,8 @@ func Test_Dump_Dump_smoke_tabular(t *testing.T) {
 			dmp := New(tc.cfg)
 
 			// --- When ---
-			haveAny := dmp.DumpAny(tc.v)
-			haveVal := dmp.Dump(0, reflect.ValueOf(tc.v))
+			haveAny := dmp.Any(tc.v)
+			haveVal := dmp.Value(reflect.ValueOf(tc.v))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, haveAny)
@@ -151,14 +151,14 @@ func Test_Dump_Dump_smoke_tabular(t *testing.T) {
 	}
 }
 
-func Test_Dump_Dump(t *testing.T) {
+func Test_Dump_Any(t *testing.T) {
 	t.Run("nil interface value", func(t *testing.T) {
 		// --- Given ---
 		var itfNil types.TItf
-		dmp := DefaultDump()
+		dmp := Default()
 
 		// --- When ---
-		have := dmp.Dump(0, reflect.ValueOf(itfNil))
+		have := dmp.Any(itfNil)
 
 		// --- Then ---
 		affirm.Equal(t, valNil, have)
@@ -174,7 +174,7 @@ func Test_Dump_Dump(t *testing.T) {
 		dmp := New(NewConfig(WithFlat, WithCompact))
 
 		// --- When ---
-		have := dmp.Dump(1, reflect.ValueOf(val))
+		have := dmp.Any(val)
 
 		// --- Then ---
 		want := `[][]any{{"str00",0,"str02"},{"str10",1,"str12"},{"str10",1,nil}}`
@@ -199,7 +199,7 @@ func Test_Dump_Dump(t *testing.T) {
 		dmp := New(NewConfig(WithFlat, WithCompact))
 
 		// --- When ---
-		have := dmp.Dump(0, reflect.ValueOf(val))
+		have := dmp.Any(val)
 
 		// --- Then ---
 		affirm.Equal(t, "{S0:{S1:{S2:{S4:{S5:{S6:{VAL:<...>}}}}}}}", have)
@@ -230,10 +230,43 @@ func Test_Dump_Dump(t *testing.T) {
 		}
 
 		// --- When ---
-		have := DefaultDump().DumpAny(val)
+		have := Default().Any(val)
 
 		// --- Then ---
 		want := tstkit.Golden(t, "testdata/struct_nested.txt")
+		affirm.Equal(t, want, have)
+	})
+
+	t.Run("format nested slices indented twice", func(t *testing.T) {
+		// --- Given ---
+		type Node struct {
+			Value    int
+			Children []*Node
+		}
+
+		val := &Node{
+			Value: 1,
+			Children: []*Node{
+				{
+					Value: 2,
+				},
+				{
+					Value: 3,
+					Children: []*Node{
+						{
+							Value: 4,
+						},
+					},
+				},
+			},
+		}
+		dmp := New(NewConfig(WithIndent(2)))
+
+		// --- When ---
+		have := dmp.Any(val)
+
+		// --- Then ---
+		want := tstkit.Golden(t, "testdata/struct_nested_with_indent.txt")
 		affirm.Equal(t, want, have)
 	})
 }

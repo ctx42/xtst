@@ -24,10 +24,10 @@ func Test_dumpStruct(t *testing.T) {
 			Loc: types.WAW,
 			TAp: nil,
 		}
-		dmp := DefaultDump()
+		dmp := New(NewConfig())
 
 		// --- When ---
-		have := structDumper(dmp, 1, reflect.ValueOf(s))
+		have := structDumper(dmp, 0, reflect.ValueOf(s))
 
 		// --- Then ---
 		want := tstkit.Golden(t, "testdata/struct_simple.txt")
@@ -62,13 +62,31 @@ func Test_dumpStruct(t *testing.T) {
 				Int: 2,
 			},
 		}
-		dmp := DefaultDump()
+		dmp := New(NewConfig())
 
 		// --- When ---
-		have := structDumper(dmp, 1, reflect.ValueOf(s))
+		have := structDumper(dmp, 0, reflect.ValueOf(s))
 
 		// --- Then ---
 		want := tstkit.Golden(t, "testdata/struct_multi_level.txt")
+		affirm.Equal(t, want, have)
+	})
+
+	t.Run("multi level struct with indent", func(t *testing.T) {
+		// --- Given ---
+		s := types.T1{
+			Int: 1,
+			T1: &types.T1{
+				Int: 2,
+			},
+		}
+		dmp := New(NewConfig(WithIndent(2)))
+
+		// --- When ---
+		have := structDumper(dmp, 0, reflect.ValueOf(s))
+
+		// --- Then ---
+		want := tstkit.Golden(t, "testdata/struct_multi_level_indent.txt")
 		affirm.Equal(t, want, have)
 	})
 

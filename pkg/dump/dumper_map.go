@@ -17,6 +17,7 @@ import (
 // nolint: cyclop
 func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
 	prn := newPrinter(dmp.cfg)
+	prn.tab(dmp.cfg.Indent + lvl)
 
 	if dmp.cfg.PrintType {
 		keyTyp := val.Type().Key()
@@ -36,22 +37,25 @@ func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
 		return prn.write("(nil)").String()
 	}
 
-	num := len(keys)
+	num := val.Len()
 	prn.write("{").nli(num)
+
 	dmp.cfg.PrintType = false // Don't print types for map values.
 	for i, key := range keys {
 		last := i == num-1
 
-		prn.tab(lvl)
-		prn.write(dmp.Dump(lvl, key))
+		sub := dmp.value(lvl+1, key)
+		prn.write(sub)
 		prn.write(":").space()
 
-		sub := dmp.Dump(lvl, val.MapIndex(key))
+		sub = dmp.value(lvl+1, val.MapIndex(key))
+		sub = strings.TrimLeft(sub, "\t")
+
 		dmp.cfg.PrintType = true
 		prn.write(sub)
 		prn.comma(last).sep(last).nl()
 	}
-	prn.tab(lvl - 1).write("}")
+	prn.tab(dmp.cfg.Indent + lvl).write("}")
 
 	return prn.String()
 }

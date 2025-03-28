@@ -40,7 +40,7 @@ func Has[T comparable](want T, bag []T, opts ...Option) error {
 	return notice.New("expected slice to have a value").
 		Trail(ops.Trail).
 		Want("%#v", want).
-		Append("slice", "%s", dmp.DumpAny(bag))
+		Append("slice", "%s", dmp.Any(bag))
 }
 
 // HasNo checks slice does not have "want" value. Returns nil if it doesn't,
@@ -55,7 +55,7 @@ func HasNo[T comparable](want T, set []T, opts ...Option) error {
 				Trail(ops.Trail).
 				Want("%#v", want).
 				Append("index", "%d", i).
-				Append("slice", "%s", dmp.DumpAny(set))
+				Append("slice", "%s", dmp.Any(set))
 		}
 	}
 	return nil
@@ -74,7 +74,7 @@ func HasKey[K comparable, V any](key K, set map[K]V, opts ...Option) (V, error) 
 	return val, notice.New("expected map to have a key").
 		Trail(ops.Trail).
 		Append("key", "%#v", key).
-		Append("map", "%s", dmp.DumpAny(set))
+		Append("map", "%s", dmp.Any(set))
 }
 
 // HasNoKey checks map has no key. Returns nil if it doesn't, otherwise it
@@ -90,7 +90,7 @@ func HasNoKey[K comparable, V any](key K, set map[K]V, opts ...Option) error {
 		Trail(ops.Trail).
 		Append("key", "%#v", key).
 		Append("value", "%#v", val).
-		Append("map", "%s", dmp.DumpAny(set))
+		Append("map", "%s", dmp.Any(set))
 }
 
 // HasKeyValue checks map has a key with given value. Returns nil if it doesn't,
@@ -138,5 +138,5 @@ func SliceSubset[V comparable](want, have []V, opts ...Option) error {
 	const hHeader = "expected \"want\" slice to be a subset of \"have\" slice"
 	return notice.New(hHeader).
 		Trail(ops.Trail).
-		Append("missing values", "%s", dmp.DumpAny(missing))
+		Append("missing values", "%s", dmp.Any(missing))
 }

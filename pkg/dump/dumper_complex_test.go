@@ -34,10 +34,35 @@ func Test_complexDumper_tabular(t *testing.T) {
 
 func Test_complexDumper(t *testing.T) {
 	t.Run("invalid usage", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig())
+
 		// --- When ---
-		have := complexDumper(Dump{}, 0, reflect.ValueOf(123))
+		have := complexDumper(dmp, 0, reflect.ValueOf(123))
 
 		// --- Then ---
 		affirm.Equal(t, valErrUsage, have)
+	})
+
+	t.Run("invalid usage uses level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig())
+
+		// --- When ---
+		have := complexDumper(dmp, 1, reflect.ValueOf(123))
+
+		// --- Then ---
+		affirm.Equal(t, "\t"+valErrUsage, have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := New(NewConfig(WithIndent(2)))
+
+		// --- When ---
+		have := complexDumper(dmp, 1, reflect.ValueOf(123))
+
+		// --- Then ---
+		affirm.Equal(t, "\t\t\t"+valErrUsage, have)
 	})
 }

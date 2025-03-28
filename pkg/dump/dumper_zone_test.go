@@ -15,25 +15,34 @@ func Test_zoneDumper_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		cfg  Config
-		val  any
-		want string
+		val    any
+		indent int
+		level  int
+		want   string
 	}{
 		{
 			"timezone",
-			NewConfig(),
 			*types.WAW,
+			0,
+			0,
 			`"Europe/Warsaw"`,
+		},
+		{
+			"uses indent and level",
+			*types.WAW,
+			2,
+			1,
+			"\t\t\t\"Europe/Warsaw\"",
 		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
-			dmp := New(tc.cfg)
+			dmp := New(NewConfig(WithIndent(tc.indent)))
 
 			// --- When ---
-			have := zoneDumper(dmp, 0, reflect.ValueOf(tc.val))
+			have := zoneDumper(dmp, tc.level, reflect.ValueOf(tc.val))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, have)
