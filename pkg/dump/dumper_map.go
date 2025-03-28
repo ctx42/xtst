@@ -49,7 +49,7 @@ func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
 		prn.write(":").space()
 
 		sub = dmp.value(lvl+1, val.MapIndex(key))
-		sub = strings.TrimLeft(sub, "\t")
+		sub = strings.TrimLeft(sub, " \t")
 
 		dmp.cfg.PrintType = true
 		prn.write(sub)

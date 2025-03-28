@@ -28,8 +28,8 @@ func Test_FileExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to an existing file:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/not_existing.txt"
+			"  trail: type.field\n" +
+			"   path: testdata/not_existing.txt"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -43,8 +43,8 @@ func Test_FileExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to be existing file:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/dir"
+			"  trail: type.field\n" +
+			"   path: testdata/dir"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -57,7 +57,7 @@ func Test_NoFileExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to not existing file:\n" +
-			"\tpath: testdata/file.txt"
+			"  path: testdata/file.txt"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -79,8 +79,8 @@ func Test_NoFileExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to be not existing file:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/dir"
+			"  trail: type.field\n" +
+			"   path: testdata/dir"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -109,8 +109,8 @@ func Test_FileContain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected file to contain string:\n" +
-			"\tpath: testdata/file.txt\n" +
-			"\twant: \"not there\""
+			"  path: testdata/file.txt\n" +
+			"  want: \"not there\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -124,9 +124,9 @@ func Test_FileContain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected file to contain string:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/file.txt\n" +
-			"\t want: \"not there\""
+			"  trail: type.field\n" +
+			"   path: testdata/file.txt\n" +
+			"   want: \"not there\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -140,9 +140,9 @@ func Test_FileContain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected no error reading file:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/not_existing.txt\n" +
-			"\terror: open testdata/not_existing.txt: no such file or directory"
+			"  trail: type.field\n" +
+			"   path: testdata/not_existing.txt\n" +
+			"  error: open testdata/not_existing.txt: no such file or directory"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -153,8 +153,8 @@ func Test_FileContain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected no error reading file:\n" +
-			"\t path: testdata/dir\n" +
-			"\terror: read testdata/dir: is a directory"
+			"   path: testdata/dir\n" +
+			"  error: read testdata/dir: is a directory"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -178,8 +178,8 @@ func Test_DirExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to an existing directory:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/not_existing_dir"
+			"  trail: type.field\n" +
+			"   path: testdata/not_existing_dir"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -193,8 +193,8 @@ func Test_DirExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to be existing directory:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/file.txt"
+			"  trail: type.field\n" +
+			"   path: testdata/file.txt"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -210,8 +210,8 @@ func Test_NoDirExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to not existing directory:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/dir"
+			"  trail: type.field\n" +
+			"   path: testdata/dir"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -233,8 +233,8 @@ func Test_NoDirExist(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected path to be not existing directory:\n" +
-			"\ttrail: type.field\n" +
-			"\t path: testdata/file.txt"
+			"  trail: type.field\n" +
+			"   path: testdata/file.txt"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

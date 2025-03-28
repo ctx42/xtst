@@ -37,8 +37,8 @@ func Test_Regexp(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected regexp to match:\n" +
-			"\tregexp: ^abc42.*$\n" +
-			"\t  have: \"abc1234\""
+			"  regexp: ^abc42.*$\n" +
+			"    have: \"abc1234\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -52,9 +52,9 @@ func Test_Regexp(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected regexp to match:\n" +
-			"\t trail: type.field\n" +
-			"\tregexp: ^abc42.*$\n" +
-			"\t  have: \"abc1234\""
+			"   trail: type.field\n" +
+			"  regexp: ^abc42.*$\n" +
+			"    have: \"abc1234\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -65,7 +65,7 @@ func Test_Regexp(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected valid regexp:\n" +
-			"\terror: \"error parsing regexp: missing closing ]: `[p`\""
+			"  error: \"error parsing regexp: missing closing ]: `[p`\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

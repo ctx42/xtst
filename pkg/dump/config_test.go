@@ -80,6 +80,18 @@ func Test_WithIndent(t *testing.T) {
 	affirm.Equal(t, 10, cfg.Indent)
 }
 
+func Test_WithTabWidth(t *testing.T) {
+	// --- Given ---
+	cfg := &Config{}
+
+	// --- When ---
+	opt := WithTabWidth(10)
+
+	// --- Then ---
+	opt(cfg)
+	affirm.Equal(t, 10, cfg.TabWidth)
+}
+
 func Test_WithDumper(t *testing.T) {
 	// --- Given ---
 	cfg := Config{Dumpers: make(map[reflect.Type]Dumper)}
@@ -106,6 +118,7 @@ func Test_NewConfig(t *testing.T) {
 	affirm.True(t, len(have.Dumpers) == 3)
 	affirm.Equal(t, DefaultDepth, have.MaxDepth)
 	affirm.Equal(t, DefaultIndent, have.Indent)
+	affirm.Equal(t, DefaultTabWith, have.TabWidth)
 
 	val, ok := have.Dumpers[typDur]
 	affirm.True(t, ok)

@@ -103,7 +103,7 @@ func Test_TimeDumperFmt(t *testing.T) {
 		have := dumper(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t\t\"2000-01-02\"", have)
+		affirm.Equal(t, "      \"2000-01-02\"", have)
 	})
 }
 
@@ -156,7 +156,7 @@ func Test_TimeDumperUnix(t *testing.T) {
 		have := TimeDumperUnix(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t\t946778645", have)
+		affirm.Equal(t, "      946778645", have)
 	})
 }
 
@@ -241,7 +241,7 @@ func Test_TimeDumperDate(t *testing.T) {
 		have := TimeDumperDate(dmp, 1, val)
 
 		// --- Then ---
-		want := "\t\t\ttime.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)"
+		want := "      time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC)"
 		affirm.Equal(t, want, have)
 	})
 }

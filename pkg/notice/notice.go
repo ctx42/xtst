@@ -182,7 +182,7 @@ func (msg *Notice) Error() string {
 	for i := range msg.Order {
 		display := names[i]
 		given := msg.Order[i]
-		m += fmt.Sprintf("\t%s: %s", display, msg.Rows[given])
+		m += fmt.Sprintf("  %s: %s", display, msg.Rows[given])
 		if i < len(msg.Order)-1 {
 			m += "\n"
 		}

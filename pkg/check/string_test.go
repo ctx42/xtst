@@ -21,9 +21,9 @@ func Test_Contain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected string to contain substring:\n" +
-			"\t    trail: type.field\n" +
-			"\t   string: \"xyz\"\n" +
-			"\tsubstring: \"abc\""
+			"      trail: type.field\n" +
+			"     string: \"xyz\"\n" +
+			"  substring: \"abc\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -70,8 +70,8 @@ func Test_Contain_error_tabular(t *testing.T) {
 			// --- Then ---
 			affirm.NotNil(t, err)
 			wMsg := "expected string to contain substring:\n" +
-				"\t   string: %q\n" +
-				"\tsubstring: %q"
+				"     string: %q\n" +
+				"  substring: %q"
 			wMsg = fmt.Sprintf(wMsg, tc.s, tc.sub)
 			affirm.Equal(t, wMsg, err.Error())
 		})
@@ -89,9 +89,9 @@ func Test_NotContain(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected string not to contain substring:\n" +
-			"\t    trail: type.field\n" +
-			"\t   string: \"abc\"\n" +
-			"\tsubstring: \"abc\""
+			"      trail: type.field\n" +
+			"     string: \"abc\"\n" +
+			"  substring: \"abc\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -137,8 +137,8 @@ func Test_NotContain_error_tabular(t *testing.T) {
 			// --- Then ---
 			affirm.NotNil(t, err)
 			wMsg := "expected string not to contain substring:\n" +
-				"\t   string: %q\n" +
-				"\tsubstring: %q"
+				"     string: %q\n" +
+				"  substring: %q"
 			wMsg = fmt.Sprintf(wMsg, tc.s, tc.sub)
 			affirm.Equal(t, wMsg, err.Error())
 		})

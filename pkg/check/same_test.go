@@ -34,8 +34,8 @@ func Test_Same(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected same pointers:\n" +
-			"\twant: %%!p(types.TPtr={0}) types.TPtr{Val:\"0\"}\n" +
-			"\thave: %p &types.TPtr{Val:\"0\"}"
+			"  want: %%!p(types.TPtr={0}) types.TPtr{Val:\"0\"}\n" +
+			"  have: %p &types.TPtr{Val:\"0\"}"
 		wMsg = fmt.Sprintf(wMsg, have)
 		affirm.Equal(t, wMsg, err.Error())
 	})
@@ -51,8 +51,8 @@ func Test_Same(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected same pointers:\n" +
-			"\twant: %p &types.TPtr{Val:\"0\"}\n" +
-			"\thave: %%!p(types.TPtr={0}) types.TPtr{Val:\"0\"}"
+			"  want: %p &types.TPtr{Val:\"0\"}\n" +
+			"  have: %%!p(types.TPtr={0}) types.TPtr{Val:\"0\"}"
 		wMsg = fmt.Sprintf(wMsg, want)
 		affirm.Equal(t, wMsg, err.Error())
 	})
@@ -68,8 +68,8 @@ func Test_Same(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected same pointers:\n" +
-			"\twant: %p &types.TPtr{Val:\"0\"}\n" +
-			"\thave: %p &types.TPtr{Val:\"1\"}"
+			"  want: %p &types.TPtr{Val:\"0\"}\n" +
+			"  have: %p &types.TPtr{Val:\"1\"}"
 		wMsg = fmt.Sprintf(wMsg, ptr0, ptr1)
 		affirm.Equal(t, wMsg, err.Error())
 	})
@@ -87,9 +87,9 @@ func Test_Same(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected same pointers:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: %p &types.TPtr{Val:\"0\"}\n" +
-			"\t have: %p &types.TPtr{Val:\"1\"}"
+			"  trail: type.field\n" +
+			"   want: %p &types.TPtr{Val:\"0\"}\n" +
+			"   have: %p &types.TPtr{Val:\"1\"}"
 		wMsg = fmt.Sprintf(wMsg, ptr0, ptr1)
 		affirm.Equal(t, wMsg, err.Error())
 	})
@@ -124,7 +124,7 @@ func Test_Same_tabular(t *testing.T) {
 
 			// --- Then ---
 			if tc.same && have != nil {
-				format := "expected same values:\n\twant: %#v\n\thave: %#v"
+				format := "expected same values:\n  want: %#v\n  have: %#v"
 				t.Errorf(format, tc.p0, tc.p1)
 			}
 		})
@@ -154,8 +154,8 @@ func Test_NotSame(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected not same pointers:\n" +
-			"\twant: %p &types.TPtr{Val:\"0\"}\n" +
-			"\thave: %p &types.TPtr{Val:\"0\"}"
+			"  want: %p &types.TPtr{Val:\"0\"}\n" +
+			"  have: %p &types.TPtr{Val:\"0\"}"
 		wMsg = fmt.Sprintf(wMsg, ptr0, ptr0)
 		affirm.Equal(t, wMsg, err.Error())
 	})
@@ -172,9 +172,9 @@ func Test_NotSame(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected not same pointers:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: %p &types.TPtr{Val:\"0\"}\n" +
-			"\t have: %p &types.TPtr{Val:\"0\"}"
+			"  trail: type.field\n" +
+			"   want: %p &types.TPtr{Val:\"0\"}\n" +
+			"   have: %p &types.TPtr{Val:\"0\"}"
 		wMsg = fmt.Sprintf(wMsg, ptr0, ptr0)
 		affirm.Equal(t, wMsg, err.Error())
 	})

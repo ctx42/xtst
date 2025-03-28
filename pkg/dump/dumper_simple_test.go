@@ -36,9 +36,9 @@ func Test_sampleDumper_tabular(t *testing.T) {
 		{"float64 very small", 0.00000000000003, 0, 0, "0.00000000000003"},
 		{"string", "string", 0, 0, `"string"`},
 
-		{"with indent", 123, 2, 0, "\t\t123"},
-		{"with level", 123, 0, 1, "\t123"},
-		{"with indent and level", 123, 2, 1, "\t\t\t123"},
+		{"with indent", 123, 2, 0, "    123"},
+		{"with level", 123, 0, 1, "  123"},
+		{"with indent and level", 123, 2, 1, "      123"},
 	}
 
 	for _, tc := range tt {

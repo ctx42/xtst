@@ -50,7 +50,7 @@ func Test_ChannelWillClose(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\t trail: type.field")
+		tspy.ExpectLogContain("   trail: type.field")
 		tspy.Close()
 
 		c := make(chan struct{})

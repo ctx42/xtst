@@ -19,7 +19,7 @@ func Test_Count(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected argument \"what\" to be string got int:\n" +
-			"\ttrail: type.field"
+			"  trail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -33,7 +33,7 @@ func Test_Count(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "unsupported \"where\" type: int:\n" +
-			"\ttrail: type.field"
+			"  trail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -47,11 +47,11 @@ func Test_Count(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected string to contain substrings:\n" +
-			"\t     trail: type.field\n" +
-			"\twant count: 2\n" +
-			"\thave count: 3\n" +
-			"\t      what: \"a\"\n" +
-			"\t     where: \"abc abc anc\""
+			"       trail: type.field\n" +
+			"  want count: 2\n" +
+			"  have count: 3\n" +
+			"        what: \"a\"\n" +
+			"       where: \"abc abc anc\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -100,10 +100,10 @@ func Test_Count_error_tabular(t *testing.T) {
 			// --- Then ---
 			affirm.NotNil(t, err)
 			wMsg := "expected string to contain substrings:\n" +
-				"\twant count: %d\n" +
-				"\thave count: %d\n" +
-				"\t      what: %q\n" +
-				"\t     where: %q"
+				"  want count: %d\n" +
+				"  have count: %d\n" +
+				"        what: %q\n" +
+				"       where: %q"
 			wMsg = fmt.Sprintf(wMsg, tc.wantCnt, tc.haveCnt, tc.what, tc.where)
 			affirm.Equal(t, wMsg, err.Error())
 		})
@@ -121,9 +121,9 @@ func Test_SameType(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected same types:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: int\n" +
-			"\t have: float64"
+			"  trail: type.field\n" +
+			"   want: int\n" +
+			"   have: float64"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -171,13 +171,13 @@ func Test_SameType_error_tabular(t *testing.T) {
 			"different types",
 			42,
 			42.0,
-			"expected same types:\n\twant: int\n\thave: float64",
+			"expected same types:\n  want: int\n  have: float64",
 		},
 		{
 			"different ptr types",
 			&types.TPtr{},
 			&types.TVal{},
-			"expected same types:\n\twant: *types.TPtr\n\thave: *types.TVal",
+			"expected same types:\n  want: *types.TPtr\n  have: *types.TVal",
 		},
 	}
 

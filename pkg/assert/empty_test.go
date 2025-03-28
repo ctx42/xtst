@@ -41,7 +41,7 @@ func Test_Empty(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -84,7 +84,7 @@ func Test_NotEmpty(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field")
+		tspy.ExpectLogContain("  trail: type.field")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")

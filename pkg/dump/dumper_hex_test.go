@@ -29,9 +29,9 @@ func Test_hexPtrDumper_tabular(t *testing.T) {
 		{"usage error", 1234, 0, 0, valErrUsage},
 		{"unsafe pointer", unsafe.Pointer(sPtr), 0, 0, fmt.Sprintf("<%p>", sPtr)},
 
-		{"uses indent", 1234, 2, 0, "\t\t" + valErrUsage},
-		{"uses level", 1234, 0, 1, "\t" + valErrUsage},
-		{"uses indent and level", 1234, 2, 1, "\t\t\t" + valErrUsage},
+		{"uses indent", 1234, 2, 0, "    " + valErrUsage},
+		{"uses level", 1234, 0, 1, "  " + valErrUsage},
+		{"uses indent and level", 1234, 2, 1, "      " + valErrUsage},
 	}
 
 	for _, tc := range tt {

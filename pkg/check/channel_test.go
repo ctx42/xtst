@@ -43,13 +43,13 @@ func Test_ChannelWillClose(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := ChannelWillClose("1s5ms", c, opt)
+		err := ChannelWillClose("5ms", c, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "timeout waiting for channel to close:\n" +
-			"\t trail: type.field\n" +
-			"\twithin: 1s5ms"
+			"   trail: type.field\n" +
+			"  within: 5ms"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -63,7 +63,7 @@ func Test_ChannelWillClose(t *testing.T) {
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "[within] failed to parse duration:\n\tvalue: abc"
+		wMsg := "[within] failed to parse duration:\n  value: abc"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

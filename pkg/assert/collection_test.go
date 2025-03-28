@@ -57,7 +57,7 @@ func Test_Len(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -104,7 +104,7 @@ func Test_Has(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		val := []int{1, 2, 3}
@@ -151,7 +151,7 @@ func Test_HasNo(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		val := []int{1, 2, 3}
@@ -201,7 +201,7 @@ func Test_HasKey(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
@@ -250,7 +250,7 @@ func Test_HasNoKey(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
@@ -297,7 +297,7 @@ func Test_HasKeyValue(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
@@ -348,7 +348,7 @@ func Test_SliceSubset(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t         trail: type.field\n")
+		tspy.ExpectLogContain("           trail: type.field\n")
 		tspy.Close()
 
 		sWant := []string{"X", "Y", "A", "B", "C"}

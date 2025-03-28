@@ -41,7 +41,7 @@ func Test_Contain(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t    trail: type.field\n")
+		tspy.ExpectLogContain("      trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -84,7 +84,7 @@ func Test_NotContain(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t    trail: type.field\n")
+		tspy.ExpectLogContain("      trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")

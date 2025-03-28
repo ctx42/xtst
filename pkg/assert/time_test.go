@@ -52,7 +52,7 @@ func Test_Time(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -105,7 +105,7 @@ func Test_TimeExact(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -158,7 +158,7 @@ func Test_Before(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -209,7 +209,7 @@ func Test_After(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -260,7 +260,7 @@ func Test_EqualOrBefore(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		date := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
@@ -311,7 +311,7 @@ func Test_EqualOrAfter(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		date := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -362,7 +362,7 @@ func Test_Within(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\t       trail: type.field\n")
+		tspy.ExpectLogContain("         trail: type.field\n")
 		tspy.Close()
 
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
@@ -380,7 +380,7 @@ func Test_Within(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		wMsg := "[want] failed to parse time:\n\tcause: not supported time type"
+		wMsg := "[want] failed to parse time:\n  cause: not supported time type"
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
@@ -397,7 +397,7 @@ func Test_Within(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		wMsg := "[have] failed to parse time:\n\tcause: not supported time type"
+		wMsg := "[have] failed to parse time:\n  cause: not supported time type"
 		tspy.ExpectLogEqual(wMsg)
 		tspy.Close()
 
@@ -445,7 +445,7 @@ func Test_Recent(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\t       trail: type.field\n")
+		tspy.ExpectLogContain("         trail: type.field\n")
 		tspy.Close()
 
 		have := time.Now().Add(-10 * time.Second)
@@ -489,7 +489,7 @@ func Test_Zone(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -532,7 +532,7 @@ func Test_Duration(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFail()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")

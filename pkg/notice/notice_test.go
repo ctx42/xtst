@@ -459,8 +459,8 @@ func Test_Message_Error(t *testing.T) {
 
 		// --- Then ---
 		want := "expected values to be equal:\n" +
-			"\twant: 42\n" +
-			"\thave: 44"
+			"  want: 42\n" +
+			"  have: 44"
 		affirm.Equal(t, want, have)
 	})
 
@@ -475,8 +475,8 @@ func Test_Message_Error(t *testing.T) {
 
 		// --- Then ---
 		want := "expected values to be equal:\n" +
-			"\t  want: 42\n" +
-			"\tlonger: 44"
+			"    want: 42\n" +
+			"  longer: 44"
 		affirm.Equal(t, want, have)
 	})
 }

@@ -17,8 +17,8 @@ func ExampleNew() {
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	want: abc
-	//	have: xyz
+	//   want: abc
+	//   have: xyz
 }
 
 func ExampleNew_formated() {
@@ -29,8 +29,8 @@ func ExampleNew_formated() {
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	want: abc
-	//	have: xyz
+	//   want: abc
+	//   have: xyz
 }
 
 func ExampleFrom() {
@@ -45,9 +45,9 @@ func ExampleFrom() {
 	fmt.Println(msg)
 	// Output:
 	// [optional prefix] expected values to be equal:
-	//	want: abc
-	//	have: xyz
-	//	  my: value
+	//   want: abc
+	//   have: xyz
+	//     my: value
 }
 
 func ExampleNotice_SetHeader() {
@@ -60,8 +60,8 @@ func ExampleNotice_SetHeader() {
 	fmt.Println(msg)
 	// Output:
 	// some other header:
-	//	want: abc
-	//	have: xyz
+	//   want: abc
+	//   have: xyz
 }
 
 func ExampleNotice_Append() {
@@ -73,9 +73,9 @@ func ExampleNotice_Append() {
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	want: abc
-	//	have: xyz
-	//	name: 5
+	//   want: abc
+	//   have: xyz
+	//   name: 5
 }
 
 func ExampleNotice_AppendRow() {
@@ -90,10 +90,10 @@ func ExampleNotice_AppendRow() {
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	  want: abc
-	//	  have: xyz
-	//	number: 5
-	//	string: abc
+	//     want: abc
+	//     have: xyz
+	//   number: 5
+	//   string: abc
 }
 
 func ExampleNotice_Prepend() {
@@ -106,10 +106,10 @@ func ExampleNotice_Prepend() {
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	trail: type.field
-	//	 name: 5
-	//	 want: abc
-	//	 have: xyz
+	//   trail: type.field
+	//    name: 5
+	//    want: abc
+	//    have: xyz
 }
 
 func ExampleNotice_Trail() {
@@ -121,9 +121,9 @@ func ExampleNotice_Trail() {
 	fmt.Println(msg)
 	// Output:
 	// expected values to be equal:
-	//	trail: type.field
-	//	 want: abc
-	//	 have: xyz
+	//   trail: type.field
+	//    want: abc
+	//    have: xyz
 }
 
 func ExampleLines() {
@@ -131,7 +131,7 @@ func ExampleLines() {
 
 	fmt.Println(lines)
 	// Output:
-	//		>| line1
-	//		>| line2
-	//		>| line3
+	//   >| line1
+	//   >| line2
+	//   >| line3
 }

@@ -48,8 +48,8 @@ func Test_ExitCode(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected exit code:\n" +
-			"\twant: 77\n" +
-			"\thave: 99"
+			"  want: 77\n" +
+			"  have: 99"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -83,7 +83,7 @@ func Test_ExitCode(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected err to have \"*exec.ExitError\" in its chain:\n" +
-			"\ttrail: type.field"
+			"  trail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

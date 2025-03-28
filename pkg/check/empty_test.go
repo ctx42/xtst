@@ -26,8 +26,8 @@ func Test_Empty(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected argument to be empty:\n" +
-			"\twant: <empty>\n" +
-			"\thave: \"abc\""
+			"  want: <empty>\n" +
+			"  have: \"abc\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -41,9 +41,9 @@ func Test_Empty(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected argument to be empty:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: <empty>\n" +
-			"\t have: \"abc\""
+			"  trail: type.field\n" +
+			"   want: <empty>\n" +
+			"   have: \"abc\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -56,11 +56,11 @@ func Test_Empty_ZENValues(t *testing.T) {
 
 			// --- Then ---
 			if tc.IsEmpty && have != nil {
-				format := "expected nil error:\n\thave: %#v"
+				format := "expected nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 			if !tc.IsEmpty && have == nil {
-				format := "expected not-nil error:\n\thave: %#v"
+				format := "expected not-nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 		})
@@ -96,7 +96,7 @@ func Test_NotEmpty(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected non-empty value:\n" +
-			"\ttrail: type.field"
+			"  trail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

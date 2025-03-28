@@ -41,7 +41,7 @@ func Test_Panic(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "func should panic:\n" +
-			"\ttrail: type.field"
+			"  trail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -72,7 +72,7 @@ func Test_NoPanic(t *testing.T) {
 
 		hMsg := err.Error()
 		affirm.True(t, strings.Contains(hMsg, "func should not panic"))
-		affirm.True(t, strings.Contains(hMsg, "\t      trail: type.field"))
+		affirm.True(t, strings.Contains(hMsg, "        trail: type.field"))
 		affirm.True(t, strings.Contains(hMsg, "panic value: test"))
 		affirm.True(t, strings.Contains(hMsg, "panic stack:"))
 	})
@@ -197,7 +197,7 @@ func Test_PanicMsg(t *testing.T) {
 			t.Error("expected PanicMsg to return nil value")
 		}
 		wMsg := "func should panic:\n" +
-			"\ttrail: type.field"
+			"  trail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 

@@ -38,13 +38,13 @@ func Test_mapDumper_tabular(t *testing.T) {
 			"default map[int]int",
 			NewConfig(),
 			map[int]int{1: 10, 2: 20},
-			"map[int]int{\n\t1: 10,\n\t2: 20,\n}",
+			"map[int]int{\n  1: 10,\n  2: 20,\n}",
 		},
 		{
 			"default map[int]int ith indent",
 			NewConfig(WithIndent(2)),
 			map[int]int{1: 10, 2: 20},
-			"\t\tmap[int]int{\n\t\t\t1: 10,\n\t\t\t2: 20,\n\t\t}",
+			"    map[int]int{\n      1: 10,\n      2: 20,\n    }",
 		},
 		{
 			"flat map[int]int",

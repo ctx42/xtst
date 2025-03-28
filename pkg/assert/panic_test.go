@@ -41,7 +41,7 @@ func Test_Panic(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field")
+		tspy.ExpectLogContain("  trail: type.field")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -84,7 +84,7 @@ func Test_NoPanic(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t      trail: type.field\n")
+		tspy.ExpectLogContain("        trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -127,7 +127,7 @@ func Test_PanicContain(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t      trail: type.field\n")
+		tspy.ExpectLogContain("        trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -176,7 +176,7 @@ func Test_PanicMsg(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field")
+		tspy.ExpectLogContain("  trail: type.field")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")

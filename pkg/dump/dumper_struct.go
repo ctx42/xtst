@@ -37,7 +37,7 @@ func structDumper(dmp Dump, lvl int, val reflect.Value) string {
 		// Field value.
 		dmp.cfg.PrintType = true
 		sub := dmp.value(lvl+1, val.Field(i))
-		sub = strings.TrimLeft(sub, "\t")
+		sub = strings.TrimLeft(sub, " \t")
 
 		prn.write(sub)
 		prn.comma(last).sep(last).nl()

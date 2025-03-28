@@ -44,7 +44,7 @@ func Test_Error(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field")
+		tspy.ExpectLogContain("  trail: type.field")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -91,7 +91,7 @@ func Test_NoError(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -149,7 +149,7 @@ func Test_ErrorIs(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectFatal()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		err0 := errors.New("err0")
@@ -203,7 +203,7 @@ func Test_ErrorAs(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		var target types.TVal
@@ -248,7 +248,7 @@ func Test_ErrorEqual(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -291,7 +291,7 @@ func Test_ErrorContain(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")
@@ -334,7 +334,7 @@ func Test_ErrorRegexp(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\t trail: type.field\n")
+		tspy.ExpectLogContain("   trail: type.field\n")
 		tspy.Close()
 
 		opt := check.WithTrail("type.field")

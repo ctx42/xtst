@@ -32,7 +32,7 @@ func Test_zoneDumper_tabular(t *testing.T) {
 			*types.WAW,
 			2,
 			1,
-			"\t\t\t\"Europe/Warsaw\"",
+			"      \"Europe/Warsaw\"",
 		},
 	}
 

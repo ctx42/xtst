@@ -27,12 +27,12 @@ func ExampleDump_Any() {
 	fmt.Println(have)
 	// Output:
 	// {
-	// 	Int: 42,
-	// 	Str: "abc",
-	// 	Tim: "2000-01-02T03:04:05Z",
-	// 	Dur: "3ns",
-	// 	Loc: "Europe/Warsaw",
-	// 	TAp: nil,
+	//   Int: 42,
+	//   Str: "abc",
+	//   Tim: "2000-01-02T03:04:05Z",
+	//   Dur: "3ns",
+	//   Loc: "Europe/Warsaw",
+	//   TAp: nil,
 	// }
 }
 
@@ -114,21 +114,21 @@ func ExampleDump_Any_recursive() {
 	fmt.Println(have)
 	// Output:
 	// {
-	// 	Value: 1,
-	// 	Children: []*dump_test.Node{
-	// 		{
-	// 			Value: 2,
-	// 			Children: nil,
-	// 		},
-	// 		{
-	// 			Value: 3,
-	// 			Children: []*dump_test.Node{
-	// 				{
-	// 					Value: 4,
-	// 					Children: nil,
-	// 				},
-	// 			},
-	// 		},
-	// 	},
+	//   Value: 1,
+	//   Children: []*dump_test.Node{
+	//     {
+	//       Value: 2,
+	//       Children: nil,
+	//     },
+	//     {
+	//       Value: 3,
+	//       Children: []*dump_test.Node{
+	//         {
+	//           Value: 4,
+	//           Children: nil,
+	//         },
+	//       },
+	//     },
+	//   },
 	// }
 }

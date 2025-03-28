@@ -80,7 +80,7 @@ func Test_Same(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		ptr0 := &types.TPtr{Val: "0"}
@@ -131,7 +131,7 @@ func Test_NotSame(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()
-		tspy.ExpectLogContain("\ttrail: type.field\n")
+		tspy.ExpectLogContain("  trail: type.field\n")
 		tspy.Close()
 
 		ptr0 := &types.TPtr{Val: "0"}

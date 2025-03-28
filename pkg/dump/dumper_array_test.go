@@ -25,19 +25,19 @@ func Test_arrayDumper_tabular(t *testing.T) {
 			"default",
 			NewConfig(),
 			[2]int{0, 1},
-			"[2]int{\n\t0,\n\t1,\n}",
+			"[2]int{\n  0,\n  1,\n}",
 		},
 		{
 			"nil array",
 			NewConfig(),
 			nilArr,
-			"[2]int{\n\t0,\n\t0,\n}",
+			"[2]int{\n  0,\n  0,\n}",
 		},
 		{
 			"default with indent",
 			NewConfig(WithIndent(2)),
 			[2]int{0, 1},
-			"\t\t[2]int{\n\t\t\t0,\n\t\t\t1,\n\t\t}",
+			"    [2]int{\n      0,\n      1,\n    }",
 		},
 		{
 			"flat array",
@@ -85,15 +85,15 @@ func Test_arrayDumper_tabular(t *testing.T) {
 				{1: 10},
 				{2: 20},
 			},
-			"[2]map[int]int{\n\t{\n\t\t1: 10,\n\t},\n\t{\n\t\t2: 20,\n\t},\n}",
+			"[2]map[int]int{\n  {\n    1: 10,\n  },\n  {\n    2: 20,\n  },\n}",
 		},
 		{
 			"array of structs",
 			NewConfig(),
 			[]types.T1{{Int: 1}, {Int: 2}},
 			"[]types.T1{\n" +
-				"\t{\n\t\tInt: 1,\n\t\tT1: nil,\n\t},\n" +
-				"\t{\n\t\tInt: 2,\n\t\tT1: nil,\n\t},\n" +
+				"  {\n    Int: 1,\n    T1: nil,\n  },\n" +
+				"  {\n    Int: 2,\n    T1: nil,\n  },\n" +
 				"}",
 		},
 	}

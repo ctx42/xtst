@@ -71,7 +71,7 @@ func Test_chanDumper(t *testing.T) {
 		have := chanDumper(dmp, 2, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t"+valErrUsage, have)
+		affirm.Equal(t, "    "+valErrUsage, have)
 	})
 
 	t.Run("print pointer address", func(t *testing.T) {
@@ -96,7 +96,7 @@ func Test_chanDumper(t *testing.T) {
 		have := chanDumper(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t(chan int)(<addr>)", have)
+		affirm.Equal(t, "  (chan int)(<addr>)", have)
 	})
 
 	t.Run("uses indent and level", func(t *testing.T) {
@@ -108,6 +108,6 @@ func Test_chanDumper(t *testing.T) {
 		have := chanDumper(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t\t(chan int)(<addr>)", have)
+		affirm.Equal(t, "      (chan int)(<addr>)", have)
 	})
 }

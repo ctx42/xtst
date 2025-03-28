@@ -18,6 +18,9 @@ const (
 
 	// DefaultIndent is default additional indent when dumping values.
 	DefaultIndent = 0
+
+	// DefaultTabWith is default tab width in spaces.
+	DefaultTabWith = 2
 )
 
 // Package wide configuration.
@@ -30,6 +33,9 @@ var (
 
 	// Indent is configurable additional indent when dumping values.
 	Indent = DefaultIndent
+
+	// TabWidth is configurable tab width in spaces.
+	TabWidth = DefaultTabWith
 )
 
 // Option represents [NewConfig] option.
@@ -68,6 +74,11 @@ func WithMaxDepth(maximum int) func(cfg *Config) {
 // to apply to dumped values.
 func WithIndent(n int) func(cfg *Config) {
 	return func(cfg *Config) { cfg.Indent = n }
+}
+
+// WithTabWidth is option for [NewConfig] setting tab width in spaces.
+func WithTabWidth(n int) func(cfg *Config) {
+	return func(cfg *Config) { cfg.TabWidth = n }
 }
 
 // Config represents [Dump] configuration.
@@ -121,6 +132,9 @@ type Config struct {
 
 	// How much additional indentation to apply to values being dumped.
 	Indent int
+
+	// Default tab with in spaces.
+	TabWidth int
 }
 
 // NewConfig returns new instance of [Config] with default values.
@@ -132,6 +146,7 @@ func NewConfig(opts ...Option) Config {
 		Dumpers:    make(map[reflect.Type]Dumper),
 		MaxDepth:   Depth,
 		Indent:     Indent,
+		TabWidth:   TabWidth,
 	}
 	for _, opt := range opts {
 		opt(&cfg)

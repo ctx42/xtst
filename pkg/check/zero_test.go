@@ -37,8 +37,8 @@ func Test_zeroError(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected argument to be zero value:\n" +
-			"\twant: <zero>\n" +
-			"\thave: 42"
+			"  want: <zero>\n" +
+			"  have: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -52,9 +52,9 @@ func Test_zeroError(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected argument to be zero value:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: <zero>\n" +
-			"\t have: 42"
+			"  trail: type.field\n" +
+			"   want: <zero>\n" +
+			"   have: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -67,11 +67,11 @@ func Test_Zero_ZENValues(t *testing.T) {
 
 			// --- Then ---
 			if tc.IsZero && have != nil {
-				format := "expected nil error:\n\thave: %#v"
+				format := "expected nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 			if !tc.IsZero && have == nil {
-				format := "expected not-nil error:\n\thave: %#v"
+				format := "expected not-nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 		})
@@ -94,8 +94,8 @@ func Test_NotZero(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected argument not to be zero value:\n" +
-			"\twant: <non-zero>\n" +
-			"\thave: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)"
+			"  want: <non-zero>\n" +
+			"  have: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -109,9 +109,9 @@ func Test_NotZero(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected argument not to be zero value:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: <non-zero>\n" +
-			"\t have: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)"
+			"  trail: type.field\n" +
+			"   want: <non-zero>\n" +
+			"   have: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC)"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

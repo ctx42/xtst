@@ -26,8 +26,8 @@ func Test_Nil(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected value to be nil:\n" +
-			"\twant: <nil>\n" +
-			"\thave: 42"
+			"  want: <nil>\n" +
+			"  have: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -41,9 +41,9 @@ func Test_Nil(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected value to be nil:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: <nil>\n" +
-			"\t have: 42"
+			"  trail: type.field\n" +
+			"   want: <nil>\n" +
+			"   have: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -56,11 +56,11 @@ func Test_Nil_ZENValues(t *testing.T) {
 
 			// --- Then ---
 			if tc.IsNil && have != nil {
-				format := "expected nil error:\n\thave: %#v"
+				format := "expected nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 			if !tc.IsNil && have == nil {
-				format := "expected not-nil error:\n\thave: %#v"
+				format := "expected not-nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 		})
@@ -95,7 +95,7 @@ func Test_NotNil(t *testing.T) {
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected non-nil value:\n\ttrail: type.field"
+		wMsg := "expected non-nil value:\n  trail: type.field"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

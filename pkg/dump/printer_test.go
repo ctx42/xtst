@@ -128,13 +128,13 @@ func Test_printer_comma(t *testing.T) {
 func Test_printer_tab(t *testing.T) {
 	t.Run("default and positive n", func(t *testing.T) {
 		// --- Given ---
-		cfg := Config{Flat: false}
+		cfg := Config{Flat: false, TabWidth: 2}
 
 		// --- When ---
 		have := newPrinter(cfg).tab(2)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t", have.String())
+		affirm.Equal(t, "    ", have.String())
 	})
 
 	t.Run("default and negative n", func(t *testing.T) {

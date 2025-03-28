@@ -46,7 +46,7 @@ func (prn printer) comma(last bool) printer {
 	return prn
 }
 
-// tab prints indentation with n tabs when not flat.
+// tab prints indentation with n spaces when not flat.
 func (prn printer) tab(n int) printer {
 	if prn.cfg.Flat {
 		return prn
@@ -54,7 +54,7 @@ func (prn printer) tab(n int) printer {
 	if n < 0 {
 		n = 0
 	}
-	prn.buf.Write(bytes.Repeat([]byte{'\t'}, n))
+	prn.buf.Write(bytes.Repeat([]byte{' '}, n*prn.cfg.TabWidth))
 	return prn
 }
 

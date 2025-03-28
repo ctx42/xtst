@@ -34,7 +34,7 @@ func Test_sliceDumper_tabular(t *testing.T) {
 			"default slice of int",
 			NewConfig(),
 			[]int{1, 2},
-			"[]int{\n\t1,\n\t2,\n}",
+			"[]int{\n  1,\n  2,\n}",
 		},
 	}
 

@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// Lines takes an indent value and a string of lines, and returns the lines
-// formatted with the specified indent.
+// Lines takes an indent value as number of spaces and a string of lines, and
+// returns the lines formatted with the specified indent.
 func Lines(indent int, lns string) string {
 	if lns == "" {
 		return ""
@@ -16,7 +16,7 @@ func Lines(indent int, lns string) string {
 	out := strings.TrimSpace(lns)
 	rows := strings.Split(out, "\n")
 	for i, lin := range rows {
-		ind := strings.Repeat("\t", indent)
+		ind := strings.Repeat(" ", indent)
 		rows[i] = ind + ">| " + lin
 	}
 	return strings.Join(rows, "\n")

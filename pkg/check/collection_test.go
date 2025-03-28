@@ -20,9 +20,9 @@ func Test_Len(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected []int length:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: 1\n" +
-			"\t have: 2"
+			"  trail: type.field\n" +
+			"   want: 1\n" +
+			"   have: 2"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -73,13 +73,13 @@ func Test_Len_error_tabular(t *testing.T) {
 		want int
 		wMsg string
 	}{
-		{"int empty fail", []int{}, 1, "expected []int length:\n\twant: 1\n\thave: 0"},
-		{"int fail", []int{1}, 2, "expected []int length:\n\twant: 2\n\thave: 1"},
-		{"map empty fail", map[string]int{}, 1, "expected map[string]int length:\n\twant: 1\n\thave: 0"},
-		{"map fail", map[string]int{"A": 1}, 2, "expected map[string]int length:\n\twant: 2\n\thave: 1"},
+		{"int empty fail", []int{}, 1, "expected []int length:\n  want: 1\n  have: 0"},
+		{"int fail", []int{1}, 2, "expected []int length:\n  want: 2\n  have: 1"},
+		{"map empty fail", map[string]int{}, 1, "expected map[string]int length:\n  want: 1\n  have: 0"},
+		{"map fail", map[string]int{"A": 1}, 2, "expected map[string]int length:\n  want: 2\n  have: 1"},
 		{"invalid type", 1, 0, "cannot execute len(int)"},
-		{"chan fail", ch, 4, "expected chan int length:\n\twant: 4\n\thave: 3"},
-		{"string fail", "abc", 4, "expected string length:\n\twant: 4\n\thave: 3"},
+		{"chan fail", ch, 4, "expected chan int length:\n  want: 4\n  have: 3"},
+		{"string fail", "abc", 4, "expected string length:\n  want: 4\n  have: 3"},
 	}
 
 	for _, tc := range tt {
@@ -116,8 +116,8 @@ func Test_Has(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected slice to have a value:\n" +
-			"\t want: 42\n" +
-			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
+			"   want: 42\n" +
+			"  slice: []int{\n  1,\n  2,\n  3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -132,9 +132,9 @@ func Test_Has(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected slice to have a value:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: 42\n" +
-			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
+			"  trail: type.field\n" +
+			"   want: 42\n" +
+			"  slice: []int{\n  1,\n  2,\n  3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -161,9 +161,9 @@ func Test_HasNo(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected slice not to have value:\n" +
-			"\t want: 2\n" +
-			"\tindex: 1\n" +
-			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
+			"   want: 2\n" +
+			"  index: 1\n" +
+			"  slice: []int{\n  1,\n  2,\n  3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -178,10 +178,10 @@ func Test_HasNo(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected slice not to have value:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: 2\n" +
-			"\tindex: 1\n" +
-			"\tslice: []int{\n\t1,\n\t2,\n\t3,\n}"
+			"  trail: type.field\n" +
+			"   want: 2\n" +
+			"  index: 1\n" +
+			"  slice: []int{\n  1,\n  2,\n  3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -221,8 +221,8 @@ func Test_HasKey(t *testing.T) {
 		affirm.Equal(t, 0, haveValue)
 		affirm.NotNil(t, err)
 		wMsg := "expected map to have a key:\n" +
-			"\tkey: \"X\"\n" +
-			"\tmap: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+			"  key: \"X\"\n" +
+			"  map: map[string]int{\n  \"A\": 1,\n  \"B\": 2,\n  \"C\": 3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -237,8 +237,8 @@ func Test_HasKey(t *testing.T) {
 		affirm.Nil(t, haveValue)
 		affirm.NotNil(t, err)
 		wMsg := "expected map to have a key:\n" +
-			"\tkey: \"X\"\n" +
-			"\tmap: map[string]any(nil)"
+			"  key: \"X\"\n" +
+			"  map: map[string]any(nil)"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -254,9 +254,9 @@ func Test_HasKey(t *testing.T) {
 		affirm.Nil(t, haveValue)
 		affirm.NotNil(t, err)
 		wMsg := "expected map to have a key:\n" +
-			"\ttrail: type.field\n" +
-			"\t  key: \"X\"\n" +
-			"\t  map: map[string]any(nil)"
+			"  trail: type.field\n" +
+			"    key: \"X\"\n" +
+			"    map: map[string]any(nil)"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -283,9 +283,9 @@ func Test_HasNoKey(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected map not to have a key:\n" +
-			"\t  key: \"B\"\n" +
-			"\tvalue: 2\n" +
-			"\t  map: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+			"    key: \"B\"\n" +
+			"  value: 2\n" +
+			"    map: map[string]int{\n  \"A\": 1,\n  \"B\": 2,\n  \"C\": 3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -300,10 +300,10 @@ func Test_HasNoKey(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected map not to have a key:\n" +
-			"\ttrail: type.field\n" +
-			"\t  key: \"B\"\n" +
-			"\tvalue: 2\n" +
-			"\t  map: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+			"  trail: type.field\n" +
+			"    key: \"B\"\n" +
+			"  value: 2\n" +
+			"    map: map[string]int{\n  \"A\": 1,\n  \"B\": 2,\n  \"C\": 3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -331,10 +331,10 @@ func Test_HasKeyValue(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected map to have a key with a value:\n" +
-			"\ttrail: type.field\n" +
-			"\t  key: \"B\"\n" +
-			"\t want: 100\n" +
-			"\t have: 2"
+			"  trail: type.field\n" +
+			"    key: \"B\"\n" +
+			"   want: 100\n" +
+			"   have: 2"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -349,9 +349,9 @@ func Test_HasKeyValue(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected map to have a key:\n" +
-			"\ttrail: type.field\n" +
-			"\t  key: \"X\"\n" +
-			"\t  map: map[string]int{\n\t\"A\": 1,\n\t\"B\": 2,\n\t\"C\": 3,\n}"
+			"  trail: type.field\n" +
+			"    key: \"X\"\n" +
+			"    map: map[string]int{\n  \"A\": 1,\n  \"B\": 2,\n  \"C\": 3,\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -392,7 +392,7 @@ func Test_SliceSubset(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected \"want\" slice to be a subset of \"have\" slice:\n" +
-			"\tmissing values: []string{\n\t\"X\",\n\t\"Y\",\n}"
+			"  missing values: []string{\n  \"X\",\n  \"Y\",\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -408,8 +408,8 @@ func Test_SliceSubset(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected \"want\" slice to be a subset of \"have\" slice:\n" +
-			"\t         trail: type.field\n" +
-			"\tmissing values: []string{\n\t\"X\",\n\t\"Y\",\n}"
+			"           trail: type.field\n" +
+			"  missing values: []string{\n  \"X\",\n  \"Y\",\n}"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

@@ -24,7 +24,7 @@ func Test_Lines(t *testing.T) {
 		have := Lines(1, "abc")
 
 		// --- Then ---
-		affirm.Equal(t, "\t>| abc", have)
+		affirm.Equal(t, " >| abc", have)
 	})
 
 	t.Run("multiple lines", func(t *testing.T) {
@@ -33,9 +33,9 @@ func Test_Lines(t *testing.T) {
 
 		// --- Then ---
 		want := "" +
-			"\t>| abc\n" +
-			"\t>| def\n" +
-			"\t>| ghi"
+			" >| abc\n" +
+			" >| def\n" +
+			" >| ghi"
 		affirm.Equal(t, want, have)
 	})
 

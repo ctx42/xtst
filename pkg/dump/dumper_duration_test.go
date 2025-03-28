@@ -77,7 +77,7 @@ func Test_DurDumperString(t *testing.T) {
 		have := DurDumperString(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\"1s\"", have)
+		affirm.Equal(t, "  \"1s\"", have)
 	})
 
 	t.Run("uses indent and level", func(t *testing.T) {
@@ -90,7 +90,7 @@ func Test_DurDumperString(t *testing.T) {
 		have := DurDumperString(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t\t\"1s\"", have)
+		affirm.Equal(t, "      \"1s\"", have)
 	})
 }
 
@@ -131,7 +131,7 @@ func Test_DurDumperSeconds(t *testing.T) {
 		have := DurDumperSeconds(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t1", have)
+		affirm.Equal(t, "  1", have)
 	})
 
 	t.Run("uses indent and level", func(t *testing.T) {
@@ -144,6 +144,6 @@ func Test_DurDumperSeconds(t *testing.T) {
 		have := DurDumperSeconds(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t\t1", have)
+		affirm.Equal(t, "      1", have)
 	})
 }

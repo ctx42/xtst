@@ -86,6 +86,6 @@ func Test_funcDumper(t *testing.T) {
 		have := funcDumper(dmp, 1, val)
 
 		// --- Then ---
-		affirm.Equal(t, "\t\t\t"+valErrUsage, have)
+		affirm.Equal(t, "      "+valErrUsage, have)
 	})
 }
