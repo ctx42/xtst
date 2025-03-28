@@ -247,9 +247,9 @@ func equalError(want, have any, ops Options) error {
 		_ = msg.Have("%#v ('%s')", have, string(b))
 	} else {
 		// TODO(rz):
-		// ops.DumpCfg.Indent = 3
-		// _ = msg.Have("%s", "\n"+dump.New(ops.DumpCfg).Any(have))
-		_ = msg.Have("%s", "")
+		ops.DumpCfg.Indent = 6
+		_ = msg.Have("%s", "\n"+dump.New(ops.DumpCfg).Any(have))
+		// _ = msg.Have("%s", "")
 	}
 
 	if wTyp != "" {
