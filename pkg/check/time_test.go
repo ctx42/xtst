@@ -145,14 +145,14 @@ func Test_Time(t *testing.T) {
 	})
 }
 
-func Test_TimeExact(t *testing.T) {
+func Test_Exact(t *testing.T) {
 	t.Run("exactly", func(t *testing.T) {
 		// --- Given ---
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 		have := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := TimeExact(want, have)
+		err := Exact(want, have)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -165,7 +165,7 @@ func Test_TimeExact(t *testing.T) {
 		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
 
 		// --- When ---
-		err := TimeExact(want, have)
+		err := Exact(want, have)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -182,7 +182,7 @@ func Test_TimeExact(t *testing.T) {
 		have := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
 
 		// --- When ---
-		err := TimeExact("2000-01-02T03:04:05Z", have)
+		err := Exact("2000-01-02T03:04:05Z", have)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -198,7 +198,7 @@ func Test_TimeExact(t *testing.T) {
 		want := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
 
 		// --- When ---
-		err := TimeExact(want, "2000-01-02T03:04:05Z")
+		err := Exact(want, "2000-01-02T03:04:05Z")
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -215,7 +215,7 @@ func Test_TimeExact(t *testing.T) {
 		have := time.Date(2000, 1, 2, 4, 4, 5, 0, types.WAW)
 
 		// --- When ---
-		err := TimeExact(want, have)
+		err := Exact(want, have)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -228,7 +228,7 @@ func Test_TimeExact(t *testing.T) {
 
 	t.Run("invalid want date format", func(t *testing.T) {
 		// --- When ---
-		err := TimeExact("2022-02-18", time.Now())
+		err := Exact("2022-02-18", time.Now())
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -240,7 +240,7 @@ func Test_TimeExact(t *testing.T) {
 
 	t.Run("invalid have date format", func(t *testing.T) {
 		// --- When ---
-		err := TimeExact(time.Now(), "2022-02-18")
+		err := Exact(time.Now(), "2022-02-18")
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -257,7 +257,7 @@ func Test_TimeExact(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := TimeExact(want, have, opt)
+		err := Exact(want, have, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -453,14 +453,14 @@ func Test_After(t *testing.T) {
 	})
 }
 
-func Test_EqualOrBefore(t *testing.T) {
+func Test_BeforeOrEqual(t *testing.T) {
 	t.Run("before", func(t *testing.T) {
 		// --- Given ---
 		date := time.Date(2000, 1, 2, 3, 4, 4, 0, time.UTC)
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := EqualOrBefore(date, mark)
+		err := BeforeOrEqual(date, mark)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -472,7 +472,7 @@ func Test_EqualOrBefore(t *testing.T) {
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := EqualOrBefore(date, mark)
+		err := BeforeOrEqual(date, mark)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -484,7 +484,7 @@ func Test_EqualOrBefore(t *testing.T) {
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := EqualOrBefore(date, mark)
+		err := BeforeOrEqual(date, mark)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -497,7 +497,7 @@ func Test_EqualOrBefore(t *testing.T) {
 
 	t.Run("invalid date", func(t *testing.T) {
 		// --- When ---
-		err := EqualOrBefore("abc", time.Now())
+		err := BeforeOrEqual("abc", time.Now())
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -509,7 +509,7 @@ func Test_EqualOrBefore(t *testing.T) {
 
 	t.Run("invalid mark", func(t *testing.T) {
 		// --- When ---
-		err := EqualOrBefore(time.Now(), "abc")
+		err := BeforeOrEqual(time.Now(), "abc")
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -526,7 +526,7 @@ func Test_EqualOrBefore(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := EqualOrBefore(date, mark, opt)
+		err := BeforeOrEqual(date, mark, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -539,14 +539,14 @@ func Test_EqualOrBefore(t *testing.T) {
 	})
 }
 
-func Test_EqualOrAfter(t *testing.T) {
+func Test_AfterOrEqual(t *testing.T) {
 	t.Run("after", func(t *testing.T) {
 		// --- Given ---
 		date := time.Date(2000, 1, 2, 3, 4, 6, 0, time.UTC)
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := EqualOrAfter(date, mark)
+		err := AfterOrEqual(date, mark)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -558,7 +558,7 @@ func Test_EqualOrAfter(t *testing.T) {
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := EqualOrAfter(date, mark)
+		err := AfterOrEqual(date, mark)
 
 		// --- Then ---
 		affirm.Nil(t, err)
@@ -570,7 +570,7 @@ func Test_EqualOrAfter(t *testing.T) {
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		err := EqualOrAfter(date, mark)
+		err := AfterOrEqual(date, mark)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -583,7 +583,7 @@ func Test_EqualOrAfter(t *testing.T) {
 
 	t.Run("invalid date", func(t *testing.T) {
 		// --- When ---
-		err := EqualOrAfter("abc", time.Now())
+		err := AfterOrEqual("abc", time.Now())
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -595,7 +595,7 @@ func Test_EqualOrAfter(t *testing.T) {
 
 	t.Run("invalid mark", func(t *testing.T) {
 		// --- When ---
-		err := EqualOrAfter(time.Now(), "abc")
+		err := AfterOrEqual(time.Now(), "abc")
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -612,7 +612,7 @@ func Test_EqualOrAfter(t *testing.T) {
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := EqualOrAfter(date, mark, opt)
+		err := AfterOrEqual(date, mark, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -844,30 +844,9 @@ func Test_Zone(t *testing.T) {
 		affirm.Nil(t, err)
 	})
 
-	t.Run("want nil", func(t *testing.T) {
-		// --- When ---
-		err := Zone(nil, time.UTC)
-
-		// --- Then ---
-		affirm.NotNil(t, err)
-		wMsg := "expected timezone:\n" +
-			"  which: want\n" +
-			"   want: <not-nil>\n" +
-			"   have: <nil>"
-		affirm.Equal(t, wMsg, err.Error())
-	})
-
-	t.Run("have nil", func(t *testing.T) {
-		// --- When ---
-		err := Zone(time.UTC, nil)
-
-		// --- Then ---
-		affirm.NotNil(t, err)
-		wMsg := "expected timezone:\n" +
-			"  which: have\n" +
-			"   want: <not-nil>\n" +
-			"   have: <nil>"
-		affirm.Equal(t, wMsg, err.Error())
+	t.Run("nil is equivalent to UTC", func(t *testing.T) {
+		affirm.Nil(t, Zone(nil, time.UTC))
+		affirm.Nil(t, Zone(time.UTC, nil))
 	})
 
 	t.Run("not equal", func(t *testing.T) {

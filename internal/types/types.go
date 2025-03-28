@@ -24,20 +24,16 @@ func init() {
 	}
 }
 
-// TFuncA is a function used in tests.
 func TFuncA() {}
 
-// TFuncB is a function used in tests.
 func TFuncB() {}
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TIntType is type alias used in tests.
 type TIntType int
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TStrType is a type used in tests.
 type TStrType string
 
 // /////////////////////////////////////////////////////////////////////////////
@@ -47,10 +43,8 @@ type TItf interface{ AAA() string }
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TInt is type used in tests.
 type TInt struct{ V int }
 
-// NewTInt returns error when v is not 42.
 func NewTInt(v int) (*TInt, error) {
 	if v != 42 {
 		return nil, errors.New("not cool")
@@ -60,7 +54,30 @@ func NewTInt(v int) (*TInt, error) {
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TA is an example type with fields of different types.
+type TTim struct{ Tim time.Time }
+
+// /////////////////////////////////////////////////////////////////////////////
+
+type TLoc struct{ Loc *time.Location }
+
+// /////////////////////////////////////////////////////////////////////////////
+
+type TIntPrv struct {
+	Int int
+	v   int
+}
+
+func NewTIntPrv(i, v int) TIntPrv { return TIntPrv{Int: i, v: v} }
+
+// /////////////////////////////////////////////////////////////////////////////
+
+type TIntStr struct {
+	Int int
+	Str string
+}
+
+// /////////////////////////////////////////////////////////////////////////////
+
 type TA struct {
 	Int int
 	Str string
@@ -74,7 +91,6 @@ type TA struct {
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TB is an example type with fields of different types.
 type TB struct {
 	TA     // Embedded by value.
 	TAv TA // Non pointer type.
@@ -82,7 +98,6 @@ type TB struct {
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TC is an example type with embedded field which is not struct or interface.
 type TC struct {
 	TD
 	Int int
@@ -90,12 +105,10 @@ type TC struct {
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TD represents type which is another name for string.
 type TD string
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TNested represents type with slices and maps of other types.
 type TNested struct {
 	SInt    []int
 	STA     []TA
@@ -107,40 +120,31 @@ type TNested struct {
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TVal implements [TItf], has value receiver methods.
 type TVal struct{ Val string } // nolint: errname
 
-// AAA implements TItf.
 func (typ TVal) AAA() string { return typ.Val }
 
-// Error implements builtin in Error interface.
 func (typ TVal) Error() string { return typ.Val }
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// TPtr implements [TItf], has pointer receiver methods.
 type TPtr struct{ Val string } // nolint: errname
 
-// AAA implements TItf.
 func (typ *TPtr) AAA() string { return typ.Val }
 
-// Variadic1 is variadic function with one additional argument.
 func (typ *TPtr) Variadic1(str string, i ...int) string {
 	return fmt.Sprintf("%s %s %v", typ.Val, str, i)
 }
 
-// Error implements builtin in error interface.
 func (typ *TPtr) Error() string { return typ.Val }
 
-// PS adds two numbers.
 func (typ *TPtr) PS(a, b string) string { return a + typ.Val + b }
 
 // /////////////////////////////////////////////////////////////////////////////
 
-// T1 represents nested structure.
 type T1 struct {
 	Int int
-	T1  *T1
+	T1  *T1 // Recursive.
 }
 
 // /////////////////////////////////////////////////////////////////////////////

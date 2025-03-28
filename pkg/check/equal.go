@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"slices"
 	"sort"
 	"time"
 
@@ -14,221 +15,250 @@ import (
 	"github.com/ctx42/xtst/pkg/notice"
 )
 
-// TODO(rz): track (log) all the fields (trails).
-// TODO(rz): make very detailed code review of this file.
-
 // Equal recursively checks both values are equal. Returns nil if they are,
 // otherwise it returns an error with a message indicating the expected and
 // actual values.
 //
 // nolint: cyclop, gocognit
 func Equal(want, have any, opts ...Option) error {
-	return deepEqual(reflect.ValueOf(want), reflect.ValueOf(have), opts...)
+	wVal := reflect.ValueOf(want)
+	hVal := reflect.ValueOf(have)
+	return wrap(deepEqual(wVal, hVal, opts...))
 }
 
-// deepEqual is the internal recursive comparison function.
-func deepEqual(a, b reflect.Value, opts ...Option) error {
-	if !a.IsValid() && !b.IsValid() {
+// deepEqual is the internal comparison function which is called recursively.
+func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
+	ops := DefaultOptions(opts...)
+
+	if i := slices.Index(ops.SkipTrails, ops.Trail); i >= 0 {
+		ops.Trail += " <skipped>"
+		ops.logTrail()
 		return nil
 	}
 
-	if !a.IsValid() || !b.IsValid() {
-		var aItf, bItf any
-		if a.IsValid() {
-			aItf = a.Interface()
-		}
-		if b.IsValid() {
-			bItf = b.Interface()
-		}
-		ops := DefaultOptions(opts...)
-		return equalError(aItf, bItf, ops)
+	if !wVal.IsValid() && !hVal.IsValid() {
+		ops.logTrail()
+		return nil
 	}
 
-	aType := a.Type()
-	bType := b.Type()
-	if aType != bType {
-		ops := DefaultOptions(opts...)
-		return equalError(a.Interface(), b.Interface(), ops)
+	if !wVal.IsValid() || !hVal.IsValid() {
+		var wItf, hItf any
+		if wVal.IsValid() {
+			wItf = wVal.Interface()
+		}
+		if hVal.IsValid() {
+			hItf = hVal.Interface()
+		}
+		ops.logTrail()
+		return equalError(wItf, hItf, ops)
 	}
 
-	switch a.Kind() {
+	wType := wVal.Type()
+	hType := hVal.Type()
+	if wType != hType {
+		ops.logTrail()
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
+	}
+
+	{
+		if chk, ok := ops.TrailCheckers[ops.Trail]; ok {
+			ops.logTrail()
+			return chk(wVal.Interface(), hVal.Interface(), WithOptions(ops))
+		}
+	}
+
+	if chk, ok := ops.TypeCheckers[wType]; ok {
+		ops.logTrail()
+		return chk(wVal.Interface(), hVal.Interface(), opts...)
+	}
+
+	switch knd := wVal.Kind(); knd {
 	case reflect.Ptr:
-		if aType == typTimeLocPtr && bType == typTimeLocPtr {
-			aZone := a.Interface().(*time.Location)
-			bZone := b.Interface().(*time.Location)
-			return Zone(aZone, bZone, opts...)
+		if wType == typTimeLocPtr && hType == typTimeLocPtr {
+			ops.logTrail()
+			wZone := wVal.Interface().(*time.Location)
+			hZone := hVal.Interface().(*time.Location)
+			return Zone(wZone, hZone, WithOptions(ops))
 		}
 
-		if a.IsNil() && b.IsNil() {
-			DefaultOptions(opts...).logTrail()
+		if wVal.IsNil() && hVal.IsNil() {
+			ops.logTrail()
 			return nil
 		}
-		if a.IsNil() || b.IsNil() {
-			ops := DefaultOptions(opts...).logTrail()
-			wItf := a.Interface()
-			hItf := b.Interface()
+		if wVal.IsNil() || hVal.IsNil() {
+			ops.logTrail()
+			wItf := wVal.Interface()
+			hItf := hVal.Interface()
 			return equalError(wItf, hItf, ops)
 		}
 
-		// TODO(rz):
-		// aPtr := a.Pointer()
-		// bPtr := b.Pointer()
-
-		ops := DefaultOptions(opts...)
-		// TODO(rz):
-		// if aPtr == bPtr {
-		// 	return nil
-		// }
-		return deepEqual(a.Elem(), b.Elem(), WithOptions(ops))
+		return deepEqual(wVal.Elem(), hVal.Elem(), WithOptions(ops))
 
 	case reflect.Struct:
-		aTyp := a.Type()
-		bTyp := b.Type()
-		if aTyp == typTime && bTyp == typTime {
-			return Time(a.Interface(), b.Interface(), opts...)
+		wTyp := wVal.Type()
+		hTyp := hVal.Type()
+		if wTyp == typTime && hTyp == typTime {
+			ops.logTrail()
+			return Time(wVal.Interface(), hVal.Interface(), opts...)
 		}
-		// TODO(rz): what if someone tries to compare time.Location instead of
-		//  *time.Location?
-		// if aTyp == typTimeLoc && bTyp == typTimeLoc {
-		// 	aZone := a.Interface().(time.Location)
-		// 	bZone := b.Interface().(time.Location)
-		// 	return Zone(&aZone, &bZone, opts...)
-		// }
-		typeName := a.Type().Name()
-		sOps := DefaultOptions(opts...).structTrail(typeName, "")
+		if wTyp == typTimeLoc && hTyp == typTimeLoc {
+			ops.logTrail()
+			wZone := wVal.Interface().(time.Location)
+			hZone := hVal.Interface().(time.Location)
+			return Zone(&wZone, &hZone, opts...)
+		}
+		typeName := wVal.Type().Name()
 
-		var ers error
-		for i := 0; i < a.NumField(); i++ {
-			aVal := a.Field(i)
-			bVal := b.Field(i)
-			if !(aVal.IsValid() && aVal.CanInterface()) {
+		sOps := ops
+		trail := ops.structTrail(typeName, "")
+		sOps.Trail = trail
+
+		var ers []error
+		for i := 0; i < wVal.NumField(); i++ {
+			wfVal := wVal.Field(i)
+			hfVal := hVal.Field(i)
+			if !(wfVal.IsValid() && wfVal.CanInterface()) {
 				continue
 			}
-			sf := a.Type().Field(i)
-			iOps := sOps.structTrail("", sf.Name)
-			iOps.skipType = true
-			if err := deepEqual(aVal, bVal, WithOptions(iOps)); err != nil {
-				ers = errors.Join(ers, err)
+			wSF := wVal.Type().Field(i)
+			trail = sOps.structTrail("", wSF.Name)
+			iOps := sOps
+			iOps.Trail = trail
+			if err := deepEqual(wfVal, hfVal, WithOptions(iOps)); err != nil {
+				ers = append(ers, notice.Unwrap(err)...)
 			}
 		}
-		return ers
+		return errors.Join(ers...)
 
 	case reflect.Slice, reflect.Array:
-		if a.Len() != b.Len() {
-			ops := DefaultOptions(opts...)
-			return equalError(a.Interface(), b.Interface(), ops)
+		if wVal.Len() != hVal.Len() {
+			ops.logTrail()
+			wItf := wVal.Interface()
+			hItf := hVal.Interface()
+			return equalError(wItf, hItf, ops).
+				Prepend("have len", "%d", hVal.Len()).
+				Prepend("want len", "%d", wVal.Len())
 		}
-		if a.Pointer() == b.Pointer() {
+		if knd == reflect.Slice && wVal.Pointer() == hVal.Pointer() {
+			ops.logTrail()
 			return nil
 		}
-		var ers error
-		for i := 0; i < a.Len(); i++ {
-			aVal := a.Index(i)
-			bVal := b.Index(i)
-			iOps := DefaultOptions(opts...).arrTrail(i)
-			if err := deepEqual(aVal, bVal, WithOptions(iOps)); err != nil {
-				ers = errors.Join(ers, err)
+		var ers []error
+		for i := 0; i < wVal.Len(); i++ {
+			wiVal := wVal.Index(i)
+			hiVal := hVal.Index(i)
+			iOps := ops
+			trail := ops.arrTrail(knd.String(), i)
+			iOps.Trail = trail
+			if err := deepEqual(wiVal, hiVal, WithOptions(iOps)); err != nil {
+				ers = append(ers, notice.Unwrap(err)...)
 			}
 		}
-		return ers
+		return errors.Join(ers...)
 
 	case reflect.Map:
-		if a.Len() != b.Len() {
-			ops := DefaultOptions(opts...)
-			return equalError(a.Interface(), b.Interface(), ops)
+		if wVal.Len() != hVal.Len() {
+			ops.logTrail()
+			return equalError(wVal.Interface(), hVal.Interface(), ops).
+				Prepend("have len", "%d", hVal.Len()).
+				Prepend("want len", "%d", wVal.Len())
 		}
-		if a.Pointer() == b.Pointer() {
+		if wVal.Pointer() == hVal.Pointer() {
+			ops.logTrail()
 			return nil
 		}
 
-		keys := a.MapKeys()
+		keys := wVal.MapKeys()
 		sort.Slice(keys, func(i, j int) bool {
 			return valToString(keys[i]) < valToString(keys[j])
 		})
 
-		var ers error
+		var ers []error
 		for _, key := range keys {
-			aVal := a.MapIndex(key)
-			bVal := b.MapIndex(key)
-			kOps := DefaultOptions(opts...).mapTrail(valToString(key))
-			if !bVal.IsValid() {
-				aItf := b.Interface()
-				ers = errors.Join(ers, equalError(aItf, nil, kOps))
+			wkVal := wVal.MapIndex(key)
+			hkVal := hVal.MapIndex(key)
+			kOps := ops
+			trail := ops.mapTrail(valToString(key))
+			kOps.Trail = trail
+			if !hkVal.IsValid() {
+				hItf := hVal.Interface()
+				err := equalError(hItf, nil, kOps)
+				ers = append(ers, notice.Unwrap(err)...)
 				continue
 			}
-			if err := deepEqual(aVal, bVal, WithOptions(kOps)); err != nil {
-				ers = errors.Join(ers, err)
+			if err := deepEqual(wkVal, hkVal, WithOptions(kOps)); err != nil {
+				ers = append(ers, notice.Unwrap(err)...)
 			}
 		}
-		return ers
+		return errors.Join(ers...)
 
 	case reflect.Interface:
-		ops := DefaultOptions(opts...).logTrail()
-		if a.IsNil() && b.IsNil() {
-			return nil
-		}
-		if a.IsNil() || b.IsNil() {
-			return equalError(a.Interface(), b.Interface(), ops)
-		}
-		aElem := a.Elem()
-		bElem := b.Elem()
-		return deepEqual(aElem, bElem, WithOptions(ops))
+		wElem := wVal.Elem()
+		hElem := hVal.Elem()
+		return deepEqual(wElem, hElem, WithOptions(ops))
 
 	case reflect.Bool:
-		ops := DefaultOptions(opts...).logTrail()
-		if a.Bool() == b.Bool() {
+		ops.logTrail()
+		if wVal.Bool() == hVal.Bool() {
 			return nil
 		}
-		return equalError(a.Interface(), b.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		ops := DefaultOptions(opts...).logTrail()
-		if a.Int() == b.Int() {
+		ops.logTrail()
+		if wVal.Int() == hVal.Int() {
 			return nil
 		}
-		return equalError(a.Interface(), b.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
 
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32,
 		reflect.Uint64:
-		ops := DefaultOptions(opts...).logTrail()
-		if a.Uint() == b.Uint() {
+		ops.logTrail()
+		if wVal.Uint() == hVal.Uint() {
 			return nil
 		}
-		return equalError(a.Interface(), b.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
 
 	case reflect.Float32, reflect.Float64:
-		ops := DefaultOptions(opts...).logTrail()
-		if a.Float() == b.Float() {
+		ops.logTrail()
+		if wVal.Float() == hVal.Float() {
 			return nil
 		}
-		return equalError(a.Interface(), b.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
+
+	case reflect.Complex64, reflect.Complex128:
+		ops.logTrail()
+		if wVal.Complex() == hVal.Complex() {
+			return nil
+		}
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
 
 	case reflect.String:
-		ops := DefaultOptions(opts...).logTrail()
-		if a.String() == b.String() {
+		ops.logTrail()
+		if wVal.String() == hVal.String() {
 			return nil
 		}
-		return equalError(a.Interface(), b.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
 
 	case reflect.Chan, reflect.Func:
-		ops := DefaultOptions(opts...).logTrail()
-		if a.Pointer() == b.Pointer() {
+		ops.logTrail()
+		if wVal.Pointer() == hVal.Pointer() {
 			return nil
 		}
-		return equalError(a.Interface(), b.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
 
 	default:
-		ops := DefaultOptions(opts...).logTrail()
+		ops.logTrail()
 		// For types, we haven't explicitly handled, use DeepEqual.
-		if reflect.DeepEqual(a.Interface(), b.Interface()) {
+		if reflect.DeepEqual(wVal.Interface(), hVal.Interface()) {
 			return nil
 		}
-		return equalError(a.Interface(), b.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), ops)
 	}
 }
 
 // equalError returns error for not equal values.
-func equalError(want, have any, ops Options) error {
+func equalError(want, have any, ops Options) *notice.Notice {
 	wTyp, hTyp := fmt.Sprintf("%T", want), fmt.Sprintf("%T", have)
 	if wTyp == hTyp {
 		wTyp, hTyp = "", ""
@@ -240,13 +270,13 @@ func equalError(want, have any, ops Options) error {
 	if b, ok := want.(byte); ok && isPrintableChar(b) {
 		_ = msg.Want("%#v ('%s')", want, string(b))
 	} else {
-		_ = msg.Want("%s", dump.New(ops.DumpCfg).Dump(1, want))
+		_ = msg.Want("%s", dump.New(ops.DumpCfg).Any(want))
 	}
 
 	if b, ok := have.(byte); ok && isPrintableChar(b) {
 		_ = msg.Have("%#v ('%s')", have, string(b))
 	} else {
-		_ = msg.Have("%s", dump.New(ops.DumpCfg).Dump(1, have))
+		_ = msg.Have("%s", dump.New(ops.DumpCfg).Any(have))
 	}
 
 	if wTyp != "" {

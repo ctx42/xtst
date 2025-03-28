@@ -68,7 +68,7 @@ func Test_Time(t *testing.T) {
 	})
 }
 
-func Test_TimeExact(t *testing.T) {
+func Test_Exact(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t).Close()
@@ -76,7 +76,7 @@ func Test_TimeExact(t *testing.T) {
 		// --- When ---
 		want := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 		have := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
-		got := TimeExact(tspy, want, have)
+		got := Exact(tspy, want, have)
 
 		// --- Then ---
 		affirm.True(t, got)
@@ -94,7 +94,7 @@ func Test_TimeExact(t *testing.T) {
 		have := time.Date(2000, 1, 2, 3, 4, 5, 0, types.WAW)
 
 		// --- When ---
-		got := TimeExact(tspy, want, have)
+		got := Exact(tspy, want, have)
 
 		// --- Then ---
 		affirm.False(t, got)
@@ -113,7 +113,7 @@ func Test_TimeExact(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		got := TimeExact(tspy, want, have, opt)
+		got := Exact(tspy, want, have, opt)
 
 		// --- Then ---
 		affirm.False(t, got)
@@ -224,7 +224,7 @@ func Test_After(t *testing.T) {
 	})
 }
 
-func Test_EqualOrBefore(t *testing.T) {
+func Test_BeforeOrEqual(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t).Close()
@@ -233,7 +233,7 @@ func Test_EqualOrBefore(t *testing.T) {
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		got := EqualOrBefore(tspy, date, mark)
+		got := BeforeOrEqual(tspy, date, mark)
 
 		// --- Then ---
 		affirm.True(t, got)
@@ -250,7 +250,7 @@ func Test_EqualOrBefore(t *testing.T) {
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		got := EqualOrBefore(tspy, date, mark)
+		got := BeforeOrEqual(tspy, date, mark)
 
 		// --- Then ---
 		affirm.False(t, got)
@@ -268,14 +268,14 @@ func Test_EqualOrBefore(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		got := EqualOrBefore(tspy, date, mark, opt)
+		got := BeforeOrEqual(tspy, date, mark, opt)
 
 		// --- Then ---
 		affirm.False(t, got)
 	})
 }
 
-func Test_EqualOrAfter(t *testing.T) {
+func Test_AfterOrEqual(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t).Close()
@@ -284,7 +284,7 @@ func Test_EqualOrAfter(t *testing.T) {
 		mark := time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		got := EqualOrAfter(tspy, date, mark)
+		got := AfterOrEqual(tspy, date, mark)
 
 		// --- Then ---
 		affirm.True(t, got)
@@ -301,7 +301,7 @@ func Test_EqualOrAfter(t *testing.T) {
 		mark := time.Date(2001, 1, 2, 3, 4, 5, 0, time.UTC)
 
 		// --- When ---
-		got := EqualOrAfter(tspy, date, mark)
+		got := AfterOrEqual(tspy, date, mark)
 
 		// --- Then ---
 		affirm.False(t, got)
@@ -319,7 +319,7 @@ func Test_EqualOrAfter(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		got := EqualOrAfter(tspy, date, mark, opt)
+		got := AfterOrEqual(tspy, date, mark, opt)
 
 		// --- Then ---
 		affirm.False(t, got)

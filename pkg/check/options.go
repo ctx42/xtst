@@ -4,6 +4,7 @@
 package check
 
 import (
+	"reflect"
 	"strconv"
 	"time"
 
@@ -46,12 +47,7 @@ var (
 // errors joined with [errors.Join].
 type Check func(want, have any, opts ...Option) error
 
-// SingleCheck is signature for generic check function checking single value.
-// Returns error if value does not match expectations. The returned error might
-// be one or more errors joined with [errors.Join].
-type SingleCheck func(have any, opts ...Option) error
-
-// Option represents [Check] and [SingleCheck] option.
+// Option represents [Check] option.
 type Option func(Options) Options
 
 // WithTrail is [Check] option setting initial field/element/key breadcrumb
@@ -63,8 +59,8 @@ func WithTrail(pth string) Option {
 	}
 }
 
-// WithTrailLog is [Check] option turning on collection of checked paths. The
-// paths are added to the provided slice.
+// WithTrailLog is [Check] option turning on collection of checked
+// fields/elements/keys. The trails are added to the provided slice.
 func WithTrailLog(list *[]string) Option {
 	return func(ops Options) Options {
 		ops.TrailLog = list
@@ -88,13 +84,43 @@ func WithRecent(recent time.Duration) Option {
 	}
 }
 
-// WithDump is [Check] and [SingleCheck] option setting [dump.Config] options.
+// WithDump is [Check] option setting [dump.Config] options.
 func WithDump(optsD ...dump.Option) Option {
 	return func(optsC Options) Options {
 		for _, opt := range optsD {
 			opt(&optsC.DumpCfg)
 		}
 		return optsC
+	}
+}
+
+// WithTypeChecker is [Check] option setting custom checker for a type.
+func WithTypeChecker(typ any, chk Check) Option {
+	return func(ops Options) Options {
+		if ops.TypeCheckers == nil {
+			ops.TypeCheckers = make(map[reflect.Type]Check)
+		}
+		ops.TypeCheckers[reflect.TypeOf(typ)] = chk
+		return ops
+	}
+}
+
+// WithTrailChecker is [Check] option setting custom checker for a given trail.
+func WithTrailChecker(trail string, chk Check) Option {
+	return func(ops Options) Options {
+		if ops.TrailCheckers == nil {
+			ops.TrailCheckers = make(map[string]Check)
+		}
+		ops.TrailCheckers[trail] = chk
+		return ops
+	}
+}
+
+// WithSkipTrail is [Check] option setting trails to skip.
+func WithSkipTrail(skip ...string) Option {
+	return func(ops Options) Options {
+		ops.SkipTrails = append(ops.SkipTrails, skip...)
+		return ops
 	}
 }
 
@@ -106,13 +132,15 @@ func WithOptions(src Options) Option {
 		ops.Recent = src.Recent
 		ops.Trail = src.Trail
 		ops.TrailLog = src.TrailLog
+		ops.TypeCheckers = src.TypeCheckers
+		ops.TrailCheckers = src.TrailCheckers
+		ops.SkipTrails = src.SkipTrails
 		ops.now = src.now
-		ops.skipType = src.skipType
 		return ops
 	}
 }
 
-// Options represents options used by [Check] and [SingleCheck] functions.
+// Options represents options used by [Check] functions.
 type Options struct {
 	// Dump configuration.
 	DumpCfg dump.Config
@@ -126,16 +154,22 @@ type Options struct {
 	// Field/element/key breadcrumb trail being checked.
 	Trail string
 
-	// List of non-skipped trails.
+	// List of visited trails.
+	// The skipped trails have " <skipped>" suffix.
 	TrailLog *[]string
+
+	// Custom checks to run for given type.
+	TypeCheckers map[reflect.Type]Check
+
+	// Custom checker for given trail.
+	TrailCheckers map[string]Check
+
+	// List of trails to skip.
+	SkipTrails []string
 
 	// Function used to get current time. Used preliminary to inject clock in
 	// tests of checks and assertions using [time.Now].
 	now func() time.Time
-
-	// In cases of nested structs you do not want to add field type to the
-	// trail. When it's true the type argument in structTrail is ignored.
-	skipType bool
 }
 
 // DefaultOptions returns default [Options].
@@ -178,34 +212,22 @@ func (ops Options) logTrail() Options {
 //	Type.Field.Field
 //	Type.Field[1].Field
 //	Type.Field["A"].Field
-func (ops Options) structTrail(typeName, fldName string) Options {
-	if ops.skipType {
-		typeName = ""
+func (ops Options) structTrail(typeName, fldName string) string {
+	left := ops.Trail
+	if typeName != "" && ops.Trail == "" {
+		left = typeName
 	}
-	ops.skipType = false
-	next := typeName
-	if typeName == "" {
-		next = fldName
+	if left != "" && fldName != "" {
+		return left + "." + fldName
 	}
-	if next == "" {
-		next = typeName
+	if left == "" && fldName != "" {
+		return fldName
 	}
-	if ops.Trail == "" {
-		ops.Trail = next
-		return ops
-	}
-	if typeName != "" && ops.Trail[len(ops.Trail)-1] == ']' {
-		next = fldName
-	}
-	if next != "" {
-		ops.Trail += "." + next
-		return ops
-	}
-	return ops
+	return left
 }
 
-// mapTrail updates [Options.Trail] with map value path considering already
-// existing trail.
+// mapTrail updates [Options.Trail] with trail of the map value considering
+// already existing trails.
 //
 // Example trails:
 //
@@ -213,15 +235,16 @@ func (ops Options) structTrail(typeName, fldName string) Options {
 //	["A"]map[1]
 //	[1]map["A"]
 //	field["A"]
-func (ops Options) mapTrail(key string) Options {
+func (ops Options) mapTrail(key string) string {
+	next := ops.Trail
 	if ops.Trail == "" {
-		ops.Trail = "map"
+		next = "map"
 	}
-	if ops.Trail[len(ops.Trail)-1] == ']' {
-		ops.Trail += "map"
+	if next[len(next)-1] == ']' {
+		next += "map"
 	}
-	ops.Trail += "[" + key + "]"
-	return ops
+	next += "[" + key + "]"
+	return next
 }
 
 // arrTrail updates [Options.Trail] with slice or array index considering
@@ -230,7 +253,12 @@ func (ops Options) mapTrail(key string) Options {
 // Example trails:
 //
 //	arr[1]
-func (ops Options) arrTrail(idx int) Options {
-	ops.Trail += "[" + strconv.Itoa(idx) + "]"
-	return ops
+//	[1]
+func (ops Options) arrTrail(kind string, idx int) string {
+	next := ops.Trail
+	if next == "" && kind != "" {
+		next = "<" + kind + ">"
+	}
+	next += "[" + strconv.Itoa(idx) + "]"
+	return next
 }

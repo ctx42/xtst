@@ -71,8 +71,47 @@ func Test_WithDump(t *testing.T) {
 	affirm.Equal(t, 100, have.DumpCfg.MaxDepth)
 }
 
+func Test_WithTypeChecker(t *testing.T) {
+	// --- Given ---
+	ops := Options{}
+	chk := func(want, have any, opts ...Option) error { return nil }
+
+	// --- When ---
+	have := WithTypeChecker(123, chk)(ops)
+
+	// --- Then ---
+	haveChk, _ := have.TypeCheckers[reflect.TypeOf(123)]
+	affirm.True(t, internal.Same(chk, haveChk))
+}
+
+func Test_WithTrailChecker(t *testing.T) {
+	// --- Given ---
+	ops := Options{}
+	chk := func(want, have any, opts ...Option) error { return nil }
+
+	// --- When ---
+	have := WithTrailChecker("type.field", chk)(ops)
+
+	// --- Then ---
+	haveChk, _ := have.TrailCheckers["type.field"]
+	affirm.True(t, internal.Same(chk, haveChk))
+}
+
+func Test_WithSkipTrail(t *testing.T) {
+	// --- Given ---
+	ops := Options{}
+
+	// --- When ---
+	have := WithSkipTrail("type.field1", "type.field2")(ops)
+
+	// --- Then ---
+	affirm.True(t, ops.SkipTrails == nil)
+	affirm.DeepEqual(t, []string{"type.field1", "type.field2"}, have.SkipTrails)
+}
+
 func Test_WithOptions(t *testing.T) {
 	// --- Given ---
+	trailLog := make([]string, 0)
 	ops := Options{
 		DumpCfg: dump.Config{
 			Flat:           true,
@@ -85,13 +124,15 @@ func Test_WithOptions(t *testing.T) {
 			Dumpers: map[reflect.Type]dump.Dumper{
 				reflect.TypeOf(123): dump.Dumper(nil),
 			},
-			Depth: 6,
+			MaxDepth: 6,
 		},
-		TimeFormat: time.RFC3339,
-		Recent:     123,
-		Trail:      "trail",
-		now:        time.Now,
-		skipType:   true,
+		TimeFormat:    time.RFC3339,
+		Recent:        123,
+		Trail:         "trail",
+		TrailLog:      &trailLog,
+		TypeCheckers:  make(map[reflect.Type]Check),
+		TrailCheckers: make(map[string]Check),
+		now:           time.Now,
 	}
 
 	// --- When ---
@@ -100,6 +141,8 @@ func Test_WithOptions(t *testing.T) {
 	// --- Then ---
 	affirm.True(t, internal.Same(ops.DumpCfg.Dumpers, have.DumpCfg.Dumpers))
 	affirm.True(t, internal.Same(ops.TrailLog, have.TrailLog))
+	affirm.True(t, internal.Same(ops.TypeCheckers, have.TypeCheckers))
+	affirm.True(t, internal.Same(ops.TrailCheckers, have.TrailCheckers))
 	affirm.True(t, internal.Same(ops.now, have.now))
 
 	ops.now = nil
@@ -120,9 +163,11 @@ func Test_DefaultOptions(t *testing.T) {
 		affirm.Equal(t, DefaultRecentDuration, have.Recent)
 		affirm.Equal(t, "", have.Trail)
 		affirm.True(t, have.TrailLog == nil)
+		affirm.True(t, have.TypeCheckers == nil)
+		affirm.True(t, have.TrailCheckers == nil)
+		affirm.True(t, have.SkipTrails == nil)
 		affirm.True(t, internal.Same(time.Now, have.now))
-		affirm.False(t, have.skipType)
-		affirm.Equal(t, 7, reflect.ValueOf(have).NumField())
+		affirm.Equal(t, 9, reflect.ValueOf(have).NumField())
 	})
 
 	t.Run("with options", func(t *testing.T) {
@@ -137,9 +182,11 @@ func Test_DefaultOptions(t *testing.T) {
 		affirm.Equal(t, DefaultRecentDuration, have.Recent)
 		affirm.Equal(t, "type.field", have.Trail)
 		affirm.True(t, have.TrailLog == nil)
+		affirm.True(t, have.TypeCheckers == nil)
+		affirm.True(t, have.TrailCheckers == nil)
+		affirm.True(t, have.SkipTrails == nil)
 		affirm.True(t, internal.Same(time.Now, have.now))
-		affirm.False(t, have.skipType)
-		affirm.Equal(t, 7, reflect.ValueOf(have).NumField())
+		affirm.Equal(t, 9, reflect.ValueOf(have).NumField())
 	})
 }
 
@@ -157,7 +204,7 @@ func Test_Options_logTrail(t *testing.T) {
 		affirm.DeepEqual(t, []string{"abc"}, *ops.TrailLog)
 	})
 
-	t.Run("does not logTrail() empty paths", func(t *testing.T) {
+	t.Run("does not log empty trails", func(t *testing.T) {
 		// --- Given ---
 		list := make([]string, 0)
 		ops := Options{Trail: "", TrailLog: &list}
@@ -179,65 +226,37 @@ func Test_Options_logTrail(t *testing.T) {
 	})
 }
 
-func Test_Options_skipTrail(t *testing.T) {
-	t.Run("skipType is reset to false", func(t *testing.T) {
-		// --- Given ---
-		ops := Options{skipType: true}
-
-		// --- When ---
-		have := ops.structTrail("type", "field")
-
-		// --- Then ---
-		affirm.False(t, have.skipType)
-	})
-}
-
 func Test_Options_structTrail_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		trail    string
-		skipNext bool
-		typName  string
-		fldName  string
-		want     string
+		trail   string
+		typName string
+		fldName string
+		want    string
 	}{
-		{"empty path with field", "", false, "", "field", "field"},
-		{"empty path with type", "", false, "type", "", "type"},
-		{"path with type", "path", false, "type", "", "path.type"},
-		{"path with field", "path", false, "", "field", "path.field"},
-		{"path with empty type and field", "path", false, "", "", "path"},
-		{"path with index", "path[1]", false, "", "", "path[1]"},
-		{"path with index and type", "path[1]", false, "type", "", "path[1]"},
-		{"path with index and field", "path[1]", false, "", "field", "path[1].field"},
-		{
-			"path with index type and field",
-			"path[1]",
-			false,
-			"type",
-			"field",
-			"path[1].field",
-		},
-		{
-			"skip type",
-			"path",
-			true,
-			"type",
-			"field",
-			"path.field",
-		},
+		{"no trail and type", "", "type", "", "type"},                         // 1
+		{"no trail and field", "", "", "field", "field"},                      // 2
+		{"no trail and type and field", "", "type", "field", "type.field"},    // 3
+		{"trail and type", "trail", "type", "", "trail"},                      // 4
+		{"trail and field", "trail", "", "field", "trail.field"},              // 5
+		{"trail and type and field", "trail", "type", "field", "trail.field"}, // 6
+		{"trail[] and type", "[]", "type", "", "[]"},                          // 7
+		{"trail[] and field", "[]", "", "field", "[].field"},                  // 8
+		{"trail[] and type and field", "[]", "type", "field", "[].field"},     // 9
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
-			ops := Options{Trail: tc.trail, skipType: tc.skipNext}
+			ops := Options{Trail: tc.trail}
 
 			// --- When ---
 			have := ops.structTrail(tc.typName, tc.fldName)
 
 			// --- Then ---
-			affirm.Equal(t, tc.want, have.Trail)
+			affirm.Equal(t, ops.Trail, tc.trail)
+			affirm.Equal(t, tc.want, have)
 		})
 	}
 }
@@ -250,10 +269,10 @@ func Test_Options_mapTrail_tabular(t *testing.T) {
 		key   string
 		want  string
 	}{
-		{"empty path with key", "", "key", "map[key]"},
-		{"path ends with index", "[1]", "key", "[1]map[key]"},
-		{"path ends with index", "[1]", "key", "[1]map[key]"},
-		{"not empty path", "field", "key", "field[key]"},
+		{"empty trail with key", "", "key", "map[key]"},
+		{"trail ends with index", "[1]", "key", "[1]map[key]"},
+		{"trail ends with index", "[1]", "key", "[1]map[key]"},
+		{"not empty trail", "field", "key", "field[key]"},
 	}
 
 	for _, tc := range tt {
@@ -265,7 +284,8 @@ func Test_Options_mapTrail_tabular(t *testing.T) {
 			have := ops.mapTrail(tc.key)
 
 			// --- Then ---
-			affirm.Equal(t, tc.want, have.Trail)
+			affirm.Equal(t, ops.Trail, tc.trail)
+			affirm.Equal(t, tc.want, have)
 		})
 	}
 }
@@ -275,12 +295,14 @@ func Test_Options_arrTrail_tabular(t *testing.T) {
 		testN string
 
 		trail string
+		kind  string
 		key   int
 		want  string
 	}{
-		{"empty path with key", "", 1, "[1]"},
-		{"path ends with index", "[1]", 2, "[1][2]"},
-		{"not empty path", "field", 1, "field[1]"},
+		{"empty trail with key", "", "", 1, "[1]"},
+		{"empty trail with key", "", "kind", 1, "<kind>[1]"},
+		{"trail ends with index", "[1]", "", 2, "[1][2]"},
+		{"not empty trail", "field", "", 1, "field[1]"},
 	}
 
 	for _, tc := range tt {
@@ -289,10 +311,11 @@ func Test_Options_arrTrail_tabular(t *testing.T) {
 			ops := Options{Trail: tc.trail}
 
 			// --- When ---
-			have := ops.arrTrail(tc.key)
+			have := ops.arrTrail(tc.kind, tc.key)
 
 			// --- Then ---
-			affirm.Equal(t, tc.want, have.Trail)
+			affirm.Equal(t, ops.Trail, tc.trail)
+			affirm.Equal(t, tc.want, have)
 		})
 	}
 }

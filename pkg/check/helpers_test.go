@@ -4,13 +4,16 @@
 package check
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
 	"unsafe"
 
+	"github.com/ctx42/xtst/internal"
 	"github.com/ctx42/xtst/internal/affirm"
 	"github.com/ctx42/xtst/internal/types"
+	"github.com/ctx42/xtst/pkg/notice"
 )
 
 func Test_typeString(t *testing.T) {
@@ -119,4 +122,134 @@ func Test_valToString_tabular(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_wrap(t *testing.T) {
+	t.Run("single error", func(t *testing.T) {
+		// --- Given ---
+		msg := notice.New("header").Want("%s", "want").Have("%s", "have")
+
+		// --- When ---
+		have := wrap(msg)
+
+		// --- Then ---
+		affirm.True(t, internal.Same(msg, have))
+	})
+
+	t.Run("joined errors", func(t *testing.T) {
+		// --- Given ---
+		msg0 := notice.New("header 0").Want("%s", "want 0").Have("%s", "have 0")
+		msg1 := notice.New("header 1").Want("%s", "want 1").Have("%s", "have 1")
+		msg := errors.Join(msg0, msg1)
+
+		// --- When ---
+		have := wrap(msg)
+
+		// --- Then ---
+		affirm.False(t, internal.Same(msg, have))
+		ers := have.(multiError).Unwrap() // nolint: errorlint
+		affirm.Equal(t, 2, len(ers))
+		affirm.True(t, internal.Same(msg0, ers[0]))
+		affirm.True(t, internal.Same(msg1, ers[1]))
+	})
+
+	t.Run("nil error", func(t *testing.T) {
+		// --- When ---
+		have := wrap(nil)
+
+		// --- Then ---
+		affirm.Nil(t, have)
+	})
+}
+
+func Test_multiError_Error(t *testing.T) {
+	t.Run("multiple errors with consecutive headers", func(t *testing.T) {
+		// --- Given ---
+		msg0 := notice.New("header").Want("%s", "want 0").Have("%s", "have 0")
+		msg1 := notice.New("header").Want("%s", "want 1").Have("%s", "have 1")
+		me := wrap(errors.Join(msg0, msg1))
+
+		// --- When ---
+		have := me.Error()
+
+		// --- Then ---
+		wMsg := "" +
+			"header:\n" +
+			"  want: want 0\n" +
+			"  have: have 0\n" +
+			" ---\n" +
+			"  want: want 1\n" +
+			"  have: have 1"
+		affirm.Equal(t, wMsg, have)
+	})
+
+	t.Run("multiple errors without consecutive headers", func(t *testing.T) {
+		// --- Given ---
+		msg0 := notice.New("header").Want("%s", "want 0").Have("%s", "have 0")
+		msg1 := notice.New("other").Want("%s", "want 1").Have("%s", "have 1")
+		msg2 := notice.New("header").Want("%s", "want 2").Have("%s", "have 2")
+		me := wrap(errors.Join(msg0, msg1, msg2))
+
+		// --- When ---
+		have := me.Error()
+
+		// --- Then ---
+		wMsg := "" +
+			"header:\n" +
+			"  want: want 0\n" +
+			"  have: have 0\n" +
+			"\n" +
+			"other:\n" +
+			"  want: want 1\n" +
+			"  have: have 1\n" +
+			"\n" +
+			"header:\n" +
+			"  want: want 2\n" +
+			"  have: have 2"
+		affirm.Equal(t, wMsg, have)
+	})
+
+	t.Run("not notice error", func(t *testing.T) {
+		// --- Given ---
+		msg0 := notice.New("header").Want("%s", "want 0").Have("%s", "have 0")
+		msg1 := errors.New("not notice")
+		msg2 := notice.New("header").Want("%s", "want 2").Have("%s", "have 2")
+		me := wrap(errors.Join(msg0, msg1, msg2))
+
+		// --- When ---
+		have := me.Error()
+
+		// --- Then ---
+		wMsg := "header:\n" +
+			"  want: want 0\n" +
+			"  have: have 0\n" +
+			"\n" +
+			"not notice\n" +
+			"\n" +
+			"header:\n" +
+			"  want: want 2\n" +
+			"  have: have 2"
+		affirm.Equal(t, wMsg, have)
+	})
+
+	t.Run("multiple errors serialized multiple times", func(t *testing.T) {
+		// --- Given ---
+		msg0 := notice.New("header").Want("%s", "want 0").Have("%s", "have 0")
+		msg1 := notice.New("header").Want("%s", "want 1").Have("%s", "have 1")
+		me := wrap(errors.Join(msg0, msg1))
+
+		// --- When ---
+		have := me.Error()
+		have = me.Error()
+
+		// --- Then ---
+		wMsg := "" +
+			"header:\n" +
+			"  want: want 0\n" +
+			"  have: have 0\n" +
+			" ---\n" +
+			"  want: want 1\n" +
+			"  have: have 1"
+		affirm.Equal(t, wMsg, have)
+	})
 }

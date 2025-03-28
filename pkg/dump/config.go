@@ -124,7 +124,6 @@ type Config struct {
 	//   - [time.Location]
 	//
 	// are automatically registered.
-	// TODO(rz): do we need to clone (check.WithOptions).
 	Dumpers map[reflect.Type]Dumper
 
 	// Controls maximum nesting when dumping recursive types.
