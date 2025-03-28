@@ -95,7 +95,7 @@ func NotNil(t *testing.T, have any) bool {
 	const format = "expected argument not to be nil:\n" +
 		"\twant: <not-nil>\n" +
 		"\thave: nil"
-	t.Error(format)
+	t.Error(format) // TODO(rz): Consider t.Fatal.
 	return false
 }
 
