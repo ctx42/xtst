@@ -183,7 +183,7 @@ func Test_DidPanic(t *testing.T) {
 		// --- Then ---
 		affirm.True(t, did)
 		affirm.Equal(t, "panic", val)
-		affirm.True(t, len(stack) > 0)
+		affirm.True(t, stack != "")
 	})
 
 	t.Run("no panic", func(t *testing.T) {

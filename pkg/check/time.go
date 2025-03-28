@@ -374,14 +374,14 @@ func formatDates(
 
 	var want, have string
 	if wTimUTC == wTimStr {
-		want = fmt.Sprintf("%s", wTimUTC)
+		want = wTimUTC
 	} else {
 		want = fmt.Sprintf("%s ( %s %s)", wTimUTC, wTimStr, wTimPad)
 
 	}
 
 	if hTimUTC == hTimStr {
-		have = fmt.Sprintf("%s", hTimUTC)
+		have = hTimUTC
 	} else {
 		have = fmt.Sprintf("%s ( %s %s)", hTimUTC, hTimStr, hTimPad)
 	}

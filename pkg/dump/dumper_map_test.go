@@ -14,7 +14,6 @@ import (
 
 func Test_mapDumper_tabular(t *testing.T) {
 	var nilMap map[string]int
-	// var nilAnyMap map[string]any
 
 	tt := []struct {
 		testN string
