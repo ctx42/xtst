@@ -7,17 +7,22 @@ import (
 	"strings"
 )
 
-// Lines takes an indent value as number of spaces and a string of lines, and
-// returns the lines formatted with the specified indent.
-func Lines(indent int, lns string) string {
+// Indent indents lines with n number of "tab"s. Lines are indented only if
+// there are more than one line.
+func Indent(n int, tab rune, lns string) string {
+	// TODO(rz): document this.
+	// TODO(rz): test this.
 	if lns == "" {
 		return ""
 	}
 	out := strings.TrimSpace(lns)
 	rows := strings.Split(out, "\n")
+	if len(rows) == 1 {
+		return lns
+	}
 	for i, lin := range rows {
-		ind := strings.Repeat(" ", indent)
-		rows[i] = ind + ">| " + lin
+		ind := strings.Repeat(" ", n)
+		rows[i] = ind + lin
 	}
 	return strings.Join(rows, "\n")
 }

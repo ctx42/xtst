@@ -10,10 +10,10 @@ import (
 	"github.com/ctx42/xtst/internal/affirm"
 )
 
-func Test_Lines(t *testing.T) {
+func Test_Indent(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		// --- When ---
-		have := Lines(1, "")
+		have := Indent(1, ' ', "")
 
 		// --- Then ---
 		affirm.Equal(t, "", have)
@@ -21,33 +21,33 @@ func Test_Lines(t *testing.T) {
 
 	t.Run("one line", func(t *testing.T) {
 		// --- When ---
-		have := Lines(1, "abc")
+		have := Indent(1, ' ', "abc")
 
 		// --- Then ---
-		affirm.Equal(t, " >| abc", have)
+		affirm.Equal(t, "abc", have)
 	})
 
 	t.Run("multiple lines", func(t *testing.T) {
 		// --- When ---
-		have := Lines(1, "abc\ndef\nghi")
+		have := Indent(1, 0, "abc\ndef\nghi")
 
 		// --- Then ---
 		want := "" +
-			" >| abc\n" +
-			" >| def\n" +
-			" >| ghi"
+			" abc\n" +
+			" def\n" +
+			" ghi"
 		affirm.Equal(t, want, have)
 	})
 
 	t.Run("no ident", func(t *testing.T) {
 		// --- When ---
-		have := Lines(0, "abc\ndef\nghi")
+		have := Indent(0, ' ', "abc\ndef\nghi")
 
 		// --- Then ---
 		want := "" +
-			">| abc\n" +
-			">| def\n" +
-			">| ghi"
+			"abc\n" +
+			"def\n" +
+			"ghi"
 		affirm.Equal(t, want, have)
 	})
 }

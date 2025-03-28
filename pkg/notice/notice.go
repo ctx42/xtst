@@ -182,7 +182,11 @@ func (msg *Notice) Error() string {
 	for i := range msg.Order {
 		display := names[i]
 		given := msg.Order[i]
-		m += fmt.Sprintf("  %s: %s", display, msg.Rows[given])
+		value := msg.Rows[given]
+		if strings.IndexByte(value, '\n') >= 0 {
+			value = "\n" + Indent(len(display)+4, ' ', value)
+		}
+		m += fmt.Sprintf("  %s: %s", display, value)
 		if i < len(msg.Order)-1 {
 			m += "\n"
 		}

@@ -479,6 +479,27 @@ func Test_Message_Error(t *testing.T) {
 			"  longer: 44"
 		affirm.Equal(t, want, have)
 	})
+
+	t.Run("multi line row value", func(t *testing.T) {
+		// --- Given ---
+		msg := New("expected values to be equal").
+			Want("42").
+			Append("longer", "\n[]int{\n  0,\n  1,\n  2,\n}")
+
+		// --- When ---
+		have := msg.Error()
+
+		// --- Then ---
+		want := "expected values to be equal:\n" +
+			"    want: 42\n" +
+			"  longer: \n" +
+			"          []int{\n" +
+			"            0,\n" +
+			"            1,\n" +
+			"            2,\n" +
+			"          }"
+		affirm.Equal(t, want, have)
+	})
 }
 
 func Test_equalizeNames(t *testing.T) {
@@ -493,6 +514,11 @@ func Test_equalizeNames(t *testing.T) {
 	have := msg.equalizeNames()
 
 	// --- Then ---
-	want := []string{"   want", "   have", "other A", "other B"}
+	want := []string{
+		"   want",
+		"   have",
+		"other A",
+		"other B",
+	}
 	affirm.DeepEqual(t, want, have)
 }

@@ -126,12 +126,12 @@ func ExampleNotice_Trail() {
 	//    have: xyz
 }
 
-func ExampleLines() {
-	lines := notice.Lines(2, "line1\nline2\nline3")
+func ExampleIndent() {
+	lines := notice.Indent(4, ' ', "line1\nline2\nline3")
 
 	fmt.Println(lines)
 	// Output:
-	//   >| line1
-	//   >| line2
-	//   >| line3
+	//     line1
+	//     line2
+	//     line3
 }

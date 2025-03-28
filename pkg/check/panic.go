@@ -32,7 +32,7 @@ func NoPanic(fn TestFunc, opts ...Option) error {
 		return notice.New("func should not panic").
 			Trail(ops.Trail).
 			Append("panic value", "%v", val).
-			Append("panic stack", "\n%s", notice.Lines(2, stack))
+			Append("panic stack", "\n%s", notice.Indent(2, ' ', stack))
 	}
 	return nil
 }
@@ -61,7 +61,7 @@ func PanicContain(want string, fn TestFunc, opts ...Option) error {
 			Trail(ops.Trail).
 			Append("substring", "%q", want).
 			Append("panic value", "%v", val).
-			Append("panic stack", "\n%s", notice.Lines(2, stack))
+			Append("panic stack", "\n%s", notice.Indent(2, ' ', stack))
 	}
 	return nil
 }
