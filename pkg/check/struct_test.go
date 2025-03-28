@@ -689,6 +689,8 @@ func Test_structEq(t *testing.T) {
 		err := Equal(want, have)
 
 		// --- Then ---
+		fmt.Println(err.Error()) // TODO(rz):
+
 		wMsg := "expected arguments to be structs:\n" +
 			"\twant type: types.TA\n" +
 			"\thave type: int"

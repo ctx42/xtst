@@ -85,7 +85,7 @@ func Test_WithOptions(t *testing.T) {
 			Dumpers: map[reflect.Type]dump.Dumper{
 				reflect.TypeOf(123): dump.Dumper(nil),
 			},
-			Depth: 6,
+			MaxDepth: 6,
 		},
 		TimeFormat: time.RFC3339,
 		Recent:     123,

@@ -240,13 +240,13 @@ func equalError(want, have any, ops Options) error {
 	if b, ok := want.(byte); ok && isPrintableChar(b) {
 		_ = msg.Want("%#v ('%s')", want, string(b))
 	} else {
-		_ = msg.Want("%s", dump.New(ops.DumpCfg).Dump(1, want))
+		_ = msg.Want("%s", dump.New(ops.DumpCfg).Any(want))
 	}
 
 	if b, ok := have.(byte); ok && isPrintableChar(b) {
 		_ = msg.Have("%#v ('%s')", have, string(b))
 	} else {
-		_ = msg.Have("%s", dump.New(ops.DumpCfg).Dump(1, have))
+		_ = msg.Have("%s", "\n"+dump.New(ops.DumpCfg).Any(have))
 	}
 
 	if wTyp != "" {
