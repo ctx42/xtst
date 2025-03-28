@@ -74,8 +74,8 @@ func Test_Equal(t *testing.T) {
 	// 	affirm.NotNil(t, err)
 	// 	hMsg := err.Error()
 	// 	wMsg := "expected same pointers:\n" +
-	// 		"\ttrail: Now\n" +
-	// 		"\t want: "
+	// 		"  trail: Now\n" +
+	// 		"   want: "
 	// 	affirm.True(t, strings.Contains(hMsg, wMsg))
 	// })
 
@@ -86,8 +86,8 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\twant: 42\n" +
-			"\thave: 44"
+			"  want: 42\n" +
+			"  have: 44"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -101,9 +101,9 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: 42\n" +
-			"\t have: 44"
+			"  trail: type.field\n" +
+			"   want: 42\n" +
+			"   have: 44"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -114,10 +114,10 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\t     want: 42\n" +
-			"\t     have: 42\n" +
-			"\twant type: int\n" +
-			"\thave type: int64"
+			"       want: 42\n" +
+			"       have: 42\n" +
+			"  want type: int\n" +
+			"  have type: int64"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -128,8 +128,8 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\twant: 0x42 ('B')\n" +
-			"\thave: 0x41 ('A')"
+			"  want: 0x42 ('B')\n" +
+			"  have: 0x41 ('A')"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -140,8 +140,8 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\twant: 0x1\n" +
-			"\thave: 0x2"
+			"  want: 0x1\n" +
+			"  have: 0x2"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -156,9 +156,9 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.STA[0].Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TNested.STA[0].Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -173,9 +173,9 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.STAp[0].Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TNested.STAp[0].Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -190,9 +190,9 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.STAp[0].TAp.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TNested.STAp[0].TAp.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -207,9 +207,9 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: map[\"A\"]\n" +
-			"\t want: 1\n" +
-			"\t have: 2"
+			"  trail: map[\"A\"]\n" +
+			"   want: 1\n" +
+			"   have: 2"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -224,13 +224,13 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: [0]\n" +
-			"\t want: 1\n" +
-			"\t have: 2\n" +
+			"  trail: [0]\n" +
+			"   want: 1\n" +
+			"   have: 2\n" +
 			"expected values to be equal:\n" +
-			"\ttrail: [1]\n" +
-			"\t want: 2\n" +
-			"\t have: 3"
+			"  trail: [1]\n" +
+			"   want: 2\n" +
+			"   have: 3"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -245,13 +245,13 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: map[\"A\"]\n" +
-			"\t want: 1\n" +
-			"\t have: 2\n" +
+			"  trail: map[\"A\"]\n" +
+			"   want: 1\n" +
+			"   have: 2\n" +
 			"expected values to be equal:\n" +
-			"\ttrail: map[\"B\"]\n" +
-			"\t want: 2\n" +
-			"\t have: 3"
+			"  trail: map[\"B\"]\n" +
+			"   want: 2\n" +
+			"   have: 3"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -264,11 +264,11 @@ func Test_Equal_EqualCases(t *testing.T) {
 
 			// --- Then ---
 			if tc.AreEqual && have != nil {
-				format := "expected nil error:\n\thave: %#v"
+				format := "expected nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 			if !tc.AreEqual && have == nil {
-				format := "expected not-nil error:\n\thave: %#v"
+				format := "expected not-nil error:\n  have: %#v"
 				t.Errorf(format, have)
 			}
 		})
@@ -285,8 +285,8 @@ func Test_equalError(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\twant: 42\n" +
-			"\thave: 44"
+			"  want: 42\n" +
+			"  have: 44"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -299,9 +299,9 @@ func Test_equalError(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: 42\n" +
-			"\t have: 44"
+			"  trail: type.field\n" +
+			"   want: 42\n" +
+			"   have: 44"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -316,8 +316,8 @@ func Test_equalError(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\twant: 0x41 ('A')\n" +
-			"\thave: 0x42 ('B')"
+			"  want: 0x41 ('A')\n" +
+			"  have: 0x42 ('B')"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -332,10 +332,10 @@ func Test_equalError(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\t     want: 0x41 ('A')\n" +
-			"\t     have: 42\n" +
-			"\twant type: uint8\n" +
-			"\thave type: int"
+			"       want: 0x41 ('A')\n" +
+			"       have: 42\n" +
+			"  want type: uint8\n" +
+			"  have type: int"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }

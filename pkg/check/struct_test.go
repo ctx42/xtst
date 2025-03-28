@@ -87,9 +87,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TC.TD\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TC.TD\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -102,16 +102,19 @@ func Test_structEqual(t *testing.T) {
 		err := Equal(want, have)
 
 		// --- Then ---
+		fmt.Println(err.Error()) // TODO(rz):
+
 		wMsg := "expected values to be equal:\n" +
-			"\twant: nil\n" +
-			"\thave: {\n" +
-			"\t\tInt: 0,\n" +
-			"\t\tStr: \"abc\",\n" +
-			"\t\tTim: \"0001-01-01T00:00:00Z\",\n" +
-			"\t\tDur: \"0s\",\n" +
-			"\t\tLoc: nil,\n" +
-			"\t\tTAp: nil,\n" +
-			"\t}"
+			"  want: nil\n" +
+			"  have: \n" +
+			"        {\n" +
+			"          Int: 0,\n" +
+			"          Str: \"abc\",\n" +
+			"          Tim: \"0001-01-01T00:00:00Z\",\n" +
+			"          Dur: \"0s\",\n" +
+			"          Loc: nil,\n" +
+			"          TAp: nil,\n" +
+			"        }"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -125,15 +128,16 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\twant: {\n" +
-			"\t\tInt: 0,\n" +
-			"\t\tStr: \"abc\",\n" +
-			"\t\tTim: \"0001-01-01T00:00:00Z\",\n" +
-			"\t\tDur: \"0s\",\n" +
-			"\t\tLoc: nil,\n" +
-			"\t\tTAp: nil,\n" +
-			"\t}\n" +
-			"\thave: nil"
+			"  want: \n" +
+			"        {\n" +
+			"          Int: 0,\n" +
+			"          Str: \"abc\",\n" +
+			"          Tim: \"0001-01-01T00:00:00Z\",\n" +
+			"          Dur: \"0s\",\n" +
+			"          Loc: nil,\n" +
+			"          TAp: nil,\n" +
+			"        }\n" +
+			"  have: nil"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -147,9 +151,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TA.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TA.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -163,13 +167,13 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TA.Int\n" +
-			"\t want: 1\n" +
-			"\t have: 2\n" +
+			"  trail: TA.Int\n" +
+			"   want: 1\n" +
+			"   have: 2\n" +
 			"expected values to be equal:\n" +
-			"\ttrail: TA.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TA.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -194,9 +198,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected equal dates:\n" +
-			"\twant: 2000-01-02T03:04:05Z\n" +
-			"\thave: 2001-01-02T03:04:05Z\n" +
-			"\tdiff: -8784h0m0s"
+			"  want: 2000-01-02T03:04:05Z\n" +
+			"  have: 2001-01-02T03:04:05Z\n" +
+			"  diff: -8784h0m0s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -212,10 +216,10 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected equal dates:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: 2000-01-02T03:04:05Z\n" +
-			"\t have: 2001-01-02T03:04:05Z\n" +
-			"\t diff: -8784h0m0s"
+			"  trail: type.field\n" +
+			"   want: 2000-01-02T03:04:05Z\n" +
+			"   have: 2001-01-02T03:04:05Z\n" +
+			"   diff: -8784h0m0s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -237,8 +241,8 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected same timezone:\n" +
-			"\twant: Europe/Warsaw\n" +
-			"\thave: UTC"
+			"  want: Europe/Warsaw\n" +
+			"  have: UTC"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -252,9 +256,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected same timezone:\n" +
-			"\ttrail: type.field\n" +
-			"\t want: Europe/Warsaw\n" +
-			"\t have: UTC"
+			"  trail: type.field\n" +
+			"   want: Europe/Warsaw\n" +
+			"   have: UTC"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -283,10 +287,10 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected equal dates:\n" +
-			"\ttrail: TA.Tim\n" +
-			"\t want: 2000-01-02T03:04:05Z\n" +
-			"\t have: 2000-01-02T03:04:06Z\n" +
-			"\t diff: -1s"
+			"  trail: TA.Tim\n" +
+			"   want: 2000-01-02T03:04:05Z\n" +
+			"   have: 2000-01-02T03:04:06Z\n" +
+			"   diff: -1s"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -305,9 +309,9 @@ func Test_structEqual(t *testing.T) {
 	//
 	// 	// --- Then ---
 	// 	wMsg := "expected same timezone:\n" +
-	// 		"\ttrail: TA.Tim\n" +
-	// 		"\t want: Europe/Warsaw\n" +
-	// 		"\t have: UTC"
+	// 		"  trail: TA.Tim\n" +
+	// 		"   want: Europe/Warsaw\n" +
+	// 		"   have: UTC"
 	// 	affirm.Equal(t, wMsg, err.Error())
 	// })
 
@@ -344,9 +348,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected same timezone:\n" +
-			"\ttrail: TA.Loc\n" +
-			"\t want: Europe/Warsaw\n" +
-			"\t have: Europe/Zurich"
+			"  trail: TA.Loc\n" +
+			"   want: Europe/Warsaw\n" +
+			"   have: Europe/Zurich"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -360,9 +364,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected same timezone:\n" +
-			"\ttrail: TA.Loc\n" +
-			"\t want: UTC\n" +
-			"\t have: Europe/Warsaw"
+			"  trail: TA.Loc\n" +
+			"   want: UTC\n" +
+			"   have: Europe/Warsaw"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -376,9 +380,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected same timezone:\n" +
-			"\ttrail: TA.Loc\n" +
-			"\t want: Europe/Warsaw\n" +
-			"\t have: UTC"
+			"  trail: TA.Loc\n" +
+			"   want: Europe/Warsaw\n" +
+			"   have: UTC"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -430,9 +434,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TA.TAp.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TA.TAp.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -446,9 +450,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TB.TAv.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TB.TAv.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -462,9 +466,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.SInt[1]\n" +
-			"\t want: 2\n" +
-			"\t have: 7"
+			"  trail: TNested.SInt[1]\n" +
+			"   want: 2\n" +
+			"   have: 7"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -478,9 +482,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.STA[0].Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TNested.STA[0].Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -494,9 +498,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.MStrTyp[\"A\"].Int\n" +
-			"\t want: 0\n" +
-			"\t have: 1"
+			"  trail: TNested.MStrTyp[\"A\"].Int\n" +
+			"   want: 0\n" +
+			"   have: 1"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -510,9 +514,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.MIntTyp[1].Int\n" +
-			"\t want: 0\n" +
-			"\t have: 1"
+			"  trail: TNested.MIntTyp[1].Int\n" +
+			"   want: 0\n" +
+			"   have: 1"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -526,9 +530,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TNested.MStrInt[\"A\"]\n" +
-			"\t want: 0\n" +
-			"\t have: 1"
+			"  trail: TNested.MStrInt[\"A\"]\n" +
+			"   want: 0\n" +
+			"   have: 1"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -572,11 +576,11 @@ func Test_structEqual(t *testing.T) {
 	//
 	// 	// --- Then ---
 	// 	wMsg := "expected dates to be within:\n" +
-	// 		"\t     path: TA.Tim\n" +
-	// 		"\t     want: 2000-01-02T03:04:05Z (2000-01-02T03:04:05Z)\n" +
-	// 		"\t     have: 2000-01-02T03:04:07Z (2000-01-02T03:04:07Z)\n" +
-	// 		"\t max diff: 1s\n" +
-	// 		"\thave diff: -2s"
+	// 		"       path: TA.Tim\n" +
+	// 		"       want: 2000-01-02T03:04:05Z (2000-01-02T03:04:05Z)\n" +
+	// 		"       have: 2000-01-02T03:04:07Z (2000-01-02T03:04:07Z)\n" +
+	// 		"   max diff: 1s\n" +
+	// 		"  have diff: -2s"
 	// 	affirm.Equal(t, wMsg, err.Error())
 	// })
 
@@ -590,13 +594,13 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TA.Int\n" +
-			"\t want: 42\n" +
-			"\t have: 44\n" +
+			"  trail: TA.Int\n" +
+			"   want: 42\n" +
+			"   have: 44\n" +
 			"expected values to be equal:\n" +
-			"\ttrail: TA.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TA.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -623,9 +627,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: TB.TA.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: TB.TA.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -639,9 +643,9 @@ func Test_structEqual(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"\ttrail: type.field.TA.Str\n" +
-			"\t want: \"abc\"\n" +
-			"\t have: \"xyz\""
+			"  trail: type.field.TA.Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -654,11 +658,19 @@ func Test_structEqual(t *testing.T) {
 		err := Equal(want, have)
 
 		// --- Then ---
-		fmt.Println(err.Error()) // TODO(rz):
-
-		wMsg := "expected struct of the same type:\n" +
-			"\twant type: int\n" +
-			"\thave type: types.TA"
+		wMsg := "expected values to be equal:\n" +
+			"       want: 42\n" +
+			"       have: \n" +
+			"             {\n" +
+			"               Int: 0,\n" +
+			"               Str: \"xyz\",\n" +
+			"               Tim: \"0001-01-01T00:00:00Z\",\n" +
+			"               Dur: \"0s\",\n" +
+			"               Loc: nil,\n" +
+			"               TAp: nil,\n" +
+			"             }\n" +
+			"  want type: int\n" +
+			"  have type: types.TA"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -671,9 +683,19 @@ func Test_structEqual(t *testing.T) {
 		err := Equal(want, have)
 
 		// --- Then ---
-		wMsg := "expected struct of the same type:\n" +
-			"\twant type: types.TA\n" +
-			"\thave type: int"
+		wMsg := "expected values to be equal:\n" +
+			"       want: \n" +
+			"             {\n" +
+			"               Int: 0,\n" +
+			"               Str: \"xyz\",\n" +
+			"               Tim: \"0001-01-01T00:00:00Z\",\n" +
+			"               Dur: \"0s\",\n" +
+			"               Loc: nil,\n" +
+			"               TAp: nil,\n" +
+			"             }\n" +
+			"       have: 42\n" +
+			"  want type: types.TA\n" +
+			"  have type: int"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
@@ -691,9 +713,19 @@ func Test_structEq(t *testing.T) {
 		// --- Then ---
 		fmt.Println(err.Error()) // TODO(rz):
 
-		wMsg := "expected arguments to be structs:\n" +
-			"\twant type: types.TA\n" +
-			"\thave type: int"
+		wMsg := "expected values to be equal:\n" +
+			"       want: \n" +
+			"             {\n" +
+			"               Int: 0,\n" +
+			"               Str: \"xyz\",\n" +
+			"               Tim: \"0001-01-01T00:00:00Z\",\n" +
+			"               Dur: \"0s\",\n" +
+			"               Loc: nil,\n" +
+			"               TAp: nil,\n" +
+			"             }\n" +
+			"       have: 42\n" +
+			"  want type: types.TA\n" +
+			"  have type: int"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -706,9 +738,19 @@ func Test_structEq(t *testing.T) {
 		err := Equal(want, have)
 
 		// --- Then ---
-		wMsg := "expected arguments to be structs:\n" +
-			"\twant type: int\n" +
-			"\thave type: types.TA"
+		wMsg := "expected values to be equal:\n" +
+			"       want: 42\n" +
+			"       have: \n" +
+			"             {\n" +
+			"               Int: 0,\n" +
+			"               Str: \"xyz\",\n" +
+			"               Tim: \"0001-01-01T00:00:00Z\",\n" +
+			"               Dur: \"0s\",\n" +
+			"               Loc: nil,\n" +
+			"               TAp: nil,\n" +
+			"             }\n" +
+			"  want type: int\n" +
+			"  have type: types.TA"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -721,10 +763,20 @@ func Test_structEq(t *testing.T) {
 		err := Equal(want, have, WithTrail("type.field"))
 
 		// --- Then ---
-		wMsg := "expected arguments to be structs:\n" +
-			"\t    trail: type.field\n" +
-			"\twant type: types.TA\n" +
-			"\thave type: int"
+		wMsg := "expected values to be equal:\n" +
+			"      trail: type.field\n" +
+			"       want: \n" +
+			"             {\n" +
+			"               Int: 0,\n" +
+			"               Str: \"xyz\",\n" +
+			"               Tim: \"0001-01-01T00:00:00Z\",\n" +
+			"               Dur: \"0s\",\n" +
+			"               Loc: nil,\n" +
+			"               TAp: nil,\n" +
+			"             }\n" +
+			"       have: 42\n" +
+			"  want type: types.TA\n" +
+			"  have type: int"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
