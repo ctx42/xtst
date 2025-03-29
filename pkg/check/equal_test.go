@@ -204,7 +204,27 @@ func Test_Equal(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	// TODO(rz): add test with struct with multiple errors.
+	t.Run("multiple errors struct", func(t *testing.T) {
+		// --- Given ---
+		s0 := types.TNested{STA: []types.TA{{Int: 42, Str: "abc"}}}
+		s1 := types.TNested{STA: []types.TA{{Int: 44, Str: "xyz"}}}
+
+		// --- When ---
+		err := Equal(s0, s1)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "" +
+			"expected values to be equal:\n" +
+			"  trail: TNested.STA[0].Int\n" +
+			"   want: 42\n" +
+			"   have: 44\n" +
+			" ---\n" +
+			"  trail: TNested.STA[0].Str\n" +
+			"   want: \"abc\"\n" +
+			"   have: \"xyz\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
 
 	t.Run("multiple errors slice", func(t *testing.T) {
 		// --- Given ---
@@ -221,7 +241,7 @@ func Test_Equal(t *testing.T) {
 			"  trail: [0]\n" +
 			"   want: 1\n" +
 			"   have: 2\n" +
-			"expected values to be equal:\n" +
+			" ---\n" +
 			"  trail: [1]\n" +
 			"   want: 2\n" +
 			"   have: 3"
@@ -238,11 +258,12 @@ func Test_Equal(t *testing.T) {
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected values to be equal:\n" +
+		wMsg := "" +
+			"expected values to be equal:\n" +
 			"  trail: map[\"A\"]\n" +
 			"   want: 1\n" +
 			"   have: 2\n" +
-			"expected values to be equal:\n" +
+			" ---\n" +
 			"  trail: map[\"B\"]\n" +
 			"   want: 2\n" +
 			"   have: 3"

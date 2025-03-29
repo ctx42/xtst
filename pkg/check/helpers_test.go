@@ -152,6 +152,14 @@ func Test_wrap(t *testing.T) {
 		affirm.True(t, internal.Same(msg0, ers[0]))
 		affirm.True(t, internal.Same(msg1, ers[1]))
 	})
+
+	t.Run("nil error", func(t *testing.T) {
+		// --- When ---
+		have := wrap(nil)
+
+		// --- Then ---
+		affirm.Nil(t, have)
+	})
 }
 
 func Test_multiError_Error(t *testing.T) {

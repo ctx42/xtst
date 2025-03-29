@@ -23,7 +23,8 @@ import (
 //
 // nolint: cyclop, gocognit
 func Equal(want, have any, opts ...Option) error {
-	return deepEqual(reflect.ValueOf(want), reflect.ValueOf(have), opts...)
+	err := deepEqual(reflect.ValueOf(want), reflect.ValueOf(have), opts...)
+	return wrap(err)
 }
 
 // deepEqual is the internal recursive comparison function.
@@ -97,7 +98,7 @@ func deepEqual(a, b reflect.Value, opts ...Option) error {
 		typeName := a.Type().Name()
 		sOps := DefaultOptions(opts...).structTrail(typeName, "")
 
-		var ers error
+		var ers []error
 		for i := 0; i < a.NumField(); i++ {
 			aVal := a.Field(i)
 			bVal := b.Field(i)
@@ -108,10 +109,10 @@ func deepEqual(a, b reflect.Value, opts ...Option) error {
 			iOps := sOps.structTrail("", sf.Name)
 			iOps.skipType = true
 			if err := deepEqual(aVal, bVal, WithOptions(iOps)); err != nil {
-				ers = errors.Join(ers, err)
+				ers = append(ers, notice.Unwrap(err)...)
 			}
 		}
-		return ers
+		return errors.Join(ers...)
 
 	case reflect.Slice, reflect.Array:
 		if a.Len() != b.Len() {
@@ -121,16 +122,16 @@ func deepEqual(a, b reflect.Value, opts ...Option) error {
 		if a.Pointer() == b.Pointer() {
 			return nil
 		}
-		var ers error
+		var ers []error
 		for i := 0; i < a.Len(); i++ {
 			aVal := a.Index(i)
 			bVal := b.Index(i)
 			iOps := DefaultOptions(opts...).arrTrail(i)
 			if err := deepEqual(aVal, bVal, WithOptions(iOps)); err != nil {
-				ers = errors.Join(ers, err)
+				ers = append(ers, notice.Unwrap(err)...)
 			}
 		}
-		return ers
+		return errors.Join(ers...)
 
 	case reflect.Map:
 		if a.Len() != b.Len() {
@@ -146,21 +147,22 @@ func deepEqual(a, b reflect.Value, opts ...Option) error {
 			return valToString(keys[i]) < valToString(keys[j])
 		})
 
-		var ers error
+		var ers []error
 		for _, key := range keys {
 			aVal := a.MapIndex(key)
 			bVal := b.MapIndex(key)
 			kOps := DefaultOptions(opts...).mapTrail(valToString(key))
 			if !bVal.IsValid() {
 				aItf := b.Interface()
-				ers = errors.Join(ers, equalError(aItf, nil, kOps))
+				err := equalError(aItf, nil, kOps)
+				ers = append(ers, notice.Unwrap(err)...)
 				continue
 			}
 			if err := deepEqual(aVal, bVal, WithOptions(kOps)); err != nil {
-				ers = errors.Join(ers, err)
+				ers = append(ers, notice.Unwrap(err)...)
 			}
 		}
-		return ers
+		return errors.Join(ers...)
 
 	case reflect.Interface:
 		ops := DefaultOptions(opts...).logTrail()
