@@ -4,6 +4,8 @@
 package check
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -15,14 +17,6 @@ import (
 // TODO(rz): make very detailed code review of this file.
 
 func Test_Equal(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		// --- When ---
-		err := Equal(42, 42)
-
-		// --- Then ---
-		affirm.Nil(t, err)
-	})
-
 	t.Run("success structs", func(t *testing.T) {
 		// --- Given ---
 		s0 := struct {
@@ -48,36 +42,36 @@ func Test_Equal(t *testing.T) {
 		affirm.Nil(t, err)
 	})
 
-	// TODO(rz):
-	// t.Run("error structs", func(t *testing.T) {
-	// 	// --- Given ---
-	// 	s0 := struct {
-	// 		Val int
-	// 		Now func() time.Time
-	// 	}{
-	// 		Val: 1,
-	// 		Now: time.Now,
-	// 	}
-	//
-	// 	s1 := struct {
-	// 		Val int
-	// 		Now func() time.Time
-	// 	}{
-	// 		Val: 1,
-	// 		Now: func() time.Time { return time.Now() }, // nolint: gocritic
-	// 	}
-	//
-	// 	// --- When ---
-	// 	err := Equal(s0, s1)
-	//
-	// 	// --- Then ---
-	// 	affirm.NotNil(t, err)
-	// 	hMsg := err.Error()
-	// 	wMsg := "expected same pointers:\n" +
-	// 		"  trail: Now\n" +
-	// 		"   want: "
-	// 	affirm.True(t, strings.Contains(hMsg, wMsg))
-	// })
+	t.Run("error structs", func(t *testing.T) {
+		// --- Given ---
+		s0 := struct {
+			Val int
+			Now func() time.Time
+		}{
+			Val: 1,
+			Now: time.Now,
+		}
+
+		s1 := struct {
+			Val int
+			Now func() time.Time
+		}{
+			Val: 1,
+			Now: func() time.Time { return time.Now() }, // nolint: gocritic
+		}
+
+		// --- When ---
+		err := Equal(s0, s1)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		hMsg := err.Error()
+		fmt.Println(hMsg) // TODO(rz):
+		wMsg := "expected same pointers:\n" +
+			"  trail: Now\n" +
+			"   want: "
+		affirm.True(t, strings.Contains(hMsg, wMsg))
+	})
 
 	t.Run("error", func(t *testing.T) {
 		// --- When ---
@@ -256,7 +250,7 @@ func Test_Equal(t *testing.T) {
 	})
 }
 
-func Test_Equal_EqualCases(t *testing.T) {
+func Test_Equal_EqualCases_tabular(t *testing.T) {
 	for _, tc := range cases.EqualCases() {
 		t.Run("Equal "+tc.Desc, func(t *testing.T) {
 			// --- When ---
