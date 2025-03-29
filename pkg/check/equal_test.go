@@ -4,8 +4,6 @@
 package check
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 	"time"
 
@@ -65,15 +63,14 @@ func Test_Equal(t *testing.T) {
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		hMsg := err.Error()
-		fmt.Println(hMsg) // TODO(rz):
-		wMsg := "expected same pointers:\n" +
+		wMsg := "expected values to be equal:\n" +
 			"  trail: Now\n" +
-			"   want: "
-		affirm.True(t, strings.Contains(hMsg, wMsg))
+			"   want: <func>(<addr>)\n" +
+			"   have: <func>(<addr>)"
+		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error", func(t *testing.T) {
+	t.Run("error simple", func(t *testing.T) {
 		// --- When ---
 		err := Equal(42, 44)
 
@@ -115,18 +112,6 @@ func Test_Equal(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error printable byte", func(t *testing.T) {
-		// --- When ---
-		err := Equal(byte('B'), byte('A'))
-
-		// --- Then ---
-		affirm.NotNil(t, err)
-		wMsg := "expected values to be equal:\n" +
-			"  want: 0x42 ('B')\n" +
-			"  have: 0x41 ('A')"
-		affirm.Equal(t, wMsg, err.Error())
-	})
-
 	t.Run("error not printable byte", func(t *testing.T) {
 		// --- When ---
 		err := Equal(byte(1), byte(2))
@@ -139,10 +124,22 @@ func Test_Equal(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
+	t.Run("error printable byte", func(t *testing.T) {
+		// --- When ---
+		err := Equal(byte('B'), byte('A'))
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values to be equal:\n" +
+			"  want: 0x42 ('B')\n" +
+			"  have: 0x41 ('A')"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
 	t.Run("error nested slice of value types", func(t *testing.T) {
 		// --- Given ---
-		s0 := types.TNested{STA: []types.TA{{Str: "abc"}}}
-		s1 := types.TNested{STA: []types.TA{{Str: "xyz"}}}
+		s0 := types.TNested{STA: []types.TA{{Int: 42}}}
+		s1 := types.TNested{STA: []types.TA{{Int: 44}}}
 
 		// --- When ---
 		err := Equal(s0, s1)
@@ -150,16 +147,16 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"  trail: TNested.STA[0].Str\n" +
-			"   want: \"abc\"\n" +
-			"   have: \"xyz\""
+			"  trail: TNested.STA[0].Int\n" +
+			"   want: 42\n" +
+			"   have: 44"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
 	t.Run("error nested slice of pointer types", func(t *testing.T) {
 		// --- Given ---
-		s0 := types.TNested{STAp: []*types.TA{{Str: "abc"}}}
-		s1 := types.TNested{STAp: []*types.TA{{Str: "xyz"}}}
+		s0 := types.TNested{STAp: []*types.TA{{Int: 42}}}
+		s1 := types.TNested{STAp: []*types.TA{{Int: 44}}}
 
 		// --- When ---
 		err := Equal(s0, s1)
@@ -167,16 +164,16 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"  trail: TNested.STAp[0].Str\n" +
-			"   want: \"abc\"\n" +
-			"   have: \"xyz\""
+			"  trail: TNested.STAp[0].Int\n" +
+			"   want: 42\n" +
+			"   have: 44"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
 	t.Run("error deep nested", func(t *testing.T) {
 		// --- Given ---
-		s0 := types.TNested{STAp: []*types.TA{{TAp: &types.TA{Str: "abc"}}}}
-		s1 := types.TNested{STAp: []*types.TA{{TAp: &types.TA{Str: "xyz"}}}}
+		s0 := types.TNested{STAp: []*types.TA{{TAp: &types.TA{Int: 42}}}}
+		s1 := types.TNested{STAp: []*types.TA{{TAp: &types.TA{Int: 44}}}}
 
 		// --- When ---
 		err := Equal(s0, s1)
@@ -184,9 +181,9 @@ func Test_Equal(t *testing.T) {
 		// --- Then ---
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
-			"  trail: TNested.STAp[0].TAp.Str\n" +
-			"   want: \"abc\"\n" +
-			"   have: \"xyz\""
+			"  trail: TNested.STAp[0].TAp.Int\n" +
+			"   want: 42\n" +
+			"   have: 44"
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
@@ -207,6 +204,8 @@ func Test_Equal(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
+	// TODO(rz): add test with struct with multiple errors.
+
 	t.Run("multiple errors slice", func(t *testing.T) {
 		// --- Given ---
 		s0 := []int{1, 2}
@@ -217,7 +216,8 @@ func Test_Equal(t *testing.T) {
 
 		// --- Then ---
 		affirm.NotNil(t, err)
-		wMsg := "expected values to be equal:\n" +
+		wMsg := "" +
+			"expected values to be equal:\n" +
 			"  trail: [0]\n" +
 			"   want: 1\n" +
 			"   have: 2\n" +

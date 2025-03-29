@@ -164,6 +164,5 @@ func NewConfig(opts ...Option) Config {
 	if _, ok := cfg.Dumpers[typDur]; !ok {
 		cfg.Dumpers[typDur] = GetDurDumper(cfg.DurationFormat)
 	}
-
 	return cfg
 }

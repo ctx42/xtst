@@ -21,6 +21,19 @@ import (
 //   - Type["key"].Field
 const trail = "trail"
 
+// ContinuationHeader is a special [Notice.Header] separating notices with the
+// same header.
+//
+// Example:
+//
+//	header:
+//	  want: want 0
+//	  have: have 0
+//	 ---
+//	  want: want 1
+//	  have: have 1
+const ContinuationHeader = " ---"
+
 // ErrAssert represents an error that occurs during an assertion. It is
 // typically used when a condition fails to meet the expected value.
 var ErrAssert = errors.New("assert error")
@@ -176,7 +189,10 @@ func (msg *Notice) Is(target error) bool { return errors.Is(msg.err, target) }
 func (msg *Notice) Error() string {
 	m := msg.Header
 	if len(msg.Order) > 0 {
-		m += ":\n"
+		if msg.Header != ContinuationHeader {
+			m += ":"
+		}
+		m += "\n"
 	}
 	names := msg.equalizeNames()
 	for i := range msg.Order {

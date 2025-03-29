@@ -4,11 +4,14 @@
 package check
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ctx42/xtst/pkg/notice"
 )
 
 // Types for some of the built-in types.
@@ -17,14 +20,6 @@ var (
 	typTimeLoc    = reflect.TypeOf(time.Location{})  // TODO(rz): do we need both?
 	typTimeLocPtr = reflect.TypeOf(&time.Location{}) // TODO(rz): do we need both?
 )
-
-// deRef if v is a pointer it returns the value that it points to.
-func deRef(v reflect.Value) reflect.Value {
-	if v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
-	return v
-}
 
 // typeString returns type of the value as a string.
 func typeString(val reflect.Value) string {
@@ -100,3 +95,37 @@ func valToString(key reflect.Value) string {
 		return "<invalid>"
 	}
 }
+
+// wrap wraps error in multiError if it's an error joined with [errors.Join].
+func wrap(err error) error {
+	if errs, ok := err.(interface{ Unwrap() []error }); ok {
+		return multiError{ers: errs.Unwrap()}
+	}
+	return err
+}
+
+// multiError is a decorator for multi [notice.Notice] error messages.
+type multiError struct{ ers []error }
+
+func (e multiError) Error() string {
+	var prev string
+	var msg *notice.Notice
+	for i, err := range e.ers {
+		if errors.As(err, &msg) {
+			if prev == msg.Header {
+				prev = msg.Header
+				msg.Header = notice.ContinuationHeader
+			} else {
+				prev = msg.Header
+				if i > 0 {
+					msg.Header = "\n" + msg.Header
+				}
+			}
+			continue
+		}
+		prev = ""
+	}
+	return errors.Join(e.ers...).Error()
+}
+
+func (e multiError) Unwrap() []error { return e.ers }

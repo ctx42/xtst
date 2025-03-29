@@ -500,6 +500,20 @@ func Test_Message_Error(t *testing.T) {
 			"          }"
 		affirm.Equal(t, want, have)
 	})
+
+	t.Run("continuation header", func(t *testing.T) {
+		// --- Given ---
+		msg := New(ContinuationHeader).Want("42").Have("44")
+
+		// --- When ---
+		have := msg.Error()
+
+		// --- Then ---
+		want := " ---\n" +
+			"  want: 42\n" +
+			"  have: 44"
+		affirm.Equal(t, want, have)
+	})
 }
 
 func Test_equalizeNames(t *testing.T) {
