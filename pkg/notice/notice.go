@@ -116,16 +116,16 @@ func (msg *Notice) AppendRow(desc ...Row) *Notice {
 // exists, it is moved to the beginning of the [Notice.Order] slice.
 // Implements fluent interface.
 func (msg *Notice) Prepend(name, format string, args ...any) *Notice {
-	hasPath := slices.Contains(msg.Order, trail)
+	hasTrail := slices.Contains(msg.Order, trail)
 	msg.Order = slices.DeleteFunc(msg.Order, func(s string) bool {
-		if hasPath && s == trail {
+		if hasTrail && s == trail {
 			return true
 		}
 		return name == s
 	})
 	msg.Rows[name] = fmt.Sprintf(format, args...)
 	var prepend []string
-	if hasPath && name != trail {
+	if hasTrail && name != trail {
 		prepend = []string{trail}
 	}
 	prepend = append(prepend, name)

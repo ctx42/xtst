@@ -15,7 +15,7 @@ func NewRow(name, format string, args ...any) Row {
 	return Row{Name: name, Format: format, Args: args}
 }
 
-// Trail is convenience constructor function for [Row] with name `path`.
+// Trail is convenience constructor function for [Row] with given name.
 func Trail(name string) Row {
 	return Row{Name: trail, Format: name}
 }

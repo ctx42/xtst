@@ -82,7 +82,7 @@ func Test_Equal(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with option", func(t *testing.T) {
+	t.Run("error add start trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 
@@ -291,7 +291,7 @@ func Test_Equal_EqualCases_tabular(t *testing.T) {
 }
 
 func Test_equalError(t *testing.T) {
-	t.Run("without path", func(t *testing.T) {
+	t.Run("without trail", func(t *testing.T) {
 		// --- Given ---
 		ops := DefaultOptions()
 
@@ -305,7 +305,7 @@ func Test_equalError(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("with path", func(t *testing.T) {
+	t.Run("with trail", func(t *testing.T) {
 		// --- Given ---
 		ops := DefaultOptions(WithTrail("type.field"))
 

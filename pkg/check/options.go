@@ -63,8 +63,8 @@ func WithTrail(pth string) Option {
 	}
 }
 
-// WithTrailLog is [Check] option turning on collection of checked paths. The
-// paths are added to the provided slice.
+// WithTrailLog is [Check] option turning on collection of checked
+// fields/elements/keys. The trails are added to the provided slice.
 func WithTrailLog(list *[]string) Option {
 	return func(ops Options) Options {
 		ops.TrailLog = list
@@ -204,8 +204,8 @@ func (ops Options) structTrail(typeName, fldName string) Options {
 	return ops
 }
 
-// mapTrail updates [Options.Trail] with map value path considering already
-// existing trail.
+// mapTrail updates [Options.Trail] with trail of the map value considering
+// already existing trails.
 //
 // Example trails:
 //

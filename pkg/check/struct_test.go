@@ -398,7 +398,7 @@ func Test_structEqual(t *testing.T) {
 		affirm.Nil(t, err)
 	})
 
-	t.Run("logs field paths", func(t *testing.T) {
+	t.Run("logs field trails", func(t *testing.T) {
 		// --- Given ---
 		want := types.TA{Str: "abc", TAp: &types.TA{Str: "abc"}}
 		haveList := make([]string, 0)
@@ -754,7 +754,7 @@ func Test_structEq(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
-	t.Run("error with path set", func(t *testing.T) {
+	t.Run("error with trail set", func(t *testing.T) {
 		// --- Given ---
 		want := types.TA{Str: "xyz"}
 		have := 42

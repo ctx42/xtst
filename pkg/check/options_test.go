@@ -157,7 +157,7 @@ func Test_Options_logTrail(t *testing.T) {
 		affirm.DeepEqual(t, []string{"abc"}, *ops.TrailLog)
 	})
 
-	t.Run("does not logTrail() empty paths", func(t *testing.T) {
+	t.Run("does not log empty trails", func(t *testing.T) {
 		// --- Given ---
 		list := make([]string, 0)
 		ops := Options{Trail: "", TrailLog: &list}
@@ -202,29 +202,29 @@ func Test_Options_structTrail_tabular(t *testing.T) {
 		fldName  string
 		want     string
 	}{
-		{"empty path with field", "", false, "", "field", "field"},
-		{"empty path with type", "", false, "type", "", "type"},
-		{"path with type", "path", false, "type", "", "path.type"},
-		{"path with field", "path", false, "", "field", "path.field"},
-		{"path with empty type and field", "path", false, "", "", "path"},
-		{"path with index", "path[1]", false, "", "", "path[1]"},
-		{"path with index and type", "path[1]", false, "type", "", "path[1]"},
-		{"path with index and field", "path[1]", false, "", "field", "path[1].field"},
+		{"empty trail with field", "", false, "", "field", "field"},
+		{"empty trail with type", "", false, "type", "", "type"},
+		{"trail with type", "trail", false, "type", "", "trail.type"},
+		{"trail with field", "trail", false, "", "field", "trail.field"},
+		{"trail with empty type and field", "trail", false, "", "", "trail"},
+		{"trail with index", "trail[1]", false, "", "", "trail[1]"},
+		{"trail with index and type", "trail[1]", false, "type", "", "trail[1]"},
+		{"trail with index and field", "trail[1]", false, "", "field", "trail[1].field"},
 		{
-			"path with index type and field",
-			"path[1]",
+			"trail with index type and field",
+			"trail[1]",
 			false,
 			"type",
 			"field",
-			"path[1].field",
+			"trail[1].field",
 		},
 		{
 			"skip type",
-			"path",
+			"trail",
 			true,
 			"type",
 			"field",
-			"path.field",
+			"trail.field",
 		},
 	}
 
@@ -250,10 +250,10 @@ func Test_Options_mapTrail_tabular(t *testing.T) {
 		key   string
 		want  string
 	}{
-		{"empty path with key", "", "key", "map[key]"},
-		{"path ends with index", "[1]", "key", "[1]map[key]"},
-		{"path ends with index", "[1]", "key", "[1]map[key]"},
-		{"not empty path", "field", "key", "field[key]"},
+		{"empty trail with key", "", "key", "map[key]"},
+		{"trail ends with index", "[1]", "key", "[1]map[key]"},
+		{"trail ends with index", "[1]", "key", "[1]map[key]"},
+		{"not empty trail", "field", "key", "field[key]"},
 	}
 
 	for _, tc := range tt {
@@ -278,9 +278,9 @@ func Test_Options_arrTrail_tabular(t *testing.T) {
 		key   int
 		want  string
 	}{
-		{"empty path with key", "", 1, "[1]"},
-		{"path ends with index", "[1]", 2, "[1][2]"},
-		{"not empty path", "field", 1, "field[1]"},
+		{"empty trail with key", "", 1, "[1]"},
+		{"trail ends with index", "[1]", 2, "[1][2]"},
+		{"not empty trail", "field", 1, "field[1]"},
 	}
 
 	for _, tc := range tt {
