@@ -130,7 +130,6 @@ func (e multiError) Error() string {
 				msg.Header = tmp
 				continue
 			}
-			prev = msg.Header
 		}
 		prev = ""
 		buf = append(buf, '\n', '\n')

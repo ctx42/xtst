@@ -197,11 +197,12 @@ func Test_Options_logTrail(t *testing.T) {
 		ops := Options{Trail: "abc", TrailLog: &list}
 
 		// --- When ---
-		ops.logTrail()
+		have := ops.logTrail()
 
 		// --- Then ---
 		affirm.DeepEqual(t, []string{"abc"}, list)
 		affirm.DeepEqual(t, []string{"abc"}, *ops.TrailLog)
+		affirm.DeepEqual(t, have, ops)
 	})
 
 	t.Run("does not log empty trails", func(t *testing.T) {
@@ -210,11 +211,12 @@ func Test_Options_logTrail(t *testing.T) {
 		ops := Options{Trail: "", TrailLog: &list}
 
 		// --- When ---
-		ops.logTrail()
+		have := ops.logTrail()
 
 		// --- Then ---
 		affirm.DeepEqual(t, []string{}, list)
 		affirm.DeepEqual(t, []string{}, *ops.TrailLog)
+		affirm.DeepEqual(t, have, ops)
 	})
 
 	t.Run("does not panic when nil", func(t *testing.T) {
@@ -222,7 +224,10 @@ func Test_Options_logTrail(t *testing.T) {
 		ops := Options{Trail: "abc"}
 
 		// --- When ---
-		ops.logTrail()
+		have := ops.logTrail()
+
+		// --- Then ---
+		affirm.DeepEqual(t, have, ops)
 	})
 }
 

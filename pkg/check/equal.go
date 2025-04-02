@@ -27,6 +27,8 @@ func Equal(want, have any, opts ...Option) error {
 }
 
 // deepEqual is the internal comparison function which is called recursively.
+//
+// nolint: gocognit, cyclop
 func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 	ops := DefaultOptions(opts...)
 
@@ -60,11 +62,9 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 		return equalError(wVal.Interface(), hVal.Interface(), ops)
 	}
 
-	{
-		if chk, ok := ops.TrailCheckers[ops.Trail]; ok {
-			ops.logTrail()
-			return chk(wVal.Interface(), hVal.Interface(), WithOptions(ops))
-		}
+	if chk, ok := ops.TrailCheckers[ops.Trail]; ok {
+		ops.logTrail()
+		return chk(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 	}
 
 	if chk, ok := ops.TypeCheckers[wType]; ok {
@@ -76,8 +76,8 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 	case reflect.Ptr:
 		if wType == typTimeLocPtr && hType == typTimeLocPtr {
 			ops.logTrail()
-			wZone := wVal.Interface().(*time.Location)
-			hZone := hVal.Interface().(*time.Location)
+			wZone := wVal.Interface().(*time.Location) // nolint: forcetypeassert
+			hZone := hVal.Interface().(*time.Location) // nolint: forcetypeassert
 			return Zone(wZone, hZone, WithOptions(ops))
 		}
 
@@ -103,8 +103,8 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 		}
 		if wTyp == typTimeLoc && hTyp == typTimeLoc {
 			ops.logTrail()
-			wZone := wVal.Interface().(time.Location)
-			hZone := hVal.Interface().(time.Location)
+			wZone := wVal.Interface().(time.Location) // nolint: forcetypeassert
+			hZone := hVal.Interface().(time.Location) // nolint: forcetypeassert
 			return Zone(&wZone, &hZone, opts...)
 		}
 		typeName := wVal.Type().Name()

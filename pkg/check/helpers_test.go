@@ -239,8 +239,8 @@ func Test_multiError_Error(t *testing.T) {
 		me := wrap(errors.Join(msg0, msg1))
 
 		// --- When ---
-		have := me.Error()
-		have = me.Error()
+		have0 := me.Error()
+		have1 := me.Error()
 
 		// --- Then ---
 		wMsg := "" +
@@ -250,6 +250,7 @@ func Test_multiError_Error(t *testing.T) {
 			" ---\n" +
 			"  want: want 1\n" +
 			"  have: have 1"
-		affirm.Equal(t, wMsg, have)
+		affirm.Equal(t, wMsg, have0)
+		affirm.Equal(t, have0, have1)
 	})
 }
