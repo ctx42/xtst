@@ -12,13 +12,13 @@ import (
 // and returns its string representation in format defined by [Dump]
 // configuration.
 func structDumper(dmp Dump, lvl int, val reflect.Value) string {
-	prn := newPrinter(dmp.cfg)
-	prn.tab(dmp.cfg.Indent + lvl)
+	prn := NewPrinter(dmp.cfg)
+	prn.Tab(dmp.cfg.Indent + lvl)
 	vTyp := val.Type()
 
 	num := val.NumField() // Total number of fields.
 	lastPrivate := false
-	prn.write("{").nli(num)
+	prn.Write("{").NLI(num)
 
 	for i := 0; i < num; i++ {
 		last := i == num-1
@@ -30,23 +30,23 @@ func structDumper(dmp Dump, lvl int, val reflect.Value) string {
 		}
 
 		// Field name.
-		prn.tab(dmp.cfg.Indent + lvl + 1)
-		prn.write(fld.Name)
-		prn.write(":").space()
+		prn.Tab(dmp.cfg.Indent + lvl + 1)
+		prn.Write(fld.Name)
+		prn.Write(":").Space()
 
 		// Field value.
 		dmp.cfg.PrintType = true
 		sub := dmp.value(lvl+1, val.Field(i))
 		sub = strings.TrimLeft(sub, " \t")
 
-		prn.write(sub)
-		prn.comma(last).sep(last).nl()
+		prn.Write(sub)
+		prn.Comma(last).Sep(last).NL()
 	}
 
 	if lastPrivate && dmp.cfg.Flat {
 		return strings.TrimRight(prn.String(), ",") + "}"
 	}
-	prn.tab(dmp.cfg.Indent + lvl).write("}")
+	prn.Tab(dmp.cfg.Indent + lvl).Write("}")
 
 	return prn.String()
 }

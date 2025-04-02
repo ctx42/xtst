@@ -9,24 +9,24 @@ import (
 	"github.com/ctx42/xtst/internal/affirm"
 )
 
-func Test_newPrinter(t *testing.T) {
+func Test_NewPrinter(t *testing.T) {
 	// --- Given ---
 	cfg := NewConfig()
 
 	// --- When ---
-	have := newPrinter(cfg)
+	have := NewPrinter(cfg)
 
 	// --- Then ---
 	affirm.NotNil(t, have.buf)
 }
 
-func Test_printer_nli(t *testing.T) {
+func Test_Printer_NLI(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
 		// --- Given ---
 		cfg := Config{Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).nli(1)
+		have := NewPrinter(cfg).NLI(1)
 
 		// --- Then ---
 		affirm.Equal(t, "\n", have.String())
@@ -37,7 +37,7 @@ func Test_printer_nli(t *testing.T) {
 		cfg := Config{Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).nli(0)
+		have := NewPrinter(cfg).NLI(0)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
@@ -48,20 +48,20 @@ func Test_printer_nli(t *testing.T) {
 		cfg := Config{Flat: true}
 
 		// --- When ---
-		have := newPrinter(cfg).nli(1)
+		have := NewPrinter(cfg).NLI(1)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
 	})
 }
 
-func Test_printer_nl(t *testing.T) {
+func Test_Printer_NL(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
 		// --- Given ---
 		cfg := Config{Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).nl()
+		have := NewPrinter(cfg).NL()
 
 		// --- Then ---
 		affirm.Equal(t, "\n", have.String())
@@ -72,20 +72,20 @@ func Test_printer_nl(t *testing.T) {
 		cfg := Config{Flat: true}
 
 		// --- When ---
-		have := newPrinter(cfg).nl()
+		have := NewPrinter(cfg).NL()
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
 	})
 }
 
-func Test_printer_comma(t *testing.T) {
+func Test_Printer_Comma(t *testing.T) {
 	t.Run("not last and not flat", func(t *testing.T) {
 		// --- Given ---
 		cfg := Config{Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).comma(false)
+		have := NewPrinter(cfg).Comma(false)
 
 		// --- Then ---
 		affirm.Equal(t, ",", have.String())
@@ -96,7 +96,7 @@ func Test_printer_comma(t *testing.T) {
 		cfg := Config{Flat: true}
 
 		// --- When ---
-		have := newPrinter(cfg).comma(false)
+		have := NewPrinter(cfg).Comma(false)
 
 		// --- Then ---
 		affirm.Equal(t, ",", have.String())
@@ -107,7 +107,7 @@ func Test_printer_comma(t *testing.T) {
 		cfg := Config{Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).comma(true)
+		have := NewPrinter(cfg).Comma(true)
 
 		// --- Then ---
 		affirm.Equal(t, ",", have.String())
@@ -118,20 +118,20 @@ func Test_printer_comma(t *testing.T) {
 		cfg := Config{Flat: true}
 
 		// --- When ---
-		have := newPrinter(cfg).comma(true)
+		have := NewPrinter(cfg).Comma(true)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
 	})
 }
 
-func Test_printer_tab(t *testing.T) {
+func Test_Printer_Tab(t *testing.T) {
 	t.Run("default and positive n", func(t *testing.T) {
 		// --- Given ---
 		cfg := Config{Flat: false, TabWidth: 2}
 
 		// --- When ---
-		have := newPrinter(cfg).tab(2)
+		have := NewPrinter(cfg).Tab(2)
 
 		// --- Then ---
 		affirm.Equal(t, "    ", have.String())
@@ -142,7 +142,7 @@ func Test_printer_tab(t *testing.T) {
 		cfg := Config{Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).tab(-2)
+		have := NewPrinter(cfg).Tab(-2)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
@@ -153,20 +153,20 @@ func Test_printer_tab(t *testing.T) {
 		cfg := Config{Flat: true}
 
 		// --- When ---
-		have := newPrinter(cfg).tab(2)
+		have := NewPrinter(cfg).Tab(2)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
 	})
 }
 
-func Test_printer_space(t *testing.T) {
+func Test_Printer_Space(t *testing.T) {
 	t.Run("default", func(t *testing.T) {
 		// --- Given ---
 		cfg := Config{Compact: false}
 
 		// --- When ---
-		have := newPrinter(cfg).space()
+		have := NewPrinter(cfg).Space()
 
 		// --- Then ---
 		affirm.Equal(t, " ", have.String())
@@ -177,20 +177,20 @@ func Test_printer_space(t *testing.T) {
 		cfg := Config{Compact: true}
 
 		// --- When ---
-		have := newPrinter(cfg).space()
+		have := NewPrinter(cfg).Space()
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
 	})
 }
 
-func Test_printer_sep(t *testing.T) {
+func Test_Printer_Sep(t *testing.T) {
 	t.Run("default and not last", func(t *testing.T) {
 		// --- Given ---
 		cfg := Config{Compact: false}
 
 		// --- When ---
-		have := newPrinter(cfg).sep(false)
+		have := NewPrinter(cfg).Sep(false)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
@@ -201,7 +201,7 @@ func Test_printer_sep(t *testing.T) {
 		cfg := Config{Compact: false}
 
 		// --- When ---
-		have := newPrinter(cfg).sep(true)
+		have := NewPrinter(cfg).Sep(true)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
@@ -212,7 +212,7 @@ func Test_printer_sep(t *testing.T) {
 		cfg := Config{Compact: true, Flat: true}
 
 		// --- When ---
-		have := newPrinter(cfg).sep(true)
+		have := NewPrinter(cfg).Sep(true)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
@@ -223,7 +223,7 @@ func Test_printer_sep(t *testing.T) {
 		cfg := Config{Compact: true, Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).sep(true)
+		have := NewPrinter(cfg).Sep(true)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
@@ -234,7 +234,7 @@ func Test_printer_sep(t *testing.T) {
 		cfg := Config{Compact: true, Flat: false}
 
 		// --- When ---
-		have := newPrinter(cfg).sep(true)
+		have := NewPrinter(cfg).Sep(true)
 
 		// --- Then ---
 		affirm.Equal(t, "", have.String())
@@ -245,19 +245,19 @@ func Test_printer_sep(t *testing.T) {
 		cfg := Config{Compact: false, Flat: true}
 
 		// --- When ---
-		have := newPrinter(cfg).sep(false)
+		have := NewPrinter(cfg).Sep(false)
 
 		// --- Then ---
 		affirm.Equal(t, " ", have.String())
 	})
 }
 
-func Test_printer_write_String(t *testing.T) {
+func Test_Printer_Write_String(t *testing.T) {
 	// --- Given ---
 	cfg := NewConfig()
 
 	// --- When ---
-	have := newPrinter(cfg).write("test")
+	have := NewPrinter(cfg).Write("test")
 
 	// --- Then ---
 	affirm.Equal(t, "test", have.String())

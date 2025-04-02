@@ -11,43 +11,43 @@ import (
 	"strings"
 )
 
-// printer represents code printer that is configuration aware.
-type printer struct {
+// Printer represents code printer that is configuration aware.
+type Printer struct {
 	cfg Config
 	buf *strings.Builder
 }
 
-// newPrinter returns new printer configured by [Config].
-func newPrinter(cfg Config) printer {
-	return printer{cfg: cfg, buf: &strings.Builder{}}
+// NewPrinter returns new Printer configured by [Config].
+func NewPrinter(cfg Config) Printer {
+	return Printer{cfg: cfg, buf: &strings.Builder{}}
 }
 
-// nli prints new line when not flat and at least one entry.
-func (prn printer) nli(cnt int) printer {
+// NLI prints new line when not flat and at least one entry.
+func (prn Printer) NLI(cnt int) Printer {
 	if !prn.cfg.Flat && cnt > 0 {
 		prn.buf.WriteByte('\n')
 	}
 	return prn
 }
 
-// nl prints new line when not flat.
-func (prn printer) nl() printer {
+// NL prints new line when not flat.
+func (prn Printer) NL() Printer {
 	if !prn.cfg.Flat {
 		prn.buf.WriteByte('\n')
 	}
 	return prn
 }
 
-// comma prints comma when not flat and not last entry.
-func (prn printer) comma(last bool) printer {
+// Comma prints Comma when not flat and not last entry.
+func (prn Printer) Comma(last bool) Printer {
 	if !(prn.cfg.Flat && last) {
 		prn.buf.WriteByte(',')
 	}
 	return prn
 }
 
-// tab prints indentation with n spaces when not flat.
-func (prn printer) tab(n int) printer {
+// Tab prints indentation with n spaces when not flat.
+func (prn Printer) Tab(n int) Printer {
 	if prn.cfg.Flat {
 		return prn
 	}
@@ -58,27 +58,27 @@ func (prn printer) tab(n int) printer {
 	return prn
 }
 
-// space writes a space when not compact.
-func (prn printer) space() printer {
+// Space writes a space when not compact.
+func (prn Printer) Space() Printer {
 	if !prn.cfg.Compact {
 		prn.buf.WriteByte(' ')
 	}
 	return prn
 }
 
-// sep writes separator space.
-func (prn printer) sep(last bool) printer {
+// Sep writes separator space.
+func (prn Printer) Sep(last bool) Printer {
 	if !prn.cfg.Compact && !last && prn.cfg.Flat {
 		prn.buf.WriteByte(' ')
 	}
 	return prn
 }
 
-// write writes string to the builder.
-func (prn printer) write(s string) printer {
+// Write writes string to the builder.
+func (prn Printer) Write(s string) Printer {
 	prn.buf.WriteString(s)
 	return prn
 }
 
 // String returns built string.
-func (prn printer) String() string { return prn.buf.String() }
+func (prn Printer) String() string { return prn.buf.String() }

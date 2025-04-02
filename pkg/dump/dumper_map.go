@@ -16,8 +16,8 @@ import (
 //
 // nolint: cyclop
 func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
-	prn := newPrinter(dmp.cfg)
-	prn.tab(dmp.cfg.Indent + lvl)
+	prn := NewPrinter(dmp.cfg)
+	prn.Tab(dmp.cfg.Indent + lvl)
 
 	if dmp.cfg.PrintType {
 		keyTyp := val.Type().Key()
@@ -27,35 +27,35 @@ func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
 			valTypStr = "any"
 		}
 		str := fmt.Sprintf("map[%s]%s", keyTyp.String(), valTypStr)
-		prn.write(str)
+		prn.Write(str)
 	}
 
 	keys := val.MapKeys()
 	slices.SortStableFunc(keys, valueCmp)
 
 	if val.IsNil() {
-		return prn.write("(nil)").String()
+		return prn.Write("(nil)").String()
 	}
 
 	num := val.Len()
-	prn.write("{").nli(num)
+	prn.Write("{").NLI(num)
 
 	dmp.cfg.PrintType = false // Don't print types for map values.
 	for i, key := range keys {
 		last := i == num-1
 
 		sub := dmp.value(lvl+1, key)
-		prn.write(sub)
-		prn.write(":").space()
+		prn.Write(sub)
+		prn.Write(":").Space()
 
 		sub = dmp.value(lvl+1, val.MapIndex(key))
 		sub = strings.TrimLeft(sub, " \t")
 
 		dmp.cfg.PrintType = true
-		prn.write(sub)
-		prn.comma(last).sep(last).nl()
+		prn.Write(sub)
+		prn.Comma(last).Sep(last).NL()
 	}
-	prn.tab(dmp.cfg.Indent + lvl).write("}")
+	prn.Tab(dmp.cfg.Indent + lvl).Write("}")
 
 	return prn.String()
 }

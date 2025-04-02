@@ -12,8 +12,8 @@ import (
 // or [reflect.Slice] and returns its string representation in format defined
 // by [Dump] configuration.
 func arrayDumper(dmp Dump, lvl int, val reflect.Value) string {
-	prn := newPrinter(dmp.cfg)
-	prn.tab(dmp.cfg.Indent + lvl)
+	prn := NewPrinter(dmp.cfg)
+	prn.Tab(dmp.cfg.Indent + lvl)
 
 	if dmp.cfg.PrintType {
 		valTypStr := val.Type().String()
@@ -25,21 +25,21 @@ func arrayDumper(dmp Dump, lvl int, val reflect.Value) string {
 				valTypStr = strings.Replace(valTypStr, "interface {}", "any", 1)
 			}
 		}
-		prn.write(valTypStr)
+		prn.Write(valTypStr)
 	}
 
 	num := val.Len()
-	prn.write("{").nli(num)
+	prn.Write("{").NLI(num)
 
 	dmp.cfg.PrintType = false // Don't print types for array elements.
 	for i := 0; i < num; i++ {
 		last := i == num-1
 
 		sub := dmp.value(lvl+1, val.Index(i))
-		prn.write(sub)
-		prn.comma(last).sep(last).nl()
+		prn.Write(sub)
+		prn.Comma(last).Sep(last).NL()
 	}
-	prn.tab(dmp.cfg.Indent + lvl).write("}")
+	prn.Tab(dmp.cfg.Indent + lvl).Write("}")
 
 	return prn.String()
 }

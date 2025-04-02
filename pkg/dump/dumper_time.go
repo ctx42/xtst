@@ -60,6 +60,6 @@ func TimeDumperDate(dmp Dump, lvl int, val reflect.Value) string {
 	if dmp.cfg.Compact {
 		str = strings.ReplaceAll(str, " ", "")
 	}
-	prn := newPrinter(dmp.cfg)
-	return prn.tab(dmp.cfg.Indent + lvl).write(str).String()
+	prn := NewPrinter(dmp.cfg)
+	return prn.Tab(dmp.cfg.Indent + lvl).Write(str).String()
 }
