@@ -11,6 +11,7 @@ my time as a Go developer.
 * [Introduction to Ctx42 Testing Module](#introduction-to-ctx42-testing-module)
   * [Simplicity and Usability](#simplicity-and-usability)
   * [Modular and Extensible Design](#modular-and-extensible-design)
+  * [Installation](#installation)
   * [Packages](#packages)
 <!-- TOC -->
 
@@ -38,12 +39,12 @@ all tailored to streamline your testing workflow.
 
 ## Modular and Extensible Design
 
-`Xtst` is built as a collection of modular, laser-focused packages, each 
-targeting a specific aspect of testing. For instance, you might leverage the 
-`assert` package for assertions, the `mock` and `mocker` packages for test 
-doubles, or the `tstkit` package to keep your tests readable and minimalistic. 
-The modularity lets you customize your testing setup to fit your project’s 
-exact needs, avoiding unnecessary overhead. Beyond customization, the 
+The `testing` module is built as a collection of modular, laser-focused
+packages, each targeting a specific aspect of testing. For instance, you might
+leverage the `assert` package for assertions, the `mock` and `mocker` packages
+for test doubles, or the `tstkit` package to keep your tests readable and
+minimalistic. The modularity lets you customize your testing setup to fit your
+project’s exact needs, avoiding unnecessary overhead. Beyond customization, the 
 extensible architecture invites you to create your own test helpers ensuring.
 
 ## Installation
