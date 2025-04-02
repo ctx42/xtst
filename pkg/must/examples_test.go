@@ -3,7 +3,7 @@ package must_test
 import (
 	"fmt"
 
-	"github.com/ctx42/xtst/pkg/must"
+	"github.com/ctx42/testing/pkg/must"
 )
 
 // nolint:unparam

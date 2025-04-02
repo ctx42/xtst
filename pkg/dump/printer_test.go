@@ -6,7 +6,7 @@ package dump
 import (
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
+	"github.com/ctx42/testing/internal/affirm"
 )
 
 func Test_NewPrinter(t *testing.T) {

@@ -4,8 +4,8 @@
 package assert
 
 import (
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // True asserts "have" is true. Returns true if it's, otherwise marks the test

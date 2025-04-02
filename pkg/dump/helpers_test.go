@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
+	"github.com/ctx42/testing/internal/affirm"
 )
 
 func Test_valueCmp_tabular(t *testing.T) {

@@ -8,9 +8,9 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 func Test_ExitCode(t *testing.T) {

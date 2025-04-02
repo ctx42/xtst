@@ -9,7 +9,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
+	"github.com/ctx42/testing/internal/affirm"
 )
 
 func Test_ExitCode(t *testing.T) {

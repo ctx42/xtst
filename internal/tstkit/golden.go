@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // Golden is a helper returning contents of a golden file at given path. The

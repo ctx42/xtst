@@ -6,7 +6,7 @@ package check
 import (
 	"reflect"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Zero checks "have" is the zero value for its type. Returns nil if it is,

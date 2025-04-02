@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Count checks there is "count" occurrences of "what" in "where". Returns nil

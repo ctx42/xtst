@@ -10,9 +10,9 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/internal/tstkit"
-	"github.com/ctx42/xtst/internal/types"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/tstkit"
+	"github.com/ctx42/testing/internal/types"
 )
 
 func Test_WithFlat(t *testing.T) {

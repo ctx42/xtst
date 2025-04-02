@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/ctx42/xtst/internal/types"
-	"github.com/ctx42/xtst/pkg/dump"
+	"github.com/ctx42/testing/internal/types"
+	"github.com/ctx42/testing/pkg/dump"
 )
 
 func ExampleDump_Any() {

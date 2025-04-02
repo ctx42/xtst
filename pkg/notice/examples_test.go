@@ -6,7 +6,7 @@ package notice_test
 import (
 	"fmt"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 func ExampleNew() {

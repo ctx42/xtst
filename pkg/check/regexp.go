@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Regexp checks that "want" regexp matches "have". Returns nil if it does,

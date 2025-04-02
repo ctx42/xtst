@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ctx42/xtst/internal"
-	"github.com/ctx42/xtst/internal/affirm"
+	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/internal/affirm"
 )
 
 // Flags for compiled test binary.

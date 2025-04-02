@@ -6,8 +6,8 @@ package assert
 import (
 	"time"
 
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // Time asserts "want" and "have" dates are equal. Returns true if they are,

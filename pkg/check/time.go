@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Sentinel errors.

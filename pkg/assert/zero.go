@@ -4,8 +4,8 @@
 package assert
 
 import (
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // Zero asserts "have" is the zero value for its type. Returns true if it is,

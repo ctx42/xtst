@@ -6,7 +6,7 @@ package check
 import (
 	"time"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // ChannelWillClose checks channel will be closed "within" given time duration.

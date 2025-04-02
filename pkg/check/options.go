@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ctx42/xtst/pkg/dump"
+	"github.com/ctx42/testing/pkg/dump"
 )
 
 // Package wide default configuration.

@@ -3,7 +3,7 @@ package cases
 import (
 	"time"
 
-	"github.com/ctx42/xtst/internal/types"
+	"github.com/ctx42/testing/internal/types"
 )
 
 // EqualCase represents two values and if they are considered equal.

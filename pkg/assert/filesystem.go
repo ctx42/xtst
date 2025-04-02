@@ -4,8 +4,8 @@
 package assert
 
 import (
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // FileExist asserts "pth" points to an existing file. It fails if the path

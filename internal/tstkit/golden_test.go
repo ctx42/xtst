@@ -3,8 +3,8 @@ package tstkit
 import (
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 func Test_Golden(t *testing.T) {

@@ -6,8 +6,8 @@ package internal
 import (
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/internal/types"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/types"
 )
 
 func Test_Same_tabular(t *testing.T) {

@@ -6,7 +6,7 @@ package examples
 // File contains example usages of tester.T and tester.Spy.
 
 import (
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // IsOdd asserts "have" is odd number. Returns true if it is, otherwise marks

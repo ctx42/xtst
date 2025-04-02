@@ -4,8 +4,8 @@
 package assert
 
 import (
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // Same asserts "want" and "have" are generic pointers and that both reference

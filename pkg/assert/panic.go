@@ -4,8 +4,8 @@
 package assert
 
 import (
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // Panic asserts "fn" panics. Returns true if it panicked, otherwise marks the

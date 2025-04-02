@@ -1,9 +1,9 @@
 This repository is work in progress open sourcing libraries I've created during 
 my time as a Go developer.
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/ctx42/xtst)](https://goreportcard.com/report/github.com/ctx42/xtst)
-[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://pkg.go.dev/github.com/ctx42/xtst)
-![Tests](https://github.com/ctx42/xtst/actions/workflows/go.yml/badge.svg?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ctx42/testing)](https://goreportcard.com/report/github.com/ctx42/testing)
+[![GoDoc](https://img.shields.io/badge/api-Godoc-blue.svg)](https://pkg.go.dev/github.com/ctx42/testing)
+![Tests](https://github.com/ctx42/testing/actions/workflows/go.yml/badge.svg?branch=master)
 
 ---
 
@@ -50,7 +50,7 @@ extensible architecture invites you to create your own test helpers ensuring.
 To install Ctx42 Testing Module, use go get:
 
 ```shell
-go get github.com/ctx42/xtst
+go get github.com/ctx42/testing
 ```
 
 This will make all the package modules available to you.

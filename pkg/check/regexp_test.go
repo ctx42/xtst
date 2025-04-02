@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
+	"github.com/ctx42/testing/internal/affirm"
 )
 
 func Test_Regexp(t *testing.T) {

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ctx42/xtst/internal"
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/pkg/dump"
+	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/pkg/dump"
 )
 
 func Test_WithTrail(t *testing.T) {

@@ -4,9 +4,9 @@
 package assert
 
 import (
-	"github.com/ctx42/xtst/internal"
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 // Len asserts "have" has "want" elements. Returns true if it is, otherwise it

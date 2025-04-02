@@ -6,7 +6,7 @@ package check
 import (
 	"strings"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Contain checks "want" is a substring of "have". Returns nil if it's,

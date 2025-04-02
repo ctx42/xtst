@@ -4,8 +4,8 @@
 package check
 
 import (
-	"github.com/ctx42/xtst/internal"
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Len checks "have" has "want" elements. Returns nil if it has, otherwise it

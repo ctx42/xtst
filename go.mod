@@ -1,3 +1,3 @@
-module github.com/ctx42/xtst
+module github.com/ctx42/testing
 
 go 1.24.0

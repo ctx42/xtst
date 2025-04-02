@@ -10,10 +10,10 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/ctx42/xtst/internal"
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/internal/types"
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/types"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 func Test_typeString(t *testing.T) {

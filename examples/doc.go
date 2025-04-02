@@ -1,2 +1,2 @@
-// Package examples provides usage examples for xtst module.
+// Package examples provides usage examples for testing module.
 package examples

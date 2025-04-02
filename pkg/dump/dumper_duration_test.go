@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ctx42/xtst/internal/affirm"
+	"github.com/ctx42/testing/internal/affirm"
 )
 
 func Test_GetDurDumper_tabular(t *testing.T) {

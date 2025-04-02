@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ctx42/xtst/internal"
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // TestFunc is signature used by check functions dealing with panics.

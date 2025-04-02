@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/internal/types"
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/types"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 func Test_Time(t *testing.T) {

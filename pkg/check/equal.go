@@ -11,7 +11,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Equal recursively checks both values are equal. Returns nil if they are,

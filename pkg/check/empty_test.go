@@ -6,8 +6,8 @@ package check
 import (
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/internal/cases"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/cases"
 )
 
 func Test_Empty(t *testing.T) {

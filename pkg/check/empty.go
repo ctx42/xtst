@@ -6,7 +6,7 @@ package check
 import (
 	"reflect"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Empty checks if "have" is empty. Returns nil if it's, otherwise it returns

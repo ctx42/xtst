@@ -3,7 +3,7 @@ package cases
 import (
 	"time"
 
-	"github.com/ctx42/xtst/internal/types"
+	"github.com/ctx42/testing/internal/types"
 )
 
 // ZENValue represents a value and if it's considered zero, empty or nil value.

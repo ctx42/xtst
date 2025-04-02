@@ -6,7 +6,7 @@ package examples
 import (
 	"testing"
 
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 func Test_IsOdd(t *testing.T) {

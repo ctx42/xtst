@@ -4,7 +4,7 @@
 package check
 
 import (
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // True checks "have" is true. Returns nil if it's, otherwise it returns an

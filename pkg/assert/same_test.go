@@ -6,10 +6,10 @@ package assert
 import (
 	"testing"
 
-	"github.com/ctx42/xtst/internal/affirm"
-	"github.com/ctx42/xtst/internal/types"
-	"github.com/ctx42/xtst/pkg/check"
-	"github.com/ctx42/xtst/pkg/tester"
+	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/types"
+	"github.com/ctx42/testing/pkg/check"
+	"github.com/ctx42/testing/pkg/tester"
 )
 
 func Test_Same(t *testing.T) {

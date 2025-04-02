@@ -7,7 +7,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Error checks "err" is not nil. Returns an error if it's nil.

@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // FileExist checks "pth" points to an existing file. Returns an error if the

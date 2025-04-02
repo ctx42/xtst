@@ -7,7 +7,7 @@ import (
 	"errors"
 	"os/exec"
 
-	"github.com/ctx42/xtst/pkg/notice"
+	"github.com/ctx42/testing/pkg/notice"
 )
 
 // ExitCode checks "err" is pointer to [exec.ExitError] with exit code equal to
