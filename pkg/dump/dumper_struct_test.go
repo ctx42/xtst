@@ -24,7 +24,7 @@ func Test_dumpStruct(t *testing.T) {
 			Loc: types.WAW,
 			TAp: nil,
 		}
-		dmp := New(NewConfig())
+		dmp := New()
 
 		// --- When ---
 		have := structDumper(dmp, 0, reflect.ValueOf(s))
@@ -44,7 +44,7 @@ func Test_dumpStruct(t *testing.T) {
 			Loc: types.WAW,
 			TAp: nil,
 		}
-		dmp := New(NewConfig(WithFlat, WithCompact))
+		dmp := New(WithFlat, WithCompact)
 
 		// --- When ---
 		have := structDumper(dmp, 0, reflect.ValueOf(s))
@@ -62,7 +62,7 @@ func Test_dumpStruct(t *testing.T) {
 				Int: 2,
 			},
 		}
-		dmp := New(NewConfig())
+		dmp := New()
 
 		// --- When ---
 		have := structDumper(dmp, 0, reflect.ValueOf(s))
@@ -80,7 +80,7 @@ func Test_dumpStruct(t *testing.T) {
 				Int: 2,
 			},
 		}
-		dmp := New(NewConfig(WithIndent(2)))
+		dmp := New(WithIndent(2))
 
 		// --- When ---
 		have := structDumper(dmp, 0, reflect.ValueOf(s))
@@ -98,7 +98,7 @@ func Test_dumpStruct(t *testing.T) {
 				Int: 2,
 			},
 		}
-		dmp := New(NewConfig(WithFlat, WithCompact))
+		dmp := New(WithFlat, WithCompact)
 
 		// --- When ---
 		have := structDumper(dmp, 0, reflect.ValueOf(s))

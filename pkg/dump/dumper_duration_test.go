@@ -28,7 +28,7 @@ func Test_GetDurDumper_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
-			dmp := New(NewConfig())
+			dmp := New()
 
 			// --- When ---
 			dumper := GetDurDumper(tc.format)
@@ -43,7 +43,7 @@ func Test_GetDurDumper_tabular(t *testing.T) {
 func Test_DurDumperString(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		dur := 1500 * time.Millisecond
 		val := reflect.ValueOf(dur)
 
@@ -56,7 +56,7 @@ func Test_DurDumperString(t *testing.T) {
 
 	t.Run("zero value", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		dur := 0 * time.Second
 		val := reflect.ValueOf(dur)
 
@@ -69,7 +69,7 @@ func Test_DurDumperString(t *testing.T) {
 
 	t.Run("uses level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		dur := time.Second
 		val := reflect.ValueOf(dur)
 
@@ -82,7 +82,7 @@ func Test_DurDumperString(t *testing.T) {
 
 	t.Run("uses indent and level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithIndent(2)))
+		dmp := New(WithIndent(2))
 		dur := time.Second
 		val := reflect.ValueOf(dur)
 
@@ -97,7 +97,7 @@ func Test_DurDumperString(t *testing.T) {
 func Test_DurDumperSeconds(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		dur := 1500 * time.Millisecond
 		val := reflect.ValueOf(dur)
 
@@ -110,7 +110,7 @@ func Test_DurDumperSeconds(t *testing.T) {
 
 	t.Run("zero value", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		dur := 0 * time.Second
 		val := reflect.ValueOf(dur)
 
@@ -123,7 +123,7 @@ func Test_DurDumperSeconds(t *testing.T) {
 
 	t.Run("uses level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		dur := time.Second
 		val := reflect.ValueOf(dur)
 
@@ -136,7 +136,7 @@ func Test_DurDumperSeconds(t *testing.T) {
 
 	t.Run("uses indent and level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithIndent(2)))
+		dmp := New(WithIndent(2))
 		dur := time.Second
 		val := reflect.ValueOf(dur)
 

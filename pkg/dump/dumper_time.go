@@ -57,9 +57,9 @@ func TimeDumperUnix(dmp Dump, lvl int, val reflect.Value) string {
 func TimeDumperDate(dmp Dump, lvl int, val reflect.Value) string {
 	ts := val.Interface().(time.Time) // nolint: forcetypeassert
 	str := ts.GoString()
-	if dmp.cfg.Compact {
+	if dmp.Compact {
 		str = strings.ReplaceAll(str, " ", "")
 	}
-	prn := NewPrinter(dmp.cfg)
-	return prn.Tab(dmp.cfg.Indent + lvl).Write(str).String()
+	prn := NewPrinter(dmp)
+	return prn.Tab(dmp.Indent + lvl).Write(str).String()
 }

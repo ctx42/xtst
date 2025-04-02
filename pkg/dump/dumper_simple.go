@@ -37,7 +37,7 @@ func simpleDumper(dmp Dump, lvl int, val reflect.Value) string {
 	switch val.Kind() {
 	case reflect.String:
 		format = `"%v"`
-		if dmp.cfg.Flat {
+		if dmp.Flat {
 			format = `%#v`
 		}
 
@@ -62,6 +62,6 @@ func simpleDumper(dmp Dump, lvl int, val reflect.Value) string {
 		format = `%v`
 	}
 
-	prn := NewPrinter(dmp.cfg)
-	return prn.Tab(dmp.cfg.Indent + lvl).Write(fmt.Sprintf(format, v)).String()
+	prn := NewPrinter(dmp)
+	return prn.Tab(dmp.Indent + lvl).Write(fmt.Sprintf(format, v)).String()
 }

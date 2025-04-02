@@ -72,8 +72,7 @@ val := map[string]any{
     "nil": nil,
 }
 
-cfg := dump.NewConfig(dump.WithFlat)
-have := dump.New(cfg).Any(val)
+have := dump.New(dump.WithFlat).Any(val)
 
 fmt.Println(have)
 // Output:
@@ -90,8 +89,7 @@ You can customize how `time.Time` values are displayed using the
 ```go
 val := map[time.Time]int{time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC): 42}
 
-cfg := dump.NewConfig(dump.WithFlat, dump.WithTimeFormat(time.Kitchen))
-have := dump.New(cfg).Any(val)
+have := dump.New(dump.WithFlat, dump.WithTimeFormat(time.Kitchen)).Any(val)
 
 fmt.Println(have)
 // Output:
@@ -109,8 +107,7 @@ val := map[string]any{
     "fn1": func() {},
 }
 
-cfg := dump.NewConfig(dump.WithPtrAddr)
-have := New(cfg).Any(val)
+have := New(dump.WithPtrAddr).Any(val)
 
 fmt.Println(have)
 // Output:
@@ -143,8 +140,7 @@ customIntDumper := func(dmp Dump, lvl int, val reflect.Value) string {
 	}
 }
 
-cfg := dump.NewConfig(dump.WithFlat, dump.WithCompact, dump.WithDumper(i, customIntDumper))
-have := dump.New(cfg).Any(42)
+have := dump.New(dump.WithFlat, dump.WithCompact, dump.WithDumper(i, customIntDumper)).Any(42)
 
 fmt.Println(have)
 // Output:
@@ -174,7 +170,7 @@ val := &Node{
     },
 }
 
-have := dump.Default().Any(val)
+have := dump.New().Any(val)
 fmt.Println(have)
 // Output:
 // {
@@ -211,7 +207,7 @@ val := &Node{
     },
 }
 
-have := dump.Default().Any(val)
+have := dump.New().Any(val)
 fmt.Println(have)
 // Output:
 // {

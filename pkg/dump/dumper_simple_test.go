@@ -44,7 +44,7 @@ func Test_sampleDumper_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
-			dmp := New(NewConfig(WithIndent(tc.indent)))
+			dmp := New(WithIndent(tc.indent))
 
 			// --- When ---
 			have := simpleDumper(dmp, tc.level, reflect.ValueOf(tc.val))
@@ -56,9 +56,9 @@ func Test_sampleDumper_tabular(t *testing.T) {
 }
 
 func Test_sampleDumper(t *testing.T) {
-	t.Run("string with Config.Flat false", func(t *testing.T) {
+	t.Run("string with Dump.Flat false", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 
 		// --- When ---
 		have := simpleDumper(dmp, 0, reflect.ValueOf("str0\nstr1\n"))
@@ -67,9 +67,9 @@ func Test_sampleDumper(t *testing.T) {
 		affirm.Equal(t, "\"str0\nstr1\n\"", have)
 	})
 
-	t.Run("string with Config.Flat true", func(t *testing.T) {
+	t.Run("string with Dump.Flat true", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithFlat))
+		dmp := New(WithFlat)
 
 		// --- When ---
 		have := simpleDumper(dmp, 0, reflect.ValueOf("str0\nstr1\n"))

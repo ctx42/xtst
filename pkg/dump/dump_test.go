@@ -15,49 +15,125 @@ import (
 	"github.com/ctx42/xtst/internal/types"
 )
 
-func Test_New(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		// --- Given ---
-		cfg := Config{
-			Flat:           true,
-			Compact:        true,
-			TimeFormat:     time.DateOnly,
-			DurationFormat: DurAsSeconds,
-			PtrAddr:        true,
-		}
+func Test_WithFlat(t *testing.T) {
+	// --- Given ---
+	dmp := &Dump{}
 
-		// --- When ---
-		dmp := New(cfg)
+	// --- When ---
+	WithFlat(dmp)
 
-		// --- Then ---
-		affirm.DeepEqual(t, cfg, dmp.cfg)
-	})
+	// --- Then ---
+	affirm.True(t, dmp.Flat)
 }
 
-func Test_Default(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+func Test_WithCompact(t *testing.T) {
+	// --- Given ---
+	dmp := &Dump{}
+
+	// --- When ---
+	WithCompact(dmp)
+
+	// --- Then ---
+	affirm.True(t, dmp.Compact)
+}
+
+func Test_WithPtrAddr(t *testing.T) {
+	// --- Given ---
+	dmp := &Dump{}
+
+	// --- When ---
+	WithPtrAddr(dmp)
+
+	// --- Then ---
+	affirm.True(t, dmp.PtrAddr)
+}
+
+func Test_WithTimeFormat(t *testing.T) {
+	// --- Given ---
+	dmp := &Dump{}
+
+	// --- When ---
+	opt := WithTimeFormat(TimeAsUnix)
+
+	// --- Then ---
+	opt(dmp)
+	affirm.Equal(t, TimeAsUnix, dmp.TimeFormat)
+}
+
+func Test_WithMaxDepth(t *testing.T) {
+	// --- Given ---
+	dmp := &Dump{}
+
+	// --- When ---
+	opt := WithMaxDepth(10)
+
+	// --- Then ---
+	opt(dmp)
+	affirm.Equal(t, 10, dmp.MaxDepth)
+}
+
+func Test_WithIndent(t *testing.T) {
+	// --- Given ---
+	dmp := &Dump{}
+
+	// --- When ---
+	opt := WithIndent(10)
+
+	// --- Then ---
+	opt(dmp)
+	affirm.Equal(t, 10, dmp.Indent)
+}
+
+func Test_WithTabWidth(t *testing.T) {
+	// --- Given ---
+	dmp := &Dump{}
+
+	// --- When ---
+	opt := WithTabWidth(10)
+
+	// --- Then ---
+	opt(dmp)
+	affirm.Equal(t, 10, dmp.TabWidth)
+}
+
+func Test_WithDumper(t *testing.T) {
+	// --- Given ---
+	dmp := Dump{Dumpers: make(map[reflect.Type]Dumper)}
+
+	// --- When ---
+	WithDumper(time.Time{}, GetTimeDumper(time.Kitchen))(&dmp)
+
+	// --- Then ---
+	have := dmp.Any(time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC))
+	affirm.Equal(t, `"3:04AM"`, have)
+}
+
+func Test_New(t *testing.T) {
+	t.Run("no options", func(t *testing.T) {
 		// --- When ---
-		dmp := Default()
+		have := New()
 
 		// --- Then ---
-		affirm.False(t, dmp.cfg.Flat)
-		affirm.False(t, dmp.cfg.Compact)
-		affirm.Equal(t, time.RFC3339Nano, dmp.cfg.TimeFormat)
-		affirm.Equal(t, "", dmp.cfg.DurationFormat)
-		affirm.False(t, dmp.cfg.PtrAddr)
-		affirm.True(t, dmp.cfg.UseAny)
-		affirm.True(t, len(dmp.cfg.Dumpers) == 3)
-		affirm.Equal(t, 6, dmp.cfg.MaxDepth)
+		affirm.False(t, have.Flat)
+		affirm.False(t, have.Compact)
+		affirm.Equal(t, TimeFormat, have.TimeFormat)
+		affirm.Equal(t, "", have.DurationFormat)
+		affirm.False(t, have.PtrAddr)
+		affirm.True(t, have.UseAny)
+		affirm.True(t, len(have.Dumpers) == 3)
+		affirm.Equal(t, DefaultDepth, have.MaxDepth)
+		affirm.Equal(t, DefaultIndent, have.Indent)
+		affirm.Equal(t, DefaultTabWith, have.TabWidth)
 
-		val, ok := dmp.cfg.Dumpers[typDur]
+		val, ok := have.Dumpers[typDur]
 		affirm.True(t, ok)
 		affirm.NotNil(t, val)
 
-		val, ok = dmp.cfg.Dumpers[typLocation]
+		val, ok = have.Dumpers[typLocation]
 		affirm.True(t, ok)
 		affirm.NotNil(t, val)
 
-		val, ok = dmp.cfg.Dumpers[typTime]
+		val, ok = have.Dumpers[typTime]
 		affirm.True(t, ok)
 		affirm.NotNil(t, val)
 	})
@@ -75,61 +151,61 @@ func Test_Dump_Any_Value_smoke_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		cfg  Config
+		dmp  Dump
 		v    any
 		want string
 	}{
 		// Simple.
-		{"bool true", NewConfig(WithFlat, WithCompact), true, "true"},
-		{"int", NewConfig(WithFlat, WithCompact), 123, "123"},
-		{"int8", NewConfig(WithFlat, WithCompact), int8(123), "123"},
-		{"int16", NewConfig(WithFlat, WithCompact), int16(123), "123"},
-		{"int32", NewConfig(WithFlat, WithCompact), int32(123), "123"},
-		{"int64", NewConfig(WithFlat, WithCompact), int64(123), "123"},
-		{"uint", NewConfig(WithFlat, WithCompact), uint(123), "123"},
-		{"uint8", NewConfig(WithFlat, WithCompact), uint8(123), "0x7b"},
-		{"byte", NewConfig(WithFlat, WithCompact), byte(123), "0x7b"},
-		{"uint16", NewConfig(WithFlat, WithCompact), uint16(123), "123"},
-		{"uint32", NewConfig(WithFlat, WithCompact), uint32(123), "123"},
-		{"uint64", NewConfig(WithFlat, WithCompact), uint64(123), "123"},
-		{"uintptr", NewConfig(WithFlat, WithCompact), uintptr(123), "<0x7b>"},
-		{"float32", NewConfig(WithFlat, WithCompact), float32(12.3), "12.3"},
-		{"float64", NewConfig(WithFlat, WithCompact), 12.3, "12.3"},
-		{"complex64", NewConfig(WithFlat, WithCompact), complex(float32(1), float32(2)), "(1+2i)"},
-		{"complex128", NewConfig(WithFlat, WithCompact), complex(3.3, 4.4), "(3.3+4.4i)"},
-		{"array", NewConfig(WithFlat, WithCompact), [2]int{}, "[2]int{0,0}"},
-		{"chan", NewConfig(WithFlat, WithCompact), make(chan int), "(chan int)(<addr>)"},
-		{"func", NewConfig(WithFlat, WithCompact), func() {}, "<func>(<addr>)"},
-		{"interface nil", NewConfig(WithFlat, WithCompact), itfNil, valNil},
-		{"any nil", NewConfig(WithFlat, WithCompact), aAnyNil, valNil},
-		{"interface val", NewConfig(WithFlat, WithCompact), itfVal, `{Val:""}`},
-		{"interface ptr", NewConfig(WithFlat, WithCompact), itfPtr, `{Val:""}`},
+		{"bool true", New(WithFlat, WithCompact), true, "true"},
+		{"int", New(WithFlat, WithCompact), 123, "123"},
+		{"int8", New(WithFlat, WithCompact), int8(123), "123"},
+		{"int16", New(WithFlat, WithCompact), int16(123), "123"},
+		{"int32", New(WithFlat, WithCompact), int32(123), "123"},
+		{"int64", New(WithFlat, WithCompact), int64(123), "123"},
+		{"uint", New(WithFlat, WithCompact), uint(123), "123"},
+		{"uint8", New(WithFlat, WithCompact), uint8(123), "0x7b"},
+		{"byte", New(WithFlat, WithCompact), byte(123), "0x7b"},
+		{"uint16", New(WithFlat, WithCompact), uint16(123), "123"},
+		{"uint32", New(WithFlat, WithCompact), uint32(123), "123"},
+		{"uint64", New(WithFlat, WithCompact), uint64(123), "123"},
+		{"uintptr", New(WithFlat, WithCompact), uintptr(123), "<0x7b>"},
+		{"float32", New(WithFlat, WithCompact), float32(12.3), "12.3"},
+		{"float64", New(WithFlat, WithCompact), 12.3, "12.3"},
+		{"complex64", New(WithFlat, WithCompact), complex(float32(1), float32(2)), "(1+2i)"},
+		{"complex128", New(WithFlat, WithCompact), complex(3.3, 4.4), "(3.3+4.4i)"},
+		{"array", New(WithFlat, WithCompact), [2]int{}, "[2]int{0,0}"},
+		{"chan", New(WithFlat, WithCompact), make(chan int), "(chan int)(<addr>)"},
+		{"func", New(WithFlat, WithCompact), func() {}, "<func>(<addr>)"},
+		{"interface nil", New(WithFlat, WithCompact), itfNil, valNil},
+		{"any nil", New(WithFlat, WithCompact), aAnyNil, valNil},
+		{"interface val", New(WithFlat, WithCompact), itfVal, `{Val:""}`},
+		{"interface ptr", New(WithFlat, WithCompact), itfPtr, `{Val:""}`},
 		{
 			"map",
-			NewConfig(WithFlat, WithCompact),
+			New(WithFlat, WithCompact),
 			map[string]string{"A": "a", "B": "b"},
 			`map[string]string{"A":"a","B":"b"}`,
 		},
-		{"struct pointer", NewConfig(WithFlat, WithCompact), sPtr, `{Val:"a"}`},
-		{"slice", NewConfig(WithFlat, WithCompact), []int{1, 2}, "[]int{1,2}"},
-		{"string", NewConfig(WithFlat, WithCompact), "string", `"string"`},
-		{"struct", NewConfig(WithFlat, WithCompact), struct{ F0 int }{}, "{F0:0}"},
+		{"struct pointer", New(WithFlat, WithCompact), sPtr, `{Val:"a"}`},
+		{"slice", New(WithFlat, WithCompact), []int{1, 2}, "[]int{1,2}"},
+		{"string", New(WithFlat, WithCompact), "string", `"string"`},
+		{"struct", New(WithFlat, WithCompact), struct{ F0 int }{}, "{F0:0}"},
 		{
 			"registered",
-			NewConfig(WithFlat, WithCompact),
+			New(WithFlat, WithCompact),
 			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 			`"2000-01-02T03:04:05Z"`,
 		},
-		{"struct nil", NewConfig(WithFlat, WithCompact), sNil, "nil"},
+		{"struct nil", New(WithFlat, WithCompact), sNil, "nil"},
 		{
 			"registered",
-			NewConfig(WithFlat, WithCompact),
+			New(WithFlat, WithCompact),
 			time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC),
 			`"2000-01-02T03:04:05Z"`,
 		},
 		{
 			"unsafe pointer",
-			NewConfig(WithFlat, WithCompact),
+			New(WithFlat, WithCompact),
 			unsafe.Pointer(sPtr),
 			fmt.Sprintf("<%p>", sPtr),
 		},
@@ -137,12 +213,9 @@ func Test_Dump_Any_Value_smoke_tabular(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			// --- Given ---
-			dmp := New(tc.cfg)
-
 			// --- When ---
-			haveAny := dmp.Any(tc.v)
-			haveVal := dmp.Value(reflect.ValueOf(tc.v))
+			haveAny := tc.dmp.Any(tc.v)
+			haveVal := tc.dmp.Value(reflect.ValueOf(tc.v))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, haveAny)
@@ -155,7 +228,7 @@ func Test_Dump_Any(t *testing.T) {
 	t.Run("nil interface value", func(t *testing.T) {
 		// --- Given ---
 		var itfNil types.TItf
-		dmp := Default()
+		dmp := New()
 
 		// --- When ---
 		have := dmp.Any(itfNil)
@@ -171,7 +244,7 @@ func Test_Dump_Any(t *testing.T) {
 			{"str10", 1, "str12"},
 			{"str10", 1, nil},
 		}
-		dmp := New(NewConfig(WithFlat, WithCompact))
+		dmp := New(WithFlat, WithCompact)
 
 		// --- When ---
 		have := dmp.Any(val)
@@ -196,7 +269,7 @@ func Test_Dump_Any(t *testing.T) {
 				}
 			}
 		}{}
-		dmp := New(NewConfig(WithFlat, WithCompact))
+		dmp := New(WithFlat, WithCompact)
 
 		// --- When ---
 		have := dmp.Any(val)
@@ -230,7 +303,7 @@ func Test_Dump_Any(t *testing.T) {
 		}
 
 		// --- When ---
-		have := Default().Any(val)
+		have := New().Any(val)
 
 		// --- Then ---
 		want := tstkit.Golden(t, "testdata/struct_nested.txt")
@@ -260,7 +333,7 @@ func Test_Dump_Any(t *testing.T) {
 				},
 			},
 		}
-		dmp := New(NewConfig(WithIndent(2)))
+		dmp := New(WithIndent(2))
 
 		// --- When ---
 		have := dmp.Any(val)

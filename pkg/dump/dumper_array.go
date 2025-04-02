@@ -12,12 +12,12 @@ import (
 // or [reflect.Slice] and returns its string representation in format defined
 // by [Dump] configuration.
 func arrayDumper(dmp Dump, lvl int, val reflect.Value) string {
-	prn := NewPrinter(dmp.cfg)
-	prn.Tab(dmp.cfg.Indent + lvl)
+	prn := NewPrinter(dmp)
+	prn.Tab(dmp.Indent + lvl)
 
-	if dmp.cfg.PrintType {
+	if dmp.PrintType {
 		valTypStr := val.Type().String()
-		if dmp.cfg.UseAny {
+		if dmp.UseAny {
 			switch {
 			case valTypStr == "interface{}":
 				valTypStr = "any"
@@ -31,7 +31,7 @@ func arrayDumper(dmp Dump, lvl int, val reflect.Value) string {
 	num := val.Len()
 	prn.Write("{").NLI(num)
 
-	dmp.cfg.PrintType = false // Don't print types for array elements.
+	dmp.PrintType = false // Don't print types for array elements.
 	for i := 0; i < num; i++ {
 		last := i == num-1
 
@@ -39,7 +39,7 @@ func arrayDumper(dmp Dump, lvl int, val reflect.Value) string {
 		prn.Write(sub)
 		prn.Comma(last).Sep(last).NL()
 	}
-	prn.Tab(dmp.cfg.Indent + lvl).Write("}")
+	prn.Tab(dmp.Indent + lvl).Write("}")
 
 	return prn.String()
 }

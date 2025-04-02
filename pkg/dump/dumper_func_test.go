@@ -39,7 +39,7 @@ func Test_funcDumper_tabular(t *testing.T) {
 func Test_funcDumper(t *testing.T) {
 	t.Run("nil function", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithPtrAddr))
+		dmp := New(WithPtrAddr)
 
 		var fn func()
 		val := reflect.ValueOf(fn)
@@ -53,7 +53,7 @@ func Test_funcDumper(t *testing.T) {
 
 	t.Run("usage error", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		val := reflect.ValueOf(1234)
 
 		// --- When ---
@@ -65,7 +65,7 @@ func Test_funcDumper(t *testing.T) {
 
 	t.Run("print pointer address", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithPtrAddr))
+		dmp := New(WithPtrAddr)
 		fn := func() {}
 		val := reflect.ValueOf(fn)
 		want := fmt.Sprintf("<func>(<0x%x>)", val.Pointer())
@@ -79,7 +79,7 @@ func Test_funcDumper(t *testing.T) {
 
 	t.Run("uses indent and level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithIndent(2)))
+		dmp := New(WithIndent(2))
 		val := reflect.ValueOf(1234)
 
 		// --- When ---

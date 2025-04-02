@@ -39,7 +39,7 @@ func Test_zoneDumper_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
-			dmp := New(NewConfig(WithIndent(tc.indent)))
+			dmp := New(WithIndent(tc.indent))
 
 			// --- When ---
 			have := zoneDumper(dmp, tc.level, reflect.ValueOf(tc.val))

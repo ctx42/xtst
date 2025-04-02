@@ -17,61 +17,61 @@ func Test_arrayDumper_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
-		cfg  Config
+		dmp  Dump
 		val  any
 		want string
 	}{
 		{
 			"default",
-			NewConfig(),
+			New(),
 			[2]int{0, 1},
 			"[2]int{\n  0,\n  1,\n}",
 		},
 		{
 			"nil array",
-			NewConfig(),
+			New(),
 			nilArr,
 			"[2]int{\n  0,\n  0,\n}",
 		},
 		{
 			"default with indent",
-			NewConfig(WithIndent(2)),
+			New(WithIndent(2)),
 			[2]int{0, 1},
 			"    [2]int{\n      0,\n      1,\n    }",
 		},
 		{
 			"flat array",
-			NewConfig(WithFlat),
+			New(WithFlat),
 			[2]int{0, 1},
 			"[2]int{0, 1}",
 		},
 		{
 			"flat and compact array",
-			NewConfig(WithFlat, WithCompact),
+			New(WithFlat, WithCompact),
 			[2]int{0, 1},
 			"[2]int{0,1}",
 		},
 		{
 			"flat array empty int",
-			NewConfig(WithFlat),
+			New(WithFlat),
 			[2]int{},
 			"[2]int{0, 0}",
 		},
 		{
 			"flat slice empty",
-			NewConfig(WithFlat),
+			New(WithFlat),
 			[]int{},
 			"[]int{}",
 		},
 		{
 			"flat array empty any",
-			NewConfig(WithFlat),
+			New(WithFlat),
 			[2]any{},
 			"[2]any{nil, nil}",
 		},
 		{
 			"flat array of map[string]int",
-			NewConfig(WithFlat),
+			New(WithFlat),
 			[...]map[string]int{
 				{"A": 1},
 				{"b": 2},
@@ -80,7 +80,7 @@ func Test_arrayDumper_tabular(t *testing.T) {
 		},
 		{
 			"array of map[int]int",
-			NewConfig(),
+			New(),
 			[...]map[int]int{
 				{1: 10},
 				{2: 20},
@@ -89,7 +89,7 @@ func Test_arrayDumper_tabular(t *testing.T) {
 		},
 		{
 			"array of structs",
-			NewConfig(),
+			New(),
 			[]types.T1{{Int: 1}, {Int: 2}},
 			"[]types.T1{\n" +
 				"  {\n    Int: 1,\n    T1: nil,\n  },\n" +
@@ -100,11 +100,8 @@ func Test_arrayDumper_tabular(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
-			// --- Given ---
-			dmp := New(tc.cfg)
-
 			// --- When ---
-			have := arrayDumper(dmp, 0, reflect.ValueOf(tc.val))
+			have := arrayDumper(tc.dmp, 0, reflect.ValueOf(tc.val))
 
 			// --- Then ---
 			affirm.Equal(t, tc.want, have)

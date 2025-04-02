@@ -39,7 +39,7 @@ func Test_chanDumper_tabular(t *testing.T) {
 func Test_chanDumper(t *testing.T) {
 	t.Run("nil channel", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithPtrAddr))
+		dmp := New(WithPtrAddr)
 		var ch chan int
 		val := reflect.ValueOf(ch)
 
@@ -52,7 +52,7 @@ func Test_chanDumper(t *testing.T) {
 
 	t.Run("usage error", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		val := reflect.ValueOf(1234)
 
 		// --- When ---
@@ -64,7 +64,7 @@ func Test_chanDumper(t *testing.T) {
 
 	t.Run("usage error uses level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		val := reflect.ValueOf(1234)
 
 		// --- When ---
@@ -76,7 +76,7 @@ func Test_chanDumper(t *testing.T) {
 
 	t.Run("print pointer address", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithPtrAddr))
+		dmp := New(WithPtrAddr)
 		val := reflect.ValueOf(make(chan int))
 
 		// --- When ---
@@ -89,7 +89,7 @@ func Test_chanDumper(t *testing.T) {
 
 	t.Run("uses level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig())
+		dmp := New()
 		val := reflect.ValueOf(make(chan int))
 
 		// --- When ---
@@ -101,7 +101,7 @@ func Test_chanDumper(t *testing.T) {
 
 	t.Run("uses indent and level", func(t *testing.T) {
 		// --- Given ---
-		dmp := New(NewConfig(WithIndent(2)))
+		dmp := New(WithIndent(2))
 		val := reflect.ValueOf(make(chan int))
 
 		// --- When ---

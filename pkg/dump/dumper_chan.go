@@ -21,7 +21,7 @@ func chanDumper(dmp Dump, lvl int, val reflect.Value) string {
 	switch val.Kind() {
 	case reflect.Chan:
 		ptrAddr := valAddr
-		if dmp.cfg.PtrAddr {
+		if dmp.PtrAddr {
 			ptr := reflect.ValueOf(val.Pointer())
 			ptrAddr = hexPtrDumper(dmp, lvl, ptr)
 		}
@@ -30,6 +30,6 @@ func chanDumper(dmp Dump, lvl int, val reflect.Value) string {
 		str = valErrUsage
 	}
 
-	prn := NewPrinter(dmp.cfg)
-	return prn.Tab(dmp.cfg.Indent + lvl).Write(str).String()
+	prn := NewPrinter(dmp)
+	return prn.Tab(dmp.Indent + lvl).Write(str).String()
 }

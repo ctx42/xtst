@@ -59,16 +59,16 @@ func Test_WithRecent(t *testing.T) {
 	affirm.Equal(t, time.Second, have.Recent)
 }
 
-func Test_WithDump(t *testing.T) {
+func Test_WithDumper(t *testing.T) {
 	// --- Given ---
 	ops := Options{}
 
 	// --- When ---
-	have := WithDump(dump.WithMaxDepth(100))(ops)
+	have := WithDumper(dump.WithMaxDepth(100))(ops)
 
 	// --- Then ---
-	affirm.Equal(t, 0, ops.DumpCfg.MaxDepth)
-	affirm.Equal(t, 100, have.DumpCfg.MaxDepth)
+	affirm.Equal(t, 0, ops.Dumper.MaxDepth)
+	affirm.Equal(t, 100, have.Dumper.MaxDepth)
 }
 
 func Test_WithTypeChecker(t *testing.T) {
@@ -113,7 +113,7 @@ func Test_WithOptions(t *testing.T) {
 	// --- Given ---
 	trailLog := make([]string, 0)
 	ops := Options{
-		DumpCfg: dump.Config{
+		Dumper: dump.Dump{
 			Flat:           true,
 			Compact:        true,
 			TimeFormat:     time.Kitchen,
@@ -139,7 +139,7 @@ func Test_WithOptions(t *testing.T) {
 	have := WithOptions(ops)(Options{})
 
 	// --- Then ---
-	affirm.True(t, internal.Same(ops.DumpCfg.Dumpers, have.DumpCfg.Dumpers))
+	affirm.True(t, internal.Same(ops.Dumper.Dumpers, have.Dumper.Dumpers))
 	affirm.True(t, internal.Same(ops.TrailLog, have.TrailLog))
 	affirm.True(t, internal.Same(ops.TypeCheckers, have.TypeCheckers))
 	affirm.True(t, internal.Same(ops.TrailCheckers, have.TrailCheckers))
@@ -156,8 +156,8 @@ func Test_DefaultOptions(t *testing.T) {
 		have := DefaultOptions()
 
 		// --- Then ---
-		affirm.Equal(t, false, have.DumpCfg.PtrAddr)
-		affirm.Equal(t, DefaultDumpTimeFormat, have.DumpCfg.TimeFormat)
+		affirm.Equal(t, false, have.Dumper.PtrAddr)
+		affirm.Equal(t, DefaultDumpTimeFormat, have.Dumper.TimeFormat)
 
 		affirm.Equal(t, DefaultParseTimeFormat, have.TimeFormat)
 		affirm.Equal(t, DefaultRecentDuration, have.Recent)
@@ -175,8 +175,8 @@ func Test_DefaultOptions(t *testing.T) {
 		have := DefaultOptions(WithTrail("type.field"))
 
 		// --- Then ---
-		affirm.Equal(t, false, have.DumpCfg.PtrAddr)
-		affirm.Equal(t, DefaultDumpTimeFormat, have.DumpCfg.TimeFormat)
+		affirm.Equal(t, false, have.Dumper.PtrAddr)
+		affirm.Equal(t, DefaultDumpTimeFormat, have.Dumper.TimeFormat)
 
 		affirm.Equal(t, DefaultParseTimeFormat, have.TimeFormat)
 		affirm.Equal(t, DefaultRecentDuration, have.Recent)

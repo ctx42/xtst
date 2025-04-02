@@ -22,7 +22,7 @@ func ExampleDump_Any() {
 		TAp: nil,
 	}
 
-	have := dump.Default().Any(val)
+	have := dump.New().Any(val)
 
 	fmt.Println(have)
 	// Output:
@@ -43,8 +43,7 @@ func ExampleDump_Any_flatCompact() {
 		"nil": nil,
 	}
 
-	cfg := dump.NewConfig(dump.WithFlat)
-	have := dump.New(cfg).Any(val)
+	have := dump.New(dump.WithFlat).Any(val)
 
 	fmt.Println(have)
 	// Output:
@@ -54,8 +53,7 @@ func ExampleDump_Any_flatCompact() {
 func ExampleDump_Any_customTimeFormat() {
 	val := map[time.Time]int{time.Date(2000, 1, 2, 3, 4, 5, 0, time.UTC): 42}
 
-	cfg := dump.NewConfig(dump.WithFlat, dump.WithTimeFormat(time.Kitchen))
-	have := dump.New(cfg).Any(val)
+	have := dump.New(dump.WithFlat, dump.WithTimeFormat(time.Kitchen)).Any(val)
 
 	fmt.Println(have)
 	// Output:
@@ -72,13 +70,13 @@ func ExampleDump_Any_customDumper() {
 			panic("unexpected kind")
 		}
 	}
-	cfg := dump.NewConfig(
+	opts := []dump.Option{
 		dump.WithFlat,
 		dump.WithCompact,
 		dump.WithDumper(i, dumper),
-	)
+	}
 
-	have := dump.New(cfg).Any(42)
+	have := dump.New(opts...).Any(42)
 
 	fmt.Println(have)
 	// Output:
@@ -110,7 +108,7 @@ func ExampleDump_Any_recursive() {
 		},
 	}
 
-	have := dump.Default().Any(val)
+	have := dump.New().Any(val)
 	fmt.Println(have)
 	// Output:
 	// {

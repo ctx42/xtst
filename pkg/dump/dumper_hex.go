@@ -31,6 +31,6 @@ func hexPtrDumper(dmp Dump, lvl int, val reflect.Value) string {
 		str = valErrUsage
 	}
 
-	prn := NewPrinter(dmp.cfg)
-	return prn.Tab(dmp.cfg.Indent + lvl).Write(str).String()
+	prn := NewPrinter(dmp)
+	return prn.Tab(dmp.Indent + lvl).Write(str).String()
 }

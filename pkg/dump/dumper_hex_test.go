@@ -37,7 +37,7 @@ func Test_hexPtrDumper_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- Given ---
-			dmp := New(NewConfig(WithIndent(tc.indent)))
+			dmp := New(WithIndent(tc.indent))
 
 			// --- When ---
 			have := hexPtrDumper(dmp, tc.level, reflect.ValueOf(tc.val))

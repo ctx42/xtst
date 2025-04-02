@@ -84,11 +84,11 @@ func WithRecent(recent time.Duration) Option {
 	}
 }
 
-// WithDump is [Check] option setting [dump.Config] options.
-func WithDump(optsD ...dump.Option) Option {
+// WithDumper is [Check] option setting [dump.Config] options.
+func WithDumper(optsD ...dump.Option) Option {
 	return func(optsC Options) Options {
 		for _, opt := range optsD {
-			opt(&optsC.DumpCfg)
+			opt(&optsC.Dumper)
 		}
 		return optsC
 	}
@@ -127,7 +127,7 @@ func WithSkipTrail(skip ...string) Option {
 // WithOptions is [Check] option which passes all options.
 func WithOptions(src Options) Option {
 	return func(ops Options) Options {
-		ops.DumpCfg = src.DumpCfg
+		ops.Dumper = src.Dumper
 		ops.TimeFormat = src.TimeFormat
 		ops.Recent = src.Recent
 		ops.Trail = src.Trail
@@ -143,7 +143,7 @@ func WithOptions(src Options) Option {
 // Options represents options used by [Check] functions.
 type Options struct {
 	// Dump configuration.
-	DumpCfg dump.Config
+	Dumper dump.Dump
 
 	// Time format when parsing time strings (default: [time.RFC3339]).
 	TimeFormat string
@@ -175,7 +175,7 @@ type Options struct {
 // DefaultOptions returns default [Options].
 func DefaultOptions(opts ...Option) Options {
 	ops := Options{
-		DumpCfg: dump.NewConfig(
+		Dumper: dump.New(
 			dump.WithTimeFormat(DumpTimeFormat),
 			dump.WithMaxDepth(DumpDepth),
 		),

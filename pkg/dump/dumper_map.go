@@ -16,14 +16,14 @@ import (
 //
 // nolint: cyclop
 func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
-	prn := NewPrinter(dmp.cfg)
-	prn.Tab(dmp.cfg.Indent + lvl)
+	prn := NewPrinter(dmp)
+	prn.Tab(dmp.Indent + lvl)
 
-	if dmp.cfg.PrintType {
+	if dmp.PrintType {
 		keyTyp := val.Type().Key()
 		valTyp := val.Type().Elem()
 		valTypStr := strings.ReplaceAll(valTyp.String(), " ", "")
-		if valTypStr == "interface{}" && dmp.cfg.UseAny {
+		if valTypStr == "interface{}" && dmp.UseAny {
 			valTypStr = "any"
 		}
 		str := fmt.Sprintf("map[%s]%s", keyTyp.String(), valTypStr)
@@ -40,7 +40,7 @@ func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
 	num := val.Len()
 	prn.Write("{").NLI(num)
 
-	dmp.cfg.PrintType = false // Don't print types for map values.
+	dmp.PrintType = false // Don't print types for map values.
 	for i, key := range keys {
 		last := i == num-1
 
@@ -51,11 +51,11 @@ func mapDumper(dmp Dump, lvl int, val reflect.Value) string {
 		sub = dmp.value(lvl+1, val.MapIndex(key))
 		sub = strings.TrimLeft(sub, " \t")
 
-		dmp.cfg.PrintType = true
+		dmp.PrintType = true
 		prn.Write(sub)
 		prn.Comma(last).Sep(last).NL()
 	}
-	prn.Tab(dmp.cfg.Indent + lvl).Write("}")
+	prn.Tab(dmp.Indent + lvl).Write("}")
 
 	return prn.String()
 }

@@ -12,8 +12,8 @@ import (
 // and returns its string representation in format defined by [Dump]
 // configuration.
 func structDumper(dmp Dump, lvl int, val reflect.Value) string {
-	prn := NewPrinter(dmp.cfg)
-	prn.Tab(dmp.cfg.Indent + lvl)
+	prn := NewPrinter(dmp)
+	prn.Tab(dmp.Indent + lvl)
 	vTyp := val.Type()
 
 	num := val.NumField() // Total number of fields.
@@ -30,12 +30,12 @@ func structDumper(dmp Dump, lvl int, val reflect.Value) string {
 		}
 
 		// Field name.
-		prn.Tab(dmp.cfg.Indent + lvl + 1)
+		prn.Tab(dmp.Indent + lvl + 1)
 		prn.Write(fld.Name)
 		prn.Write(":").Space()
 
 		// Field value.
-		dmp.cfg.PrintType = true
+		dmp.PrintType = true
 		sub := dmp.value(lvl+1, val.Field(i))
 		sub = strings.TrimLeft(sub, " \t")
 
@@ -43,10 +43,10 @@ func structDumper(dmp Dump, lvl int, val reflect.Value) string {
 		prn.Comma(last).Sep(last).NL()
 	}
 
-	if lastPrivate && dmp.cfg.Flat {
+	if lastPrivate && dmp.Flat {
 		return strings.TrimRight(prn.String(), ",") + "}"
 	}
-	prn.Tab(dmp.cfg.Indent + lvl).Write("}")
+	prn.Tab(dmp.Indent + lvl).Write("}")
 
 	return prn.String()
 }
