@@ -29,13 +29,25 @@ func Test_Indent(t *testing.T) {
 
 	t.Run("multiple lines", func(t *testing.T) {
 		// --- When ---
-		have := Indent(1, 0, "abc\ndef\nghi")
+		have := Indent(1, ' ', "abc\ndef\nghi")
 
 		// --- Then ---
 		want := "" +
 			" abc\n" +
 			" def\n" +
 			" ghi"
+		affirm.Equal(t, want, have)
+	})
+
+	t.Run("use tabs", func(t *testing.T) {
+		// --- When ---
+		have := Indent(1, '\t', "abc\ndef\nghi")
+
+		// --- Then ---
+		want := "" +
+			"\tabc\n" +
+			"\tdef\n" +
+			"\tghi"
 		affirm.Equal(t, want, have)
 	})
 

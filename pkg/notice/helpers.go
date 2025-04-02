@@ -7,11 +7,9 @@ import (
 	"strings"
 )
 
-// Indent indents lines with n number of "tab"s. Lines are indented only if
+// Indent indents lines with n number of runes. Lines are indented only if
 // there are more than one line.
-func Indent(n int, tab rune, lns string) string {
-	// TODO(rz): document this.
-	// TODO(rz): test this.
+func Indent(n int, r rune, lns string) string {
 	if lns == "" {
 		return ""
 	}
@@ -21,7 +19,7 @@ func Indent(n int, tab rune, lns string) string {
 		return lns
 	}
 	for i, lin := range rows {
-		ind := strings.Repeat(" ", n)
+		ind := strings.Repeat(string(r), n)
 		rows[i] = ind + lin
 	}
 	return strings.Join(rows, "\n")

@@ -21,6 +21,19 @@ import (
 //   - Type["key"].Field
 const trail = "trail"
 
+// ContinuationHeader is a special [Notice.Header] separating notices with the
+// same header.
+//
+// Example:
+//
+//	header:
+//	  want: want 0
+//	  have: have 0
+//	 ---
+//	  want: want 1
+//	  have: have 1
+const ContinuationHeader = " ---"
+
 // ErrAssert represents an error that occurs during an assertion. It is
 // typically used when a condition fails to meet the expected value.
 var ErrAssert = errors.New("assert error")
@@ -103,16 +116,16 @@ func (msg *Notice) AppendRow(desc ...Row) *Notice {
 // exists, it is moved to the beginning of the [Notice.Order] slice.
 // Implements fluent interface.
 func (msg *Notice) Prepend(name, format string, args ...any) *Notice {
-	hasPath := slices.Contains(msg.Order, trail)
+	hasTrail := slices.Contains(msg.Order, trail)
 	msg.Order = slices.DeleteFunc(msg.Order, func(s string) bool {
-		if hasPath && s == trail {
+		if hasTrail && s == trail {
 			return true
 		}
 		return name == s
 	})
 	msg.Rows[name] = fmt.Sprintf(format, args...)
 	var prepend []string
-	if hasPath && name != trail {
+	if hasTrail && name != trail {
 		prepend = []string{trail}
 	}
 	prepend = append(prepend, name)
@@ -176,7 +189,10 @@ func (msg *Notice) Is(target error) bool { return errors.Is(msg.err, target) }
 func (msg *Notice) Error() string {
 	m := msg.Header
 	if len(msg.Order) > 0 {
-		m += ":\n"
+		if msg.Header != ContinuationHeader {
+			m += ":"
+		}
+		m += "\n"
 	}
 	names := msg.equalizeNames()
 	for i := range msg.Order {
