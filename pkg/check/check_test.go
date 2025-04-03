@@ -110,13 +110,13 @@ func Test_Count_error_tabular(t *testing.T) {
 	}
 }
 
-func Test_SameType(t *testing.T) {
+func Test_Type(t *testing.T) {
 	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		opt := WithTrail("type.field")
 
 		// --- When ---
-		err := SameType(42, 4.2, opt)
+		err := Type(42, 4.2, opt)
 
 		// --- Then ---
 		affirm.NotNil(t, err)
@@ -128,7 +128,7 @@ func Test_SameType(t *testing.T) {
 	})
 }
 
-func Test_SameType_success_tabular(t *testing.T) {
+func Test_Type_success_tabular(t *testing.T) {
 	var ptr *types.TPtr
 	var itf types.TItf
 	itf = &types.TPtr{}
@@ -151,7 +151,7 @@ func Test_SameType_success_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			err := SameType(tc.val0, tc.val1)
+			err := Type(tc.val0, tc.val1)
 
 			// --- Then ---
 			affirm.Nil(t, err)
@@ -159,7 +159,7 @@ func Test_SameType_success_tabular(t *testing.T) {
 	}
 }
 
-func Test_SameType_error_tabular(t *testing.T) {
+func Test_Type_error_tabular(t *testing.T) {
 	tt := []struct {
 		testN string
 
@@ -184,7 +184,7 @@ func Test_SameType_error_tabular(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.testN, func(t *testing.T) {
 			// --- When ---
-			err := SameType(tc.val0, tc.val1)
+			err := Type(tc.val0, tc.val1)
 
 			// --- Then ---
 			affirm.NotNil(t, err)
