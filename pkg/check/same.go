@@ -4,7 +4,7 @@
 package check
 
 import (
-	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/pkg/notice"
 )
 
@@ -21,7 +21,7 @@ func Same(want, have any, opts ...Option) error {
 
 // same is internal implementation of [Same].
 func same(want, have any, opts ...Option) error {
-	if internal.Same(want, have) {
+	if core.Same(want, have) {
 		return nil
 	}
 	ops := DefaultOptions(opts...)

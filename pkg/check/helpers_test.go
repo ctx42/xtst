@@ -10,8 +10,8 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/ctx42/testing/internal"
 	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/internal/types"
 	"github.com/ctx42/testing/pkg/notice"
 )
@@ -133,7 +133,7 @@ func Test_wrap(t *testing.T) {
 		have := wrap(msg)
 
 		// --- Then ---
-		affirm.True(t, internal.Same(msg, have))
+		affirm.True(t, core.Same(msg, have))
 	})
 
 	t.Run("joined errors", func(t *testing.T) {
@@ -146,11 +146,11 @@ func Test_wrap(t *testing.T) {
 		have := wrap(msg)
 
 		// --- Then ---
-		affirm.False(t, internal.Same(msg, have))
+		affirm.False(t, core.Same(msg, have))
 		ers := have.(multiError).Unwrap() // nolint: errorlint
 		affirm.Equal(t, 2, len(ers))
-		affirm.True(t, internal.Same(msg0, ers[0]))
-		affirm.True(t, internal.Same(msg1, ers[1]))
+		affirm.True(t, core.Same(msg0, ers[0]))
+		affirm.True(t, core.Same(msg1, ers[1]))
 	})
 
 	t.Run("nil error", func(t *testing.T) {

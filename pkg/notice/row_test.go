@@ -17,7 +17,7 @@ func Test_NewRow(t *testing.T) {
 		// --- Then ---
 		affirm.Equal(t, "name", have.Name)
 		affirm.Equal(t, "format", have.Format)
-		affirm.NotNil(t, have.Args)
+		affirm.Nil(t, have.Args)
 		affirm.Equal(t, 0, len(have.Args))
 	})
 
@@ -39,6 +39,6 @@ func Test_Trail(t *testing.T) {
 	// --- Then ---
 	affirm.Equal(t, trail, have.Name)
 	affirm.Equal(t, "type.field", have.Format)
-	affirm.NotNil(t, have.Args)
+	affirm.Nil(t, have.Args)
 	affirm.Equal(t, 0, len(have.Args))
 }

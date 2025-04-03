@@ -1,14 +1,112 @@
 // SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package internal
+package core
 
 import (
+	"reflect"
 	"testing"
 
-	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/cases"
 	"github.com/ctx42/testing/internal/types"
 )
+
+func Test_Nil_ZENValues(t *testing.T) {
+	for _, tc := range cases.ZENValues() {
+		t.Run("Nil "+tc.Desc, func(t *testing.T) {
+			// --- When ---
+			have := IsNil(tc.Val)
+
+			// --- Then ---
+			if tc.IsNil && !have {
+				format := "expected nil error:\n  have: %#v"
+				t.Errorf(format, have)
+			}
+			if !tc.IsNil && have {
+				format := "expected not-nil error:\n  have: %#v"
+				t.Errorf(format, have)
+			}
+		})
+	}
+}
+
+func Test_Len_tabular(t *testing.T) {
+	ch := make(chan int, 10)
+	ch <- 0
+	t.Cleanup(func() { <-ch; close(ch) })
+
+	tt := []struct {
+		testN string
+
+		val  any
+		want int
+		ok   bool
+	}{
+		{"success string", "abc", 3, true},
+		{"success slice", []int{1, 2}, 2, true},
+		{"success array", [...]int{1, 2}, 2, true},
+		{"success channel", ch, 1, true},
+
+		{"error not supported", 123, 0, false},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.testN, func(t *testing.T) {
+			// --- When ---
+			haveLen, haveOK := Len(tc.val)
+
+			// --- Then ---
+			if tc.want != haveLen {
+				format := "expected length:\n  have: %d\n  want: %d"
+				t.Errorf(format, haveLen, tc.want)
+			}
+			if tc.ok != haveOK {
+				format := "expected ok:\n  have: %t\n  want: %t"
+				t.Errorf(format, haveOK, tc.ok)
+			}
+		})
+	}
+}
+
+func Test_DidPanic(t *testing.T) {
+	t.Run("panicked", func(t *testing.T) {
+		// --- Given ---
+		fn := func() { panic("panic") }
+
+		// --- When ---
+		did, val, stack := DidPanic(fn)
+
+		// --- Then ---
+		if !did {
+			t.Error("expected DidPanic to return true")
+		}
+		if val.(string) != "panic" {
+			t.Error("expected DidPanic to return value 'panic'")
+		}
+		if stack == "" {
+			t.Error("expected DidPanic to return stack trace")
+		}
+	})
+
+	t.Run("no panic", func(t *testing.T) {
+		// --- Given ---
+		fn := func() {}
+
+		// --- When ---
+		did, val, stack := DidPanic(fn)
+
+		// --- Then ---
+		if did {
+			t.Error("expected DidPanic to return false")
+		}
+		if val != nil {
+			t.Error("expected DidPanic to return empty string")
+		}
+		if stack != "" {
+			t.Error("expected DidPanic to return empty string")
+		}
+	})
+}
 
 func Test_Same_tabular(t *testing.T) {
 	// Pointers.
@@ -135,67 +233,12 @@ func Test_Same_tabular(t *testing.T) {
 			have := Same(tc.want, tc.have)
 
 			// --- Then ---
-			affirm.DeepEqual(t, tc.same, have)
+			if !reflect.DeepEqual(tc.same, have) {
+				wMsg := "expected same:\n" +
+					"  want: %t\n" +
+					"  have: %t"
+				t.Errorf(wMsg, have, tc.same)
+			}
 		})
 	}
-}
-
-func Test_Len_tabular(t *testing.T) {
-	ch := make(chan int, 10)
-	ch <- 0
-	t.Cleanup(func() { <-ch; close(ch) })
-
-	tt := []struct {
-		testN string
-
-		val  any
-		want int
-		ok   bool
-	}{
-		{"success string", "abc", 3, true},
-		{"success slice", []int{1, 2}, 2, true},
-		{"success array", [...]int{1, 2}, 2, true},
-		{"success channel", ch, 1, true},
-
-		{"error not supported", 123, 0, false},
-	}
-
-	for _, tc := range tt {
-		t.Run(tc.testN, func(t *testing.T) {
-			// --- When ---
-			haveLen, haveOK := Len(tc.val)
-
-			// --- Then ---
-			affirm.Equal(t, tc.want, haveLen)
-			affirm.Equal(t, tc.ok, haveOK)
-		})
-	}
-}
-
-func Test_DidPanic(t *testing.T) {
-	t.Run("panicked", func(t *testing.T) {
-		// --- Given ---
-		fn := func() { panic("panic") }
-
-		// --- When ---
-		did, val, stack := DidPanic(fn)
-
-		// --- Then ---
-		affirm.True(t, did)
-		affirm.Equal(t, "panic", val)
-		affirm.True(t, stack != "")
-	})
-
-	t.Run("no panic", func(t *testing.T) {
-		// --- Given ---
-		fn := func() {}
-
-		// --- When ---
-		did, val, stack := DidPanic(fn)
-
-		// --- Then ---
-		affirm.False(t, did)
-		affirm.Nil(t, val)
-		affirm.Equal(t, 0, len(stack))
-	})
 }

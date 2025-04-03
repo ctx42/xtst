@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ctx42/testing/internal"
 	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/core"
 )
 
 // Flags for compiled test binary.
@@ -59,5 +59,5 @@ func Test_WithNow(t *testing.T) {
 	have := WithNow(now)(ops)
 
 	// --- Then ---
-	affirm.True(t, internal.Same(now, have.now))
+	affirm.True(t, core.Same(now, have.now))
 }

@@ -6,6 +6,7 @@ package check
 import (
 	"reflect"
 
+	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/pkg/notice"
 )
 
@@ -13,7 +14,7 @@ import (
 // otherwise, it returns an error with a message indicating the expected
 // and actual values.
 func Zero(have any, opts ...Option) error {
-	if isNil(have) {
+	if core.IsNil(have) {
 		return zeroError(have, opts...)
 	}
 	type z interface{ IsZero() bool }

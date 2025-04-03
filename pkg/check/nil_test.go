@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/ctx42/testing/internal/affirm"
-	"github.com/ctx42/testing/internal/cases"
 )
 
 func Test_Nil(t *testing.T) {
@@ -46,25 +45,6 @@ func Test_Nil(t *testing.T) {
 			"   have: 42"
 		affirm.Equal(t, wMsg, err.Error())
 	})
-}
-
-func Test_Nil_ZENValues(t *testing.T) {
-	for _, tc := range cases.ZENValues() {
-		t.Run("Nil "+tc.Desc, func(t *testing.T) {
-			// --- When ---
-			have := Nil(tc.Val)
-
-			// --- Then ---
-			if tc.IsNil && have != nil {
-				format := "expected nil error:\n  have: %#v"
-				t.Errorf(format, have)
-			}
-			if !tc.IsNil && have == nil {
-				format := "expected not-nil error:\n  have: %#v"
-				t.Errorf(format, have)
-			}
-		})
-	}
 }
 
 func Test_NotNil(t *testing.T) {

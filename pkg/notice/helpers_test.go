@@ -94,7 +94,7 @@ func Test_Unwrap(t *testing.T) {
 		have := Unwrap(nil)
 
 		// --- Then ---
-		affirm.NotNil(t, have)
+		affirm.Nil(t, have)
 		affirm.Equal(t, 0, len(have))
 	})
 }

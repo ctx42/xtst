@@ -4,7 +4,7 @@
 package assert
 
 import (
-	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/pkg/check"
 	"github.com/ctx42/testing/pkg/tester"
 )
@@ -14,7 +14,7 @@ import (
 func Len(t tester.T, want int, have any, opts ...check.Option) bool {
 	t.Helper()
 	if e := check.Len(want, have, opts...); e != nil {
-		cnt, _ := internal.Len(have)
+		cnt, _ := core.Len(have)
 		if want > cnt {
 			t.Fatal(e)
 		} else {

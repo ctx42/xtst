@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2025 Rafal Zajac <rzajac@gmail.com>
 // SPDX-License-Identifier: MIT
 
-package internal
+package core
 
 import (
 	"reflect"
@@ -11,6 +11,50 @@ import (
 )
 
 var nilVal = reflect.ValueOf(nil)
+
+// IsNil returns true if "have" is nil.
+func IsNil(have any) bool {
+	if have == nil {
+		return true
+	}
+	val := reflect.ValueOf(have)
+	kind := val.Kind()
+	if kind >= reflect.Chan && kind <= reflect.Slice && val.IsNil() {
+		return true
+	}
+	return false
+}
+
+// Len gets length of x using reflection. Returns (0, false) if impossible.
+//
+// Can be used for: strings, arrays, slices and channels.
+func Len(v any) (length int, ok bool) {
+	vv := reflect.ValueOf(v)
+	defer func() {
+		if e := recover(); e != nil {
+			ok = false
+		}
+	}()
+	return vv.Len(), true
+}
+
+// DidPanic returns true if the passed function panicked, otherwise it returns
+// false. Additionally, when a function panics it returns the value passed to
+// panic and the stack trace.
+func DidPanic(fn func()) (didPanic bool, val any, stack string) {
+	didPanic = true
+
+	defer func() {
+		val = recover()
+		if didPanic {
+			stack = string(debug.Stack())
+		}
+	}()
+
+	fn() // Call the target function
+	didPanic = false
+	return
+}
 
 // Same returns true when two generic pointers point to the same memory.
 //
@@ -86,35 +130,4 @@ func same(want, have reflect.Value) bool {
 	wPtr := unsafe.Pointer(want.Pointer())
 	hPtr := unsafe.Pointer(have.Pointer())
 	return wPtr == hPtr
-}
-
-// Len gets length of x using reflection. Returns (0, false) if impossible.
-//
-// Can be used for: strings, arrays, slices and channels.
-func Len(v any) (length int, ok bool) {
-	vv := reflect.ValueOf(v)
-	defer func() {
-		if e := recover(); e != nil {
-			ok = false
-		}
-	}()
-	return vv.Len(), true
-}
-
-// DidPanic returns true if the passed function panicked, otherwise it returns
-// false. Additionally, when a function panics it returns the value passed to
-// panic and the stack trace.
-func DidPanic(fn func()) (didPanic bool, val any, stack string) {
-	didPanic = true
-
-	defer func() {
-		val = recover()
-		if didPanic {
-			stack = string(debug.Stack())
-		}
-	}()
-
-	fn() // Call the target function
-	didPanic = false
-	return
 }

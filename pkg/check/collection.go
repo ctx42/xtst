@@ -4,14 +4,14 @@
 package check
 
 import (
-	"github.com/ctx42/testing/internal"
+	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/pkg/notice"
 )
 
 // Len checks "have" has "want" elements. Returns nil if it has, otherwise it
 // returns an error with a message indicating the expected and actual values.
 func Len(want int, have any, opts ...Option) error {
-	cnt, ok := internal.Len(have)
+	cnt, ok := core.Len(have)
 	if !ok {
 		return notice.New("cannot execute len(%T)", have)
 	}

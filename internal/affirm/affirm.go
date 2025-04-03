@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/ctx42/testing/internal/core"
 )
 
 // True affirms "have" is true. Returns true if it is, otherwise marks the test
@@ -74,7 +76,7 @@ func DeepEqual(t *testing.T, want, have any) bool {
 // test as failed, writes error message to the test log and returns false.
 func Nil(t *testing.T, have any) bool {
 	t.Helper()
-	if have == nil {
+	if core.IsNil(have) {
 		return true
 	}
 	const format = "expected argument to be nil:\n" +
@@ -89,7 +91,7 @@ func Nil(t *testing.T, have any) bool {
 // false.
 func NotNil(t *testing.T, have any) bool {
 	t.Helper()
-	if have != nil {
+	if !core.IsNil(have) {
 		return true
 	}
 	const format = "expected argument not to be nil:\n" +

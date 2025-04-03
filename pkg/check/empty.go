@@ -6,6 +6,7 @@ package check
 import (
 	"reflect"
 
+	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/pkg/notice"
 )
 
@@ -36,7 +37,7 @@ func Empty(have any, opts ...Option) error {
 
 // isEmpty returns true if "have" is empty.
 func isEmpty(have any) bool {
-	if isNil(have) {
+	if core.IsNil(have) {
 		return true
 	}
 

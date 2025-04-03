@@ -7,6 +7,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/pkg/notice"
 )
 
@@ -26,10 +27,11 @@ func NoError(err error, opts ...Option) error {
 	}
 	ops := DefaultOptions(opts...)
 	const mHeader = "expected error to be nil"
-	if isNil(err) {
+	if core.IsNil(err) {
 		return notice.New(mHeader).
 			Trail(ops.Trail).
-			Want("<nil>").Have("%T", err)
+			Want("<nil>").
+			Have("%T", err)
 	}
 	return notice.New(mHeader).
 		Trail(ops.Trail).
@@ -94,7 +96,7 @@ func ErrorEqual(want string, err error, opts ...Option) error {
 // Returns nil if it's, otherwise it returns an error with a message indicating
 // the expected and actual values.
 func ErrorContain(want string, err error, opts ...Option) error {
-	if isNil(err) {
+	if core.IsNil(err) {
 		ops := DefaultOptions(opts...)
 		return notice.New("expected error not to be nil").
 			Trail(ops.Trail).
@@ -122,7 +124,7 @@ func ErrorContain(want string, err error, opts ...Option) error {
 // [regexp.Regexp]. The [fmt.Sprint] is used to get string representation of
 // have argument.
 func ErrorRegexp(want any, err error, opts ...Option) error {
-	if isNil(err) {
+	if core.IsNil(err) {
 		ops := DefaultOptions(opts...)
 		return notice.New("expected error not to be nil").
 			Trail(ops.Trail).
