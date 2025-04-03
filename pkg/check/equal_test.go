@@ -1257,7 +1257,7 @@ func Test_equalError(t *testing.T) {
 		ops := DefaultOptions()
 
 		// --- When ---
-		err := equalError(42, 44, ops)
+		err := equalError(42, 44, WithOptions(ops))
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
@@ -1271,7 +1271,7 @@ func Test_equalError(t *testing.T) {
 		ops := DefaultOptions(WithTrail("type.field"))
 
 		// --- When ---
-		err := equalError(42, 44, ops)
+		err := equalError(42, 44, WithOptions(ops))
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
@@ -1288,7 +1288,7 @@ func Test_equalError(t *testing.T) {
 		ops := DefaultOptions()
 
 		// --- When ---
-		err := equalError(w, h, ops)
+		err := equalError(w, h, WithOptions(ops))
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
@@ -1304,7 +1304,7 @@ func Test_equalError(t *testing.T) {
 		ops := DefaultOptions()
 
 		// --- When ---
-		err := equalError(w, h, ops)
+		err := equalError(w, h, WithOptions(ops))
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +

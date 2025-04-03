@@ -11,6 +11,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/ctx42/testing/pkg/dump"
 	"github.com/ctx42/testing/pkg/notice"
 )
 
@@ -51,14 +52,14 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 			hItf = hVal.Interface()
 		}
 		ops.logTrail()
-		return equalError(wItf, hItf, ops)
+		return equalError(wItf, hItf, WithOptions(ops))
 	}
 
 	wType := wVal.Type()
 	hType := hVal.Type()
 	if wType != hType {
 		ops.logTrail()
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 	}
 
 	if chk, ok := ops.TrailCheckers[ops.Trail]; ok {
@@ -88,7 +89,7 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 			ops.logTrail()
 			wItf := wVal.Interface()
 			hItf := hVal.Interface()
-			return equalError(wItf, hItf, ops)
+			return equalError(wItf, hItf, WithOptions(ops))
 		}
 
 		return deepEqual(wVal.Elem(), hVal.Elem(), WithOptions(ops))
@@ -134,7 +135,7 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 			ops.logTrail()
 			wItf := wVal.Interface()
 			hItf := hVal.Interface()
-			return equalError(wItf, hItf, ops).
+			return equalError(wItf, hItf, WithOptions(ops)).
 				Prepend("have len", "%d", hVal.Len()).
 				Prepend("want len", "%d", wVal.Len())
 		}
@@ -158,7 +159,9 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 	case reflect.Map:
 		if wVal.Len() != hVal.Len() {
 			ops.logTrail()
-			return equalError(wVal.Interface(), hVal.Interface(), ops).
+			wItf := wVal.Interface()
+			hItf := hVal.Interface()
+			return equalError(wItf, hItf, WithOptions(ops)).
 				Prepend("have len", "%d", hVal.Len()).
 				Prepend("want len", "%d", wVal.Len())
 		}
@@ -181,7 +184,7 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 			kOps.Trail = trail
 			if !hkVal.IsValid() {
 				hItf := hVal.Interface()
-				err := equalError(hItf, nil, kOps)
+				err := equalError(hItf, nil, WithOptions(kOps))
 				ers = append(ers, notice.Unwrap(err)...)
 				continue
 			}
@@ -201,14 +204,14 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 		if wVal.Bool() == hVal.Bool() {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		ops.logTrail()
 		if wVal.Int() == hVal.Int() {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32,
 		reflect.Uint64:
@@ -216,35 +219,35 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 		if wVal.Uint() == hVal.Uint() {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 
 	case reflect.Float32, reflect.Float64:
 		ops.logTrail()
 		if wVal.Float() == hVal.Float() {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 
 	case reflect.Complex64, reflect.Complex128:
 		ops.logTrail()
 		if wVal.Complex() == hVal.Complex() {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 
 	case reflect.String:
 		ops.logTrail()
 		if wVal.String() == hVal.String() {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 
 	case reflect.Chan, reflect.Func:
 		ops.logTrail()
 		if wVal.Pointer() == hVal.Pointer() {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 
 	default:
 		ops.logTrail()
@@ -252,17 +255,18 @@ func deepEqual(wVal, hVal reflect.Value, opts ...Option) error {
 		if reflect.DeepEqual(wVal.Interface(), hVal.Interface()) {
 			return nil
 		}
-		return equalError(wVal.Interface(), hVal.Interface(), ops)
+		return equalError(wVal.Interface(), hVal.Interface(), WithOptions(ops))
 	}
 }
 
 // equalError returns error for not equal values.
-func equalError(want, have any, ops Options) *notice.Notice {
+func equalError(want, have any, opts ...Option) *notice.Notice {
 	wTyp, hTyp := fmt.Sprintf("%T", want), fmt.Sprintf("%T", have)
 	if wTyp == hTyp {
 		wTyp, hTyp = "", ""
 	}
 
+	ops := DefaultOptions(opts...)
 	msg := notice.New("expected values to be equal").
 		Trail(ops.Trail)
 
@@ -285,4 +289,8 @@ func equalError(want, have any, ops Options) *notice.Notice {
 			Append("have type", "%s", hTyp)
 	}
 	return msg
+}
+
+func dumpByte(dnp dump.Dump, lvl int, val reflect.Value) string {
+	return ""
 }
