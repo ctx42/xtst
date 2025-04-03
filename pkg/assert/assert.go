@@ -34,3 +34,15 @@ func Type(t tester.T, want, have any, opts ...check.Option) bool {
 	}
 	return true
 }
+
+// Fields asserts struct or pointer to a struct "s" has "want" number of
+// fields. Returns true if it does, otherwise marks the test as failed, writes
+// error message to test log and returns false.
+func Fields(t tester.T, want int, s any, opts ...check.Option) bool {
+	t.Helper()
+	if e := check.Fields(want, s, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}

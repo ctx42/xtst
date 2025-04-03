@@ -60,3 +60,26 @@ func Type(want, have any, opts ...Option) error {
 		Want("%T", want).
 		Have("%T", have)
 }
+
+// Fields checks a struct or pointer to a struct "s" has "want" number of
+// fields. Returns nil if it does, otherwise it returns an error with a message
+// indicating the expected and actual values.
+func Fields(want int, s any, opts ...Option) error {
+	sVal := reflect.Indirect(reflect.ValueOf(s))
+	ops := DefaultOptions(opts...)
+	if sVal.Kind() != reflect.Struct {
+		return notice.New("expected struct type").
+			Trail(ops.Trail).
+			Append("got type", "%T", s)
+	}
+
+	have := sVal.Type().NumField()
+	if want == have {
+		return nil
+	}
+
+	return notice.New("expected struct to have number of fields").
+		Trail(ops.Trail).
+		Want("%d", want).
+		Have("%d", have)
+}

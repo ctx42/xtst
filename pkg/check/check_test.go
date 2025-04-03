@@ -192,3 +192,63 @@ func Test_Type_error_tabular(t *testing.T) {
 		})
 	}
 }
+
+func Test_Fields(t *testing.T) {
+	t.Run("success zero fields", func(t *testing.T) {
+		// --- Given ---
+		s := struct{}{}
+
+		// --- When ---
+		err := Fields(0, s)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("success value object", func(t *testing.T) {
+		// --- When ---
+		err := Fields(7, types.TA{})
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("pointer to object", func(t *testing.T) {
+		// --- When ---
+		err := Fields(7, &types.TA{})
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := Fields(1, &types.TA{}, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected struct to have number of fields:\n" +
+			"  trail: type.field\n" +
+			"   want: 1\n" +
+			"   have: 7"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error not struct", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := Fields(1, 1, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected struct type:\n" +
+			"     trail: type.field\n" +
+			"  got type: int"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}

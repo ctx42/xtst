@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/ctx42/testing/internal/affirm"
+	"github.com/ctx42/testing/internal/types"
 	"github.com/ctx42/testing/pkg/check"
 	"github.com/ctx42/testing/pkg/tester"
 )
@@ -95,6 +96,50 @@ func Test_Type(t *testing.T) {
 
 		// --- When ---
 		have := Type(tspy, 1, uint(1), opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
+func Test_Fields(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		// --- When ---
+		have := Fields(tspy, 7, types.TA{})
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		// --- When ---
+		have := Fields(tspy, 1, &types.TA{})
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("  trail: type.field\n")
+		tspy.Close()
+
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := Fields(tspy, 1, &types.TA{}, opt)
 
 		// --- Then ---
 		affirm.False(t, have)
