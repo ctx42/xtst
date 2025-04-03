@@ -16,8 +16,7 @@ func Error(err error, opts ...Option) error {
 		return nil // nolint: nilerr
 	}
 	ops := DefaultOptions(opts...)
-	const mHeader = "expected non-nil error"
-	return notice.New(mHeader).Trail(ops.Trail)
+	return notice.New("expected non-nil error").Trail(ops.Trail)
 }
 
 // NoError checks "err" is nil. Returns error it's not nil.

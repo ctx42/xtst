@@ -19,8 +19,8 @@ func Count(count int, what, where any, opts ...Option) error {
 		var ok bool
 		var subT string
 		if subT, ok = what.(string); !ok {
-			const mHeader = "expected argument \"what\" to be string got %T"
 			ops := DefaultOptions(opts...)
+			const mHeader = "expected argument \"what\" to be string got %T"
 			return notice.New(mHeader, what).
 				Trail(ops.Trail)
 		}

@@ -45,6 +45,5 @@ func NotNil(have any, opts ...Option) error {
 		return nil
 	}
 	ops := DefaultOptions(opts...)
-	const mHeader = "expected non-nil value"
-	return notice.New(mHeader).Trail(ops.Trail)
+	return notice.New("expected non-nil value").Trail(ops.Trail)
 }
