@@ -7,6 +7,8 @@
       * [Asserting Time](#asserting-time)
       * [Asserting JSON Strings](#asserting-json-strings)
       * [Worthy mentions](#worthy-mentions)
+  * [Advanced usage](#advanced-usage)
+    * [Custom Checkers](#custom-checkers)
 <!-- TOC -->
 
 # The `assert` package
