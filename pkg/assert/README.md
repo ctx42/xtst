@@ -9,6 +9,7 @@
       * [Worthy mentions](#worthy-mentions)
   * [Advanced usage](#advanced-usage)
     * [Custom Checkers](#custom-checkers)
+    * [Skipping Fields, Elements, or Indexes](#skipping-fields-elements-or-indexes)
 <!-- TOC -->
 
 # The `assert` package
