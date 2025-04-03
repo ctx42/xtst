@@ -19,7 +19,7 @@ func Epsilon[T constraints.Number](
 ) bool {
 
 	t.Helper()
-	if e := check.Within(want, delta, have, opts...); e != nil {
+	if e := check.Epsilon(want, delta, have, opts...); e != nil {
 		t.Error(e)
 		return false
 	}
