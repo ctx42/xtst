@@ -58,12 +58,12 @@ This will make all the package modules available to you.
 
 ## Packages
 
-- Package [assert](pkg/assert) provides assertion toolkit.
-- Package [check](pkg/check) provides equality toolkit used by `assert` package.
-- Package [dump](pkg/dump) provides configurable renderer of any type to a string.
-- Package [must](pkg/must) provides basic test helpers which panic on error.
-- Package [notice](pkg/notice) helps to create nicely formated assertion messages.
-- Package [tester](pkg/tester) provides facilities to test `Test Helpers`.
+- Package [assert](pkg/assert/README.md) provides assertion toolkit.
+- Package [check](pkg/check/README.md) provides equality toolkit used by `assert` package.
+- Package [dump](pkg/dump/README.md) provides configurable renderer of any type to a string.
+- Package [must](pkg/must/README.md) provides basic test helpers which panic on error.
+- Package [notice](pkg/notice/README.md) helps to create nicely formated assertion messages.
+- Package [tester](pkg/tester/README.md) provides facilities to test `Test Helpers`.
 
 Click on the package link to see its README.md file with documentation. Each 
 also package has an `examples_test.go` file with usage examples.
