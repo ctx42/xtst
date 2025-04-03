@@ -186,3 +186,29 @@ func MapSubset[K comparable, V any](want, have map[K]V, opts ...Option) error {
 
 	return wrap(errors.Join(ers...))
 }
+
+// MapsSubset checks all the "want" maps are subsets of corresponding "have"
+// maps using [MapSubset]. Returns nil if all "want" maps are subset of
+// corresponding "have" maps, otherwise it returns an error with a message
+// indicating the expected and actual values.
+func MapsSubset[K comparable, V any](want, have []map[K]V, opts ...Option) error {
+	ops := DefaultOptions(opts...)
+	if len(want) != len(have) {
+		msg := "expected slices of the same length"
+		return notice.New(msg).
+			Trail(ops.Trail).
+			Want("%d", len(want)).
+			Have("%d", len(have))
+	}
+
+	var ers []error
+	for i := range want {
+		iOps := ops
+		trail := ops.arrTrail("slice", i)
+		iOps.Trail = trail
+		if err := MapSubset(want[i], have[i], WithOptions(iOps)); err != nil {
+			ers = append(ers, notice.Unwrap(err)...)
+		}
+	}
+	return wrap(errors.Join(ers...))
+}

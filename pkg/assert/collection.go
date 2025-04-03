@@ -122,3 +122,21 @@ func MapSubset[K cmp.Ordered, V any](
 	}
 	return true
 }
+
+// MapsSubset asserts all the "want" maps are subsets of corresponding "have"
+// maps using [MapSubset]. Returns true if all "want" maps are subset of
+// corresponding "have" maps, otherwise marks the test as failed, writes error
+// message to test log and returns false.
+func MapsSubset[K cmp.Ordered, V any](
+	t tester.T,
+	want, have []map[K]V,
+	opts ...check.Option,
+) bool {
+
+	t.Helper()
+	if e := check.MapsSubset(want, have, opts...); e != nil {
+		t.Error(e)
+		return false
+	}
+	return true
+}

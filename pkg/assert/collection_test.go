@@ -431,3 +431,68 @@ func Test_MapSubset(t *testing.T) {
 		affirm.False(t, have)
 	})
 }
+
+func Test_MapsSubset(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		w0 := []map[string]string{
+			{"KEY0": "VAL0"},
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+		w1 := []map[string]string{
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+
+		// --- When ---
+		have := MapsSubset(tspy, w0, w1)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		w0 := []map[string]string{
+			{"KEY0": "VAL0", "KEY1": "VAL1", "KEY2": "VAL2"},
+		}
+		w1 := []map[string]string{
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+
+		// --- When ---
+		have := MapsSubset(tspy, w0, w1)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("  trail: <slice>[0]map[2]\n")
+		tspy.Close()
+
+		w0 := []map[int]int{
+			{1: 10, 2: 20},
+		}
+		w1 := []map[int]int{
+			{1: 10, 2: 200},
+		}
+
+		// --- When ---
+		have := MapsSubset(tspy, w0, w1)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}

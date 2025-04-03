@@ -580,3 +580,73 @@ func Test_MapSubset(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
+
+func Test_MapsSubset(t *testing.T) {
+	t.Run("maps are subset", func(t *testing.T) {
+		// --- Given ---
+		want := []map[string]string{
+			{"KEY0": "VAL0"},
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+		have := []map[string]string{
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+
+		// --- When ---
+		err := MapsSubset(want, have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error have has fewer indexes", func(t *testing.T) {
+		// --- Given ---
+		want := []map[string]string{
+			{"KEY0": "VAL0"},
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+		have := []map[string]string{
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := MapsSubset(want, have, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected slices of the same length:\n" +
+			"  trail: type.field\n" +
+			"   want: 2\n" +
+			"   have: 1"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error wrong values", func(t *testing.T) {
+		// --- Given ---
+		want := []map[string]string{
+			{"KEY0": "VAL0", "KEY1": "VALA"},
+			{"KEY0": "VAL0", "KEY1": "BAD"},
+		}
+		have := []map[string]string{
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+			{"KEY0": "VAL0", "KEY1": "VAL1"},
+		}
+
+		// --- When ---
+		err := MapsSubset(want, have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values to be equal:\n" +
+			"  trail: <slice>[0]map[\"KEY1\"]\n" +
+			"   want: \"VALA\"\n" +
+			"   have: \"VAL1\"\n" +
+			" ---\n" +
+			"  trail: <slice>[1]map[\"KEY1\"]\n" +
+			"   want: \"BAD\"\n" +
+			"   have: \"VAL1\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
