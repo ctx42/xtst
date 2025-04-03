@@ -5,6 +5,7 @@ package affirm
 
 import (
 	"errors"
+	"runtime"
 	"testing"
 )
 
@@ -182,13 +183,9 @@ func Test_Panic(t *testing.T) {
 		ti := &testing.T{}
 
 		// --- When ---
-		have, panicked := Panic(ti, func() { panic("abc") })
+		have := Panic(ti, func() { panic("abc") })
 
 		// --- Then ---
-		if !panicked {
-			t.Errorf("expected 'panicked' to be true")
-
-		}
 		if ti.Failed() {
 			t.Error("expected not failed test")
 		}
@@ -202,13 +199,9 @@ func Test_Panic(t *testing.T) {
 		ti := &testing.T{}
 
 		// --- When ---
-		have, panicked := Panic(ti, func() { panic(errors.New("abc")) })
+		have := Panic(ti, func() { panic(errors.New("abc")) })
 
 		// --- Then ---
-		if !panicked {
-			t.Errorf("expected 'panicked' to be true")
-
-		}
 		if ti.Failed() {
 			t.Error("expected not failed test")
 		}
@@ -222,13 +215,9 @@ func Test_Panic(t *testing.T) {
 		ti := &testing.T{}
 
 		// --- When ---
-		have, panicked := Panic(ti, func() { panic(123) })
+		have := Panic(ti, func() { panic(123) })
 
 		// --- Then ---
-		if !panicked {
-			t.Errorf("expected 'panicked' to be true")
-
-		}
 		if ti.Failed() {
 			t.Error("expected not failed test")
 		}
@@ -237,18 +226,35 @@ func Test_Panic(t *testing.T) {
 		}
 	})
 
+	t.Run("success function panics with nil", func(t *testing.T) {
+		// --- Given ---
+		ti := &testing.T{}
+
+		// --- When ---
+		have := Panic(ti, func() { panic(nil) })
+
+		// --- Then ---
+
+		if ti.Failed() {
+			t.Error("expected not failed test")
+		}
+		want := (&runtime.PanicNilError{}).Error()
+		if *have != want {
+			wMsg := "expected panic message:\n" +
+				"want: %s\n" +
+				"have: %s\n"
+			t.Errorf(wMsg, want, *have)
+		}
+	})
+
 	t.Run("error function does not panic", func(t *testing.T) {
 		// --- Given ---
 		ti := &testing.T{}
 
 		// --- When ---
-		have, panicked := Panic(ti, func() {})
+		have := Panic(ti, func() {})
 
 		// --- Then ---
-		if panicked {
-			t.Error("expected 'panicked' to be false")
-
-		}
 		if !ti.Failed() {
 			t.Error("expected failed test")
 		}

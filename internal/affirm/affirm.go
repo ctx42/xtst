@@ -101,29 +101,27 @@ func NotNil(t *testing.T, have any) bool {
 	return false
 }
 
-// Panic affirms fn panics with a string message equal to "want". Returns true
-// if fn panicked with the message, otherwise marks the test as failed, writes
-// error message to the test log and returns false.
-func Panic(t *testing.T, fn func()) (msg *string, success bool) {
+// Panic affirms "fn" panics. When "fn" panicked, it returns pointer to a
+// string representation of the value used in panic(). When "fn" doesn't panic
+// it returns nil, marks the test as failed and writes error message to the
+// test.
+func Panic(t *testing.T, fn func()) *string {
 	t.Helper()
-	defer func() {
-		t.Helper()
-		if r := recover(); r != nil {
-			success = true
-			var val string
-			switch v := r.(type) {
-			case string:
-				val = v
-			case error:
-				val = v.Error()
-			default:
-				val = fmt.Sprint(v)
-			}
-			msg = &val
-		}
-	}()
+	var val any
+	var panicked bool
+	if panicked, val, _ = core.DidPanic(fn); !panicked {
+		t.Error("expected fn to panic")
+		return nil
+	}
 
-	fn()
-	t.Error("expected fn to panic")
-	return nil, false
+	var str string
+	switch v := val.(type) {
+	case string:
+		str = v
+	case error:
+		str = v.Error()
+	default:
+		str = fmt.Sprint(v)
+	}
+	return &str
 }

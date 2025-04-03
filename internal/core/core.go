@@ -38,9 +38,9 @@ func Len(v any) (length int, ok bool) {
 	return vv.Len(), true
 }
 
-// DidPanic returns true if the passed function panicked, otherwise it returns
-// false. Additionally, when a function panics it returns the value passed to
-// panic and the stack trace.
+// DidPanic returns true if the passed function panicked when executed, the
+// value that was passed to panic, and the stack trace. When function did not
+// panic it returns false and zero values for the other two return arguments.
 func DidPanic(fn func()) (didPanic bool, val any, stack string) {
 	didPanic = true
 

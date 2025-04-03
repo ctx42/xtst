@@ -57,8 +57,7 @@ func Test_Golden(t *testing.T) {
 		fn := func() { have = Golden(tspy, "testdata/golden_no_marker.txt") }
 
 		// --- Then ---
-		msg, panicked := affirm.Panic(t, fn)
-		affirm.True(t, panicked)
+		msg := affirm.Panic(t, fn)
 		affirm.NotNil(t, *msg)
 		affirm.Equal(t, "", have)
 	})
@@ -77,8 +76,7 @@ func Test_Golden(t *testing.T) {
 		fn := func() { have = Golden(tspy, "testdata/not-existing.txt") }
 
 		// --- Then ---
-		msg, panicked := affirm.Panic(t, fn)
-		affirm.True(t, panicked)
+		msg := affirm.Panic(t, fn)
 		affirm.NotNil(t, *msg)
 		affirm.Equal(t, "", have)
 	})
