@@ -59,3 +59,26 @@ func ExampleNoError_changeMessage() {
 	//      have: "test error"
 	//   context: wow
 }
+
+func ExampleEqual_structs() {
+	type T struct {
+		Int int
+		Str string
+	}
+
+	have := T{Int: 1, Str: "abc"}
+	want := T{Int: 2, Str: "xyz"}
+
+	err := check.Equal(want, have)
+
+	fmt.Println(err)
+	// Output:
+	// expected values to be equal:
+	//   trail: T.Int
+	//    want: 2
+	//    have: 1
+	//  ---
+	//   trail: T.Str
+	//    want: "xyz"
+	//    have: "abc"
+}
