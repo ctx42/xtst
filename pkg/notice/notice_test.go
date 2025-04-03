@@ -492,7 +492,7 @@ func Test_Message_Error(t *testing.T) {
 		// --- Then ---
 		want := "expected values to be equal:\n" +
 			"    want: 42\n" +
-			"  longer: \n" +
+			"  longer:\n" +
 			"          []int{\n" +
 			"            0,\n" +
 			"            1,\n" +

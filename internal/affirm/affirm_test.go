@@ -231,7 +231,7 @@ func Test_Panic(t *testing.T) {
 		ti := &testing.T{}
 
 		// --- When ---
-		have := Panic(ti, func() { panic(nil) })
+		have := Panic(ti, func() { panic(nil) }) // nolint: govet
 
 		// --- Then ---
 

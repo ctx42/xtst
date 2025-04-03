@@ -567,7 +567,7 @@ func Test_Equal_kind_Struct(t *testing.T) {
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
 			"  want: nil\n" +
-			"  have: \n" +
+			"  have:\n" +
 			"        {\n" +
 			"          Int: 0,\n" +
 			"          Str: \"abc\",\n" +
@@ -589,7 +589,7 @@ func Test_Equal_kind_Struct(t *testing.T) {
 
 		// --- Then ---
 		wMsg := "expected values to be equal:\n" +
-			"  want: \n" +
+			"  want:\n" +
 			"        {\n" +
 			"          Int: 0,\n" +
 			"          Str: \"abc\",\n" +
@@ -767,12 +767,12 @@ func Test_Equal_kind_Slice_and_Array(t *testing.T) {
 			"     trail: type.field\n" +
 			"  want len: 2\n" +
 			"  have len: 1\n" +
-			"      want: \n" +
+			"      want:\n" +
 			"            []int{\n" +
 			"              1,\n" +
 			"              2,\n" +
 			"            }\n" +
-			"      have: \n" +
+			"      have:\n" +
 			"            []int{\n" +
 			"              1,\n" +
 			"            }"
@@ -874,7 +874,7 @@ func Test_Equal_kind_Map(t *testing.T) {
 		affirm.NotNil(t, err)
 		wMsg := "expected values to be equal:\n" +
 			"      trail: map[2]\n" +
-			"       want: \n" +
+			"       want:\n" +
 			"             map[int]int{\n" +
 			"               1: 42,\n" +
 			"               3: 44,\n" +
@@ -903,12 +903,12 @@ func Test_Equal_kind_Map(t *testing.T) {
 			"     trail: type.field\n" +
 			"  want len: 2\n" +
 			"  have len: 3\n" +
-			"      want: \n" +
+			"      want:\n" +
 			"            map[int]int{\n" +
 			"              1: 42,\n" +
 			"              2: 44,\n" +
 			"            }\n" +
-			"      have: \n" +
+			"      have:\n" +
 			"            map[int]int{\n" +
 			"              1: 42,\n" +
 			"              2: 43,\n" +
