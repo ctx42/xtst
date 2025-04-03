@@ -18,12 +18,21 @@ import (
 // Equal recursively checks both values are equal. Returns nil if they are,
 // otherwise it returns an error with a message indicating the expected and
 // actual values.
-//
-// nolint: cyclop, gocognit
 func Equal(want, have any, opts ...Option) error {
 	wVal := reflect.ValueOf(want)
 	hVal := reflect.ValueOf(have)
 	return wrap(deepEqual(wVal, hVal, opts...))
+}
+
+// NotEqual checks both values are not equal using. Returns nil if they are not,
+// otherwise it returns an error with a message indicating the expected and
+// actual values.
+func NotEqual(want, have any, opts ...Option) error {
+	if err := Equal(want, have, opts...); err == nil {
+		return equalError(want, have, opts...).
+			SetHeader("expected values not to be equal")
+	}
+	return nil
 }
 
 // deepEqual is the internal comparison function which is called recursively.

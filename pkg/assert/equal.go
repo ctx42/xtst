@@ -18,3 +18,15 @@ func Equal(t tester.T, want, have any, opts ...check.Option) bool {
 	}
 	return true
 }
+
+// NotEqual asserts both values are not equal. Returns true if they are not,
+// otherwise marks the test as failed, writes error message to test log and
+// returns false.
+func NotEqual(t tester.T, want, have any, opts ...check.Option) bool {
+	t.Helper()
+	if err := check.NotEqual(want, have, opts...); err != nil {
+		t.Error(err)
+		return false
+	}
+	return true
+}

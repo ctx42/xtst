@@ -1253,6 +1253,56 @@ func Test_Equal_EqualCases_tabular(t *testing.T) {
 	}
 }
 
+func Test_NotEqual(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- When ---
+		err := NotEqual(42, 44)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- When ---
+		err := NotEqual(42, 42)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values not to be equal:\n" +
+			"  want: 42\n" +
+			"  have: 42"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error with bytes", func(t *testing.T) {
+		// --- When ---
+		err := NotEqual(byte(42), byte(42))
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values not to be equal:\n" +
+			"  want: 0x2a ('*')\n" +
+			"  have: 0x2a ('*')"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := NotEqual(42, 42, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values not to be equal:\n" +
+			"  trail: type.field\n" +
+			"   want: 42\n" +
+			"   have: 42"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
 func Test_equalError(t *testing.T) {
 	t.Run("without trail", func(t *testing.T) {
 		// --- Given ---
