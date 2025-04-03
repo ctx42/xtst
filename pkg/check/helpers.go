@@ -20,6 +20,7 @@ var (
 	typTime       = reflect.TypeOf(time.Time{})
 	typTimeLoc    = reflect.TypeOf(time.Location{})
 	typTimeLocPtr = reflect.TypeOf(&time.Location{})
+	typByte       = reflect.TypeOf(byte(0))
 )
 
 // typeString returns type of the value as a string.

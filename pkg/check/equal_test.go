@@ -3,12 +3,14 @@ package check
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
 	"github.com/ctx42/testing/internal/affirm"
 	"github.com/ctx42/testing/internal/cases"
 	"github.com/ctx42/testing/internal/types"
+	"github.com/ctx42/testing/pkg/dump"
 	"github.com/ctx42/testing/pkg/must"
 )
 
@@ -1297,6 +1299,23 @@ func Test_equalError(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 
+	t.Run("does not override already set byte dumper", func(t *testing.T) {
+		// --- Given ---
+		w := byte('A')
+		h := byte('B')
+		fn := func(_ dump.Dump, _ int, _ reflect.Value) string { return "abc" }
+		ops := DefaultOptions(WithDumper(dump.WithDumper(byte(0), fn)))
+
+		// --- When ---
+		err := equalError(w, h, WithOptions(ops))
+
+		// --- Then ---
+		wMsg := "expected values to be equal:\n" +
+			"  want: abc\n" +
+			"  have: abc"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
 	t.Run("different types", func(t *testing.T) {
 		// --- Given ---
 		w := byte('A')
@@ -1313,5 +1332,43 @@ func Test_equalError(t *testing.T) {
 			"  want type: uint8\n" +
 			"  have type: int"
 		affirm.Equal(t, wMsg, err.Error())
+	})
+}
+
+func Test_dumpByte(t *testing.T) {
+	t.Run("success printable", func(t *testing.T) {
+		// --- Given ---
+		dmp := dump.New()
+		val := reflect.ValueOf(byte(42))
+
+		// --- When ---
+		have := dumpByte(dmp, 0, val)
+
+		// --- Then ---
+		affirm.Equal(t, "0x2a ('*')", have)
+	})
+
+	t.Run("success not printable", func(t *testing.T) {
+		// --- Given ---
+		dmp := dump.New()
+		val := reflect.ValueOf(byte(1))
+
+		// --- When ---
+		have := dumpByte(dmp, 0, val)
+
+		// --- Then ---
+		affirm.Equal(t, "0x01", have)
+	})
+
+	t.Run("uses indent and level", func(t *testing.T) {
+		// --- Given ---
+		dmp := dump.New(dump.WithIndent(2))
+		val := reflect.ValueOf(byte(1))
+
+		// --- When ---
+		have := dumpByte(dmp, 1, val)
+
+		// --- Then ---
+		affirm.Equal(t, "      0x01", have)
 	})
 }

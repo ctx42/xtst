@@ -267,23 +267,16 @@ func equalError(want, have any, opts ...Option) *notice.Notice {
 	}
 
 	ops := DefaultOptions(opts...)
+	if _, ok := ops.Dumper.Dumpers[typByte]; !ok {
+		ops.Dumper.Dumpers[typByte] = dumpByte
+	}
+
 	msg := notice.New("expected values to be equal").
-		Trail(ops.Trail)
-
-	if b, ok := want.(byte); ok && isPrintableChar(b) {
-		_ = msg.Want("%#v ('%s')", want, string(b))
-	} else {
-		_ = msg.Want("%s", ops.Dumper.Any(want))
-	}
-
-	if b, ok := have.(byte); ok && isPrintableChar(b) {
-		_ = msg.Have("%#v ('%s')", have, string(b))
-	} else {
-		_ = msg.Have("%s", ops.Dumper.Any(have))
-	}
+		Trail(ops.Trail).
+		Want("%s", ops.Dumper.Any(want)).
+		Have("%s", ops.Dumper.Any(have))
 
 	if wTyp != "" {
-		// nolint: govet
 		_ = msg.
 			Append("want type", "%s", wTyp).
 			Append("have type", "%s", hTyp)
@@ -291,6 +284,15 @@ func equalError(want, have any, opts ...Option) *notice.Notice {
 	return msg
 }
 
-func dumpByte(dnp dump.Dump, lvl int, val reflect.Value) string {
-	return ""
+// dumpByte is a custom bumper for bytes.
+func dumpByte(dmp dump.Dump, lvl int, val reflect.Value) string {
+	v := val.Interface().(byte) // nolint: forcetypeassert
+	var str string
+	if isPrintableChar(v) {
+		str = fmt.Sprintf("0x%02x ('%s')", v, string(v))
+	} else {
+		str = fmt.Sprintf("0x%02x", v)
+	}
+	prn := dump.NewPrinter(dmp)
+	return prn.Tab(dmp.Indent + lvl).Write(str).String()
 }
