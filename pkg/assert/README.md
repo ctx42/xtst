@@ -234,3 +234,38 @@ fmt.Println(strings.Join(trails, "\n"))
 // T.Next.Next.Next.Int
 // T.Next.Next.Next.Next
 ```
+
+### Skipping Fields, Elements, or Indexes
+
+You can ask certain trials to be skipped when asserting.
+
+```go
+type T struct {
+    Int  int
+    Next *T
+}
+
+have := T{1, &T{2, &T{3, &T{42, nil}}}}
+want := T{1, &T{2, &T{8, &T{42, nil}}}}
+trails := make([]string, 0)
+
+assert.Equal(
+    want,
+    have,
+    check.WithTrailLog(&trails),
+    check.WithSkipTrail("T.Next.Next.Int"),
+)
+
+fmt.Println(strings.Join(trails, "\n"))
+// Test Log:
+//
+// T.Int
+// T.Next.Int
+// T.Next.Next.Int <skipped>
+// T.Next.Next.Next.Int
+// T.Next.Next.Next.Next
+```
+
+Notice that the requested trail was skipped from assertion even though the
+values were not equal `3 != 8`. The skipped paths are always marked with 
+` <skipped>` tag.

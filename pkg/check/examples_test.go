@@ -230,6 +230,34 @@ func ExampleEqual_listVisitedTrails() {
 	// T.Next.Next.Next.Next
 }
 
+func ExampleEqual_skipTrails() {
+	type T struct {
+		Int  int
+		Next *T
+	}
+
+	have := T{1, &T{2, &T{3, &T{42, nil}}}}
+	want := T{1, &T{2, &T{8, &T{42, nil}}}}
+	trails := make([]string, 0)
+
+	err := check.Equal(
+		want,
+		have,
+		check.WithTrailLog(&trails),
+		check.WithSkipTrail("T.Next.Next.Int"),
+	)
+
+	fmt.Println(err)
+	fmt.Println(strings.Join(trails, "\n"))
+	// Output:
+	// <nil>
+	// T.Int
+	// T.Next.Int
+	// T.Next.Next.Int <skipped>
+	// T.Next.Next.Next.Int
+	// T.Next.Next.Next.Next
+}
+
 func ExampleJSON() {
 	want := `{"A": 1, "B": 2}`
 	have := `{"A": 1, "B": 3}`
