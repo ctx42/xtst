@@ -12,6 +12,8 @@ import (
 // Count asserts there is "count" occurrences of "what" in "where". Returns
 // true if the count matches, otherwise marks the test as failed, writes error
 // message to test log and returns false.
+//
+// Currently only strings are supported.
 func Count(t tester.T, count int, what, where any, opts ...check.Option) bool {
 	t.Helper()
 	if e := check.Count(count, what, where, opts...); e != nil {

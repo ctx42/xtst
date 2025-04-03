@@ -460,3 +460,123 @@ func Test_SliceSubset(t *testing.T) {
 		affirm.Equal(t, wMsg, err.Error())
 	})
 }
+
+func Test_MapSubset(t *testing.T) {
+	t.Run("success map is subset", func(t *testing.T) {
+		// --- Given ---
+		want := map[string]string{
+			"KEY0": "VAL0",
+		}
+		have := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+		}
+
+		// --- When ---
+		err := MapSubset(want, have)
+
+		// --- Then ---
+		affirm.Nil(t, err)
+	})
+
+	t.Run("error missing keys", func(t *testing.T) {
+		// --- Given ---
+		want := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+			"KEY2": "VAL2",
+		}
+		have := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+		}
+		opt := WithTrail("type.field")
+
+		// --- When ---
+		err := MapSubset(want, have, opt)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected \"have\" map to have key(s):\n" +
+			"           trail: type.field\n" +
+			"  missing key(s): \"KEY2\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error wrong values", func(t *testing.T) {
+		// --- Given ---
+		want := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VALA",
+		}
+		have := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+		}
+
+		// --- When ---
+		err := MapSubset(want, have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values to be equal:\n" +
+			"  trail: map[\"KEY1\"]\n" +
+			"   want: \"VALA\"\n" +
+			"   have: \"VAL1\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error missing and wrong values", func(t *testing.T) {
+		// --- Given ---
+		want := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VALA",
+			"KEY2": "VAL2",
+		}
+		have := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+		}
+
+		// --- When ---
+		err := MapSubset(want, have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values to be equal:\n" +
+			"  trail: map[\"KEY1\"]\n" +
+			"   want: \"VALA\"\n" +
+			"   have: \"VAL1\"\n" +
+			"\n" +
+			"expected \"have\" map to have key(s):\n" +
+			"  missing key(s): \"KEY2\""
+		affirm.Equal(t, wMsg, err.Error())
+	})
+
+	t.Run("error multiple not matching values", func(t *testing.T) {
+		// --- Given ---
+		want := map[int]int{
+			0: 10,
+			1: 11,
+		}
+		have := map[int]int{
+			0: 100,
+			1: 111,
+		}
+
+		// --- When ---
+		err := MapSubset(want, have)
+
+		// --- Then ---
+		affirm.NotNil(t, err)
+		wMsg := "expected values to be equal:\n" +
+			"  trail: map[0]\n" +
+			"   want: 10\n" +
+			"   have: 100\n" +
+			" ---\n" +
+			"  trail: map[1]\n" +
+			"   want: 11\n" +
+			"   have: 111"
+		affirm.Equal(t, wMsg, err.Error())
+	})
+}

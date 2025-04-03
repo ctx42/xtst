@@ -14,6 +14,8 @@ import (
 // Count checks there is "count" occurrences of "what" in "where". Returns nil
 // if it's, otherwise it returns an error with a message indicating the
 // expected and actual values.
+//
+// Currently only strings are supported.
 func Count(count int, what, where any, opts ...Option) error {
 	if src, ok := where.(string); ok {
 		var ok bool

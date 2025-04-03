@@ -43,7 +43,7 @@ func Test_JSON(t *testing.T) {
 		affirm.False(t, got)
 	})
 
-	t.Run("error", func(t *testing.T) {
+	t.Run("log message with trail", func(t *testing.T) {
 		// --- Given ---
 		tspy := tester.New(t)
 		tspy.ExpectError()

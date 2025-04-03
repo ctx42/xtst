@@ -4,6 +4,11 @@
 package check
 
 import (
+	"errors"
+	"reflect"
+	"sort"
+	"strings"
+
 	"github.com/ctx42/testing/internal/core"
 	"github.com/ctx42/testing/pkg/notice"
 )
@@ -133,4 +138,51 @@ func SliceSubset[V comparable](want, have []V, opts ...Option) error {
 	return notice.New(hHeader).
 		Trail(ops.Trail).
 		Append("missing values", "%s", ops.Dumper.Any(missing))
+}
+
+// MapSubset checks the "want" is a subset "have". In other words all keys and
+// their corresponding values in "want" map must be in "have" map. It is not an
+// error when "have" map has some other keys. Returns nil if "want" is a subset
+// of "have", otherwise it returns an error with a message indicating the
+// expected and actual values.
+func MapSubset[K comparable, V any](want, have map[K]V, opts ...Option) error {
+	ops := DefaultOptions(opts...)
+
+	var ersM map[string][]error
+	var order []string
+	var missing []string
+	for wKey, wVal := range want {
+		wKeyStr := valToString(reflect.ValueOf(wKey))
+		trail := ops.mapTrail(wKeyStr)
+		hVal, exist := have[wKey]
+		if !exist {
+			missing = append(missing, wKeyStr)
+			continue
+		}
+		kOps := ops
+		kOps.Trail = trail
+		if err := Equal(wVal, hVal, WithOptions(kOps)); err != nil {
+			if ersM == nil {
+				ersM = make(map[string][]error)
+			}
+			order = append(order, trail)
+			ersM[trail] = append(ersM[trail], notice.Unwrap(err)...)
+		}
+	}
+
+	var ers []error
+	sort.Strings(order)
+	for _, trail := range order {
+		ers = append(ers, ersM[trail]...)
+	}
+
+	if len(missing) > 0 {
+		sort.Strings(missing)
+		err := notice.New(`expected "have" map to have key(s)`).
+			Trail(ops.Trail).
+			Append("missing key(s)", "%s", strings.Join(missing, ", "))
+		ers = append(ers, err)
+	}
+
+	return wrap(errors.Join(ers...))
 }

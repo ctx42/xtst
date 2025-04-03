@@ -173,11 +173,11 @@ func Test_HasKey(t *testing.T) {
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
 
 		// --- When ---
-		haveValue, success := HasKey(tspy, "B", val)
+		haveValue, haveHas := HasKey(tspy, "B", val)
 
 		// --- Then ---
 		affirm.Equal(t, 2, haveValue)
-		affirm.True(t, success)
+		affirm.True(t, haveHas)
 	})
 
 	t.Run("error", func(t *testing.T) {
@@ -190,11 +190,11 @@ func Test_HasKey(t *testing.T) {
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
 
 		// --- When ---
-		haveValue, success := HasKey(tspy, "X", val)
+		haveValue, haveHas := HasKey(tspy, "X", val)
 
 		// --- Then ---
 		affirm.Equal(t, 0, haveValue)
-		affirm.False(t, success)
+		affirm.False(t, haveHas)
 	})
 
 	t.Run("log message with trail", func(t *testing.T) {
@@ -208,11 +208,11 @@ func Test_HasKey(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		haveValue, success := HasKey(tspy, "X", val, opt)
+		haveValue, haveHas := HasKey(tspy, "X", val, opt)
 
 		// --- Then ---
 		affirm.Equal(t, 0, haveValue)
-		affirm.False(t, success)
+		affirm.False(t, haveHas)
 	})
 }
 
@@ -224,10 +224,10 @@ func Test_HasNoKey(t *testing.T) {
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
 
 		// --- When ---
-		success := HasNoKey(tspy, "D", val)
+		have := HasNoKey(tspy, "D", val)
 
 		// --- Then ---
-		affirm.True(t, success)
+		affirm.True(t, have)
 	})
 
 	t.Run("error", func(t *testing.T) {
@@ -240,10 +240,10 @@ func Test_HasNoKey(t *testing.T) {
 		val := map[string]int{"A": 1, "B": 2, "C": 3}
 
 		// --- When ---
-		success := HasNoKey(tspy, "B", val)
+		have := HasNoKey(tspy, "B", val)
 
 		// --- Then ---
-		affirm.False(t, success)
+		affirm.False(t, have)
 	})
 
 	t.Run("log message with trail", func(t *testing.T) {
@@ -257,10 +257,10 @@ func Test_HasNoKey(t *testing.T) {
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		success := HasNoKey(tspy, "B", val, opt)
+		have := HasNoKey(tspy, "B", val, opt)
 
 		// --- Then ---
-		affirm.False(t, success)
+		affirm.False(t, have)
 	})
 }
 
@@ -317,11 +317,11 @@ func Test_SliceSubset(t *testing.T) {
 		tspy := tester.New(t)
 		tspy.Close()
 
-		sWant := []string{"A", "B", "C"}
-		sHave := []string{"C", "B", "A"}
+		s0 := []string{"A", "B", "C"}
+		s1 := []string{"C", "B", "A"}
 
 		// --- When ---
-		have := SliceSubset(tspy, sWant, sHave)
+		have := SliceSubset(tspy, s0, s1)
 
 		// --- Then ---
 		affirm.True(t, have)
@@ -351,12 +351,81 @@ func Test_SliceSubset(t *testing.T) {
 		tspy.ExpectLogContain("           trail: type.field\n")
 		tspy.Close()
 
-		sWant := []string{"X", "Y", "A", "B", "C"}
-		sHave := []string{"C", "B", "A"}
+		s0 := []string{"X", "Y", "A", "B", "C"}
+		s1 := []string{"C", "B", "A"}
 		opt := check.WithTrail("type.field")
 
 		// --- When ---
-		have := SliceSubset(tspy, sWant, sHave, opt)
+		have := SliceSubset(tspy, s0, s1, opt)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+}
+
+func Test_MapSubset(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.Close()
+
+		mWant := map[string]string{
+			"KEY0": "VAL0",
+		}
+		mHave := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+		}
+
+		// --- When ---
+		have := MapSubset(tspy, mWant, mHave)
+
+		// --- Then ---
+		affirm.True(t, have)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.IgnoreLogs()
+		tspy.Close()
+
+		m0 := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+			"KEY2": "VAL2",
+		}
+		m1 := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+		}
+
+		// --- When ---
+		have := MapSubset(tspy, m0, m1)
+
+		// --- Then ---
+		affirm.False(t, have)
+	})
+
+	t.Run("log message with trail", func(t *testing.T) {
+		// --- Given ---
+		tspy := tester.New(t)
+		tspy.ExpectError()
+		tspy.ExpectLogContain("  trail: type.field\n")
+		tspy.Close()
+
+		m0 := map[string]string{
+			"KEY0": "VAL0",
+			"KEY1": "VAL1",
+		}
+		m1 := map[string]string{
+			"KEY0": "VAL0",
+		}
+		opt := check.WithTrail("type.field")
+
+		// --- When ---
+		have := MapSubset(tspy, m0, m1, opt)
 
 		// --- Then ---
 		affirm.False(t, have)
